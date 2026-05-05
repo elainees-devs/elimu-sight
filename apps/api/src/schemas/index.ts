@@ -16,6 +16,10 @@ export {
   createClassSchema,
   updateClassSchema,
   classIdParamSchema,
+  Class,
+  CreateClassInput,
+  UpdateClassInput,
+  ClassIdParam,
 } from "./class.schema";
 
 // subject schemas
