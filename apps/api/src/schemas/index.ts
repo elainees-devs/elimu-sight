@@ -28,6 +28,10 @@ export {
   createSubjectSchema,
   updateSubjectSchema,
   subjectIdParamSchema,
+  Subject,
+  CreateSubjectInput,
+  UpdateSubjectInput,
+  SubjectIdParam,
 } from "./subject.schema";
 
 // student schemas
