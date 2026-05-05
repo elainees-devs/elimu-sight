@@ -75,3 +75,15 @@ export {
     AuthenticateUserInput,
     UserIdParam,
 } from "./user.schema";
+
+// insight schemas
+export {
+  insightSchema,
+  createInsightSchema,
+  updateInsightSchema,
+  insightIdParamSchema,
+  Insight,
+  CreateInsightInput,
+  UpdateInsightInput,
+  InsightIdParam,
+} from "./insight.schema";
