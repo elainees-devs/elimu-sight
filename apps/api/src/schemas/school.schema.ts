@@ -1,5 +1,5 @@
 import { subscriptionPlans } from "@utils/index";
-import Joi from "joi";
+import Joi, { ObjectSchema } from "joi";
 
 /**
  * =========================
@@ -71,3 +71,12 @@ export const updateSchoolSchema = Joi.object({
 export const schoolIdParamSchema = Joi.object({
   id: Joi.string().uuid().required(),
 });
+
+/**
+ * Utility to extract Joi type
+ */
+export type InferSchema<T> = T extends ObjectSchema<infer U> ? U : never;
+export type School = InferSchema<typeof schoolSchema>;
+export type CreateSchoolInput = InferSchema<typeof createSchoolSchema>;
+export type UpdateSchoolInput = InferSchema<typeof updateSchoolSchema>;
+export type SchoolIdParam = InferSchema<typeof schoolIdParamSchema>;
