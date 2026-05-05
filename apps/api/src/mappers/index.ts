@@ -1,0 +1,23 @@
+// school mappers
+export {toSchoolResponse, toSchoolListResponse, toCreateSchoolDB, toUpdateSchoolDB} from "./school.mapper";
+
+// user mappers
+export {toUserResponse,toUserListResponse ,toCreateUserDB, toUpdateUserDB} from "./user.mapper";
+
+// subject mappers
+export {toSubjectResponse, toSubjectListResponse, toCreateSubjectDB, toUpdateSubjectDB} from "./subject.mapper";
+
+// class mappers
+export {toClassResponse, toClassListResponse, toCreateClassDB, toUpdateClassDB} from "./class.mapper";
+
+// class-subject mappers
+export {toClassSubjectResponse, toClassSubjectListResponse, toCreateClassSubjectDB, toUpdateClassSubjectDB} from "./class-subject.mapper";
+
+// student mappers
+export {toStudentResponse, toStudentListResponse, toCreateStudentDB, toUpdateStudentDB} from "./student.mapper";
+
+// assessment mappers
+export {toAssessmentResponse, toAssessmentListResponse, toCreateAssessmentDB, toUpdateAssessmentDB} from "./assessment.mappers";
+
+// insight mappers
+export {toInsightResponse, toInsightListResponse, toCreateInsightDB, toUpdateInsightDB} from "./insight.mapper";
