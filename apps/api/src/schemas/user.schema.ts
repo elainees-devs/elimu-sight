@@ -80,3 +80,10 @@ export const authenticateUserSchema = Joi.object({
 export const userIdParamSchema = Joi.object({
   id: Joi.string().uuid().required(),
 });
+
+export type InferSchema<T> = T extends Joi.ObjectSchema<infer U> ? U : never;
+export type User = InferSchema<typeof userSchema>;
+export type CreateUserInput = InferSchema<typeof createUserSchema>;
+export type UpdateUserInput = InferSchema<typeof updateUserSchema>;
+export type AuthenticateUserInput = InferSchema<typeof authenticateUserSchema>;
+export type UserIdParam = InferSchema<typeof userIdParamSchema>;
