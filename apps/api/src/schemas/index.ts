@@ -52,6 +52,10 @@ export {
   createClassSubjectSchema,
   updateClassSubjectSchema,
   classSubjectIdParamSchema,
+  ClassSubject,
+  CreateClassSubjectInput,
+  UpdateClassSubjectInput,
+  ClassSubjectIdParam,
 } from "./class-subject.schema";
 
 // user schemas
