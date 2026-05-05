@@ -36,6 +36,10 @@ export {
   createStudentSchema,
   updateStudentSchema,
   studentIdParamSchema,
+  Student,
+  CreateStudentInput,
+  UpdateStudentInput,
+  StudentIdParam,
 } from "./student.schema";
 
 // assessment schemas
