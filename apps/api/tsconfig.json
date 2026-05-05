@@ -1,0 +1,57 @@
+{
+  "compilerOptions": {
+    /* ========================
+       BASIC SETTINGS
+    ======================== */
+    "target": "ES2020",
+    "module": "CommonJS",
+
+    /* ========================
+       PATHS
+    ======================== */
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "baseUrl": "./src",
+    "paths": {
+      "@controllers/*": ["controllers/*"],
+      "@services/*": ["services/*"],
+      "@utils/*": ["utils/*"],
+      "@config/*": ["config/*"]
+    },
+ 
+
+    /* ========================
+       STRICTNESS
+    ======================== */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+
+     /* =========================
+       MODULE RESOLUTION
+    ========================= */
+    "moduleResolution": "node",
+    "ignoreDeprecations": "6.0",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+
+    /* ========================
+       QUALITY OF LIFE
+    ======================== */
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* ========================
+       DEBUGGING
+    ======================== */
+    "sourceMap": true,
+
+    /* ========================
+       TYPES
+    ======================== */
+    "types": ["node"]
+  },
+
+   "include": ["src/**/*.ts", "src/**/*.d.ts"],
+  "exclude": ["node_modules", "dist"]
+}
