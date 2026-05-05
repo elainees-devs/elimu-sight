@@ -61,3 +61,9 @@ export const updateSubjectSchema = Joi.object({
 export const subjectIdParamSchema = Joi.object({
   id: Joi.string().uuid().required(),
 });
+
+export type InferSchema<T> = T extends Joi.ObjectSchema<infer U> ? U : never;
+export type Subject = InferSchema<typeof subjectSchema>;
+export type CreateSubjectInput = InferSchema<typeof createSubjectSchema>;
+export type UpdateSubjectInput = InferSchema<typeof updateSubjectSchema>;
+export type SubjectIdParam = InferSchema<typeof subjectIdParamSchema>;
