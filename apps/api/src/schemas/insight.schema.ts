@@ -84,3 +84,9 @@ export const updateInsightSchema = Joi.object({
 export const insightIdParamSchema = Joi.object({
   id: Joi.string().uuid().required(),
 });
+
+export type InferSchema<T> = T extends Joi.ObjectSchema<infer U> ? U : never;
+export type Insight = InferSchema<typeof insightSchema>;
+export type CreateInsightInput = InferSchema<typeof createInsightSchema>;
+export type UpdateInsightInput = InferSchema<typeof updateInsightSchema>;
+export type InsightIdParam = InferSchema<typeof insightIdParamSchema>;
