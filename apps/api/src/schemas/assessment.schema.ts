@@ -80,3 +80,9 @@ export const updateAssessmentSchema = Joi.object({
 export const assessmentIdParamSchema = Joi.object({
   id: Joi.string().uuid().required(),
 });
+
+export type InferSchema<T> = T extends Joi.ObjectSchema<infer U> ? U : never;
+export type Assessment = InferSchema<typeof assessmentSchema>;
+export type CreateAssessmentInput = InferSchema<typeof createAssessmentSchema>;
+export type UpdateAssessmentInput = InferSchema<typeof updateAssessmentSchema>;
+export type AssessmentIdParam = InferSchema<typeof assessmentIdParamSchema>;
