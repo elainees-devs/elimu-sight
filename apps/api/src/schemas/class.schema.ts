@@ -66,3 +66,9 @@ export const updateClassSchema = Joi.object({
 export const classIdParamSchema = Joi.object({
   id: Joi.string().uuid().required(),
 });
+
+export type InferSchema<T> = T extends Joi.ObjectSchema<infer U> ? U : never;
+export type Class = InferSchema<typeof classSchema>;
+export type CreateClassInput = InferSchema<typeof createClassSchema>;
+export type UpdateClassInput = InferSchema<typeof updateClassSchema>;
+export type ClassIdParam = InferSchema<typeof classIdParamSchema>;
