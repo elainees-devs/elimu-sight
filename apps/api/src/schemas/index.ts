@@ -40,6 +40,10 @@ export {
   createAssessmentSchema,
   updateAssessmentSchema,
   assessmentIdParamSchema,
+  Assessment,
+  CreateAssessmentInput,
+  UpdateAssessmentInput,
+  AssessmentIdParam,
 } from "./assessment.schema";
 
 // class-subject schemas
