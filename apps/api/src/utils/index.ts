@@ -3,3 +3,9 @@ export {subscriptionPlans,roles, insightTypes, generatedBy, genders, examTypes} 
 
 // jwt
 export {generateToken, verifyToken, refreshToken} from "./jwt";
+
+// prisma
+export {prisma} from "./prisma";
+
+// app error
+export {ApiError} from "./app-error";
