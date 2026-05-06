@@ -1,5 +1,9 @@
 import { ApiError, prisma } from "@utils/index";
-import { toAssessmentListResponse, toUpdateAssessmentDB, toAssessmentId} from "mappers";
+import {
+  toAssessmentListResponse,
+  toUpdateAssessmentDB,
+  toAssessmentId,
+} from "mappers";
 import { AssessmentDB, toAssessmentResponse } from "mappers/index";
 import { AssessmentIdParam, UpdateAssessmentInput } from "schemas";
 
@@ -72,7 +76,7 @@ export class AssessmentService {
     }
   }
 
-// ===============================
+  // ===============================
   // GET ASSESSMENT BY NAME LOGIC
   // ===============================
   async getAssessmentByName(schoolId: string, examType: string) {
@@ -181,18 +185,13 @@ export class AssessmentService {
       });
 
       if (!assessment) {
-        throw new ApiError(
-          404,
-          "Assessment not found after deletion"
-        );
+        throw new ApiError(404, "Assessment not found after deletion");
       }
 
       // =========================
       // MAP RESPONSE
       // =========================
-      return toAssessmentResponse(
-        assessment as AssessmentDB
-      );
+      return toAssessmentResponse(assessment as AssessmentDB);
     } catch (error) {
       if (error instanceof ApiError) {
         throw error;
@@ -200,12 +199,21 @@ export class AssessmentService {
       throw new ApiError(500, "Failed to delete assessment");
     }
   }
-
-
-}
- 
-
-
   // ===============================
   // COUNT ALL ASSESSMENTS LOGIC
   // ===============================
+  async getAssessmentCount(schoolId: string) {
+    try {
+      const count = await prisma.assessments.count({
+        where: {
+          school_id: schoolId,
+          deleted_at: null,
+        },
+      });
+
+      return count;
+    } catch (error) {
+      throw new ApiError(500, "Failed to get assessment count");
+    }
+  }
+}
