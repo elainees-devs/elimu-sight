@@ -1,6 +1,7 @@
 
 import { ApiError, prisma } from "@utils/index";
-import { toSubjectListResponse } from "mappers";
+import { toSubjectListResponse, toSubjectResponse , SubjectDB} from "mappers";
+
 
 type GetSubjectParams = {
   page?: number;
@@ -70,10 +71,34 @@ export class SubjectService {
       throw new ApiError(500, "Failed to fetch subjects");
     }
   }
-}
-  // ===============================
+// ===============================
   // GET SUBJECT BY NAME LOGIC
   // ===============================
+  async getSubjectByName(schoolId: string, name: string) {
+    try {
+      const subject = await prisma.subjects.findFirst({
+        where: {
+          school_id: schoolId,
+          name: {
+            equals: name,
+            mode: "insensitive",
+          },
+        },
+      });
+
+      if (!subject) {
+        throw new ApiError(404, "Subject not found");
+      }
+
+      return toSubjectResponse(subject as SubjectDB);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(500, "Failed to fetch subject by name");
+    }
+  }
+
 
   // ===============================
   // UPDATE SUBJECT DETAILS LOGIC
