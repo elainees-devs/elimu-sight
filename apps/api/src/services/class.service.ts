@@ -1,7 +1,18 @@
 import { ApiError } from "@utils/app-error";
 import { prisma } from "@utils/prisma";
-import { ClassDB, toClassId, toClassListResponse, toClassResponse, toCreateClassDB, toUpdateClassDB } from "mappers/class.mapper";
-import { ClassIdParam, CreateClassInput, UpdateClassInput } from "schemas/class.schema";
+import {
+  ClassDB,
+  toClassId,
+  toClassListResponse,
+  toClassResponse,
+  toCreateClassDB,
+  toUpdateClassDB,
+} from "mappers/class.mapper";
+import {
+  ClassIdParam,
+  CreateClassInput,
+  UpdateClassInput,
+} from "schemas/class.schema";
 
 type GetClassParams = {
   page?: number;
@@ -109,7 +120,6 @@ export class ClassService {
     }
   }
 
-
   // ===============================
   // CREATE NEW CLASS LOGIC
   // ===============================
@@ -158,8 +168,7 @@ export class ClassService {
     }
   }
 
-
-// ===============================
+  // ===============================
   // UPDATE CLASS DETAILS LOGIC
   // ===============================
   async updateClassDetails(input: UpdateClassInput) {
@@ -224,7 +233,7 @@ export class ClassService {
       throw new ApiError(500, "Failed to update class");
     }
   }
-   // ===============================
+  // ===============================
   // SOFT DELETE CLASS LOGIC
   // ===============================
   async deleteClass(params: ClassIdParam) {
@@ -277,11 +286,21 @@ export class ClassService {
       throw new ApiError(500, "Failed to delete class");
     }
   }
-}
-
-
-
-
   // ===============================
   // COUNT ALL CLASSES LOGIC
   // ===============================
+  async getClassCount(schoolId: string) {
+    try {
+      const count = await prisma.classes.count({
+        where: {
+          school_id: schoolId,
+          deleted_at: null,
+        },
+      });
+
+      return count;
+    } catch (error) {
+      throw new ApiError(500, "Failed to get class count");
+    }
+  }
+}
