@@ -530,11 +530,88 @@ export class ClassSubjectService {
       );
     }
   }
-
-}
   // ===================================
   // SYNC SUBJECTS FOR A CLASS LOGIC
   // ===================================
+  async syncSubjectsForClass(
+    classId: string,
+    subjects: CreateClassSubjectInput[]
+  ) {
+    try {
+      const result = await prisma.$transaction(
+        async (tx: Prisma.TransactionClient) => {
+          // =========================
+          // GET EXISTING SUBJECTS
+          // =========================
+          const existing = await tx.classSubjects.findMany({
+            where: { class_id: classId },
+          });
+
+          const existingSubjectIds = new Set(
+            existing.map((s: ClassSubjectDB) => s.subject_id)
+          );
+
+          const incomingSubjectIds = new Set(
+            subjects.map((s: CreateClassSubjectInput) => s.subjectId)
+          );
+
+          // =========================
+          // DELETE REMOVED SUBJECTS
+          // =========================
+          const toDelete = existing.filter(
+            (s: ClassSubjectDB) => !incomingSubjectIds.has(s.subject_id)
+          );
+
+          if (toDelete.length > 0) {
+            await tx.classSubjects.deleteMany({
+              where: {
+                id: {
+                  in: toDelete.map((s: ClassSubjectDB) => s.id),
+                },
+              },
+            });
+          }
+
+          // =========================
+          // ADD NEW SUBJECTS
+          // =========================
+          const toAdd = subjects.filter((s: CreateClassSubjectInput) =>
+            (s:CreateClassSubjectInput) => !existingSubjectIds.has(s.subjectId)
+          );
+
+          if (toAdd.length > 0) {
+            const newRecords = toAdd.map((subject) => ({
+              ...toCreateClassSubjectDB(subject),
+              class_id: classId,
+            }));
+
+            await tx.classSubjects.createMany({
+              data: newRecords,
+            });
+          }
+
+          // =========================
+          // RETURN FINAL STATE
+          // =========================
+          return tx.classSubjects.findMany({
+            where: { class_id: classId },
+            orderBy: { created_at: "desc" },
+          });
+        }
+      );
+
+      return toClassSubjectListResponse(result);
+    } catch (error) {
+      throw new ApiError(
+        500,
+        "Failed to sync class subjects"
+      );
+    }
+  }
+
+
+}
+ 
 
   // ===================================
   // ARCHIVE ALL SUBJECTS FOR A CLASS LOGIC
