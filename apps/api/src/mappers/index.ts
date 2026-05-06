@@ -14,7 +14,7 @@ export {toClassResponse, toClassListResponse, toCreateClassDB, toUpdateClassDB} 
 export {ClassSubjectDB,toClassSubjectId,toClassSubjectResponse, toClassSubjectListResponse, toCreateClassSubjectDB, toUpdateClassSubjectDB} from "./class-subject.mapper";
 
 // student mappers
-export {StudentDB,toStudentResponse, toStudentListResponse, toCreateStudentDB, toUpdateStudentDB} from "./student.mapper";
+export {StudentDB,toStudentResponse, toStudentListResponse, toCreateStudentDB, toUpdateStudentDB, toStudentId} from "./student.mapper";
 
 // assessment mappers
 export {AssessmentDB,toAssessmentResponse, toAssessmentListResponse, toCreateAssessmentDB, toUpdateAssessmentDB, toAssessmentId} from "./assessment.mappers";
