@@ -1,6 +1,6 @@
 import { ApiError, prisma } from "@utils/index";
-import { toClassSubjectListResponse, ClassSubjectDB , toClassSubjectId, toClassSubjectResponse, toCreateClassSubjectDB} from "mappers";
-import { ClassSubjectIdParam, CreateClassSubjectInput } from "schemas";
+import { toClassSubjectListResponse, ClassSubjectDB , toClassSubjectId, toClassSubjectResponse, toCreateClassSubjectDB, toUpdateClassSubjectDB} from "mappers";
+import { ClassSubjectIdParam, CreateClassSubjectInput, UpdateClassSubjectInput } from "schemas";
 
 type GetClassSubjectParams = {
   page?: number;
@@ -222,14 +222,80 @@ export class ClassSubjectService {
       );
     }
   }
+// ===================================
+  // UPDATE CLASS SUBJECT LOGIC
+  // ===================================
+  async updateClassSubject(input: UpdateClassSubjectInput) {
+    try {
+      const { id, ...updateData } = input;
+
+      // =========================
+      // CHECK IF RECORD EXISTS
+      // =========================
+      const existing = await prisma.classSubjects.findUnique({
+        where: { id },
+      });
+
+      if (!existing) {
+        throw new ApiError(
+          404,
+          "Class subject not found"
+        );
+      }
+
+      // =========================
+      // OPTIONAL: AVOID DUPLICATE TEACHER ASSIGNMENT
+      // =========================
+      if (updateData.teacherId) {
+        const duplicate = await prisma.classSubjects.findFirst({
+          where: {
+            class_id: existing.class_id,
+            subject_id: existing.subject_id,
+            teacher_id: updateData.teacherId,
+            NOT: { id },
+          },
+        });
+
+        if (duplicate) {
+          throw new ApiError(
+            400,
+            "Teacher already assigned to this class subject"
+          );
+        }
+      }
+
+      // =========================
+      // MAP INPUT → DB
+      // =========================
+      const dbData = toUpdateClassSubjectDB(updateData);
+
+      // =========================
+      // UPDATE RECORD
+      // =========================
+      const updated = await prisma.classSubjects.update({
+        where: { id },
+        data: dbData,
+      });
+
+      // =========================
+      // MAP RESPONSE
+      // =========================
+      return toClassSubjectResponse(
+        updated as ClassSubjectDB
+      );
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(
+        500,
+        "Failed to update class subject"
+      );
+    }
+  }
 
 
 }
-
-
-  // ===================================
-  // UPDATE CLASS SUBJECT LOGIC
-  // ===================================
 
   // ===================================
   // DELETE CLASS SUBJECT LOGIC
