@@ -1,6 +1,6 @@
 import { ApiError, prisma } from "@utils/index";
-import { toClassSubjectListResponse, ClassSubjectDB , toClassSubjectId, toClassSubjectResponse} from "mappers";
-import { ClassSubjectIdParam } from "schemas";
+import { toClassSubjectListResponse, ClassSubjectDB , toClassSubjectId, toClassSubjectResponse, toCreateClassSubjectDB} from "mappers";
+import { ClassSubjectIdParam, CreateClassSubjectInput } from "schemas";
 
 type GetClassSubjectParams = {
   page?: number;
@@ -170,13 +170,62 @@ export class ClassSubjectService {
       );
     }
   }
-
-}
-
-
   // ===================================
   // CREATE CLASS SUBJECT LOGIC
   // ===================================
+  async createClassSubject(input: CreateClassSubjectInput) {
+    try {
+      const { classId, subjectId } = input;
+
+      // =========================
+      // CHECK DUPLICATE ASSIGNMENT
+      // =========================
+      const existing = await prisma.classSubjects.findFirst({
+        where: {
+          class_id: classId,
+          subject_id: subjectId,
+        },
+      });
+
+      if (existing) {
+        throw new ApiError(
+          400,
+          "Subject already assigned to this class"
+        );
+      }
+
+      // =========================
+      // MAP INPUT → DB
+      // =========================
+      const dbData = toCreateClassSubjectDB(input);
+
+      // =========================
+      // CREATE RECORD
+      // =========================
+      const classSubject = await prisma.classSubjects.create({
+        data: dbData,
+      });
+
+      // =========================
+      // MAP RESPONSE
+      // =========================
+      return toClassSubjectResponse(
+        classSubject as ClassSubjectDB
+      );
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(
+        500,
+        "Failed to create class subject"
+      );
+    }
+  }
+
+
+}
+
 
   // ===================================
   // UPDATE CLASS SUBJECT LOGIC
