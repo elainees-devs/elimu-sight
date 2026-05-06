@@ -151,11 +151,28 @@ export class ClassSubjectService {
       );
     }
   }
+  // =====================================
+  // COUNT ALL SUBJECTS FOR A CLASS LOGIC
+  // =====================================
+  async getClassSubjectCount(classId: string) {
+    try {
+      const count = await prisma.classSubjects.count({
+        where: {
+          class_id: classId,
+        },
+      });
+
+      return count;
+    } catch (error) {
+      throw new ApiError(
+        500,
+        "Failed to get class subject count"
+      );
+    }
+  }
+
 }
 
-  // ===================================
-  // COUNT ALL SUBJECTS FOR A CLASS LOGIC
-  // ===================================
 
   // ===================================
   // CREATE CLASS SUBJECT LOGIC
