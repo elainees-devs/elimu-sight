@@ -16,7 +16,7 @@ import {
  * DB TYPE (explicit, no any)
  * =========================
  */
-type SchoolDB = {
+export type SchoolDB = {
   id: string;
   name: string;
   email: string;
