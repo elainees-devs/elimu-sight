@@ -1,5 +1,6 @@
 import { ApiError, prisma } from "@utils/index";
-import { toClassSubjectListResponse } from "mappers";
+import { toClassSubjectListResponse, ClassSubjectDB , toClassSubjectId, toClassSubjectResponse} from "mappers";
+import { ClassSubjectIdParam } from "schemas";
 
 type GetClassSubjectParams = {
   page?: number;
@@ -62,7 +63,45 @@ export class ClassSubjectService {
   // ===================================
   // GET CLASS SUBJECT BY ID LOGIC
   // ===================================
+  async getClassSubjectById(params: ClassSubjectIdParam) {
+    try {
+      // =========================
+      // VALIDATE ID
+      // =========================
+      const id = toClassSubjectId(params);
 
+      // =========================
+      // QUERY
+      // =========================
+      const classSubject =
+        await prisma.classSubjects.findUnique({
+          where: { id },
+        });
+
+      if (!classSubject) {
+        throw new ApiError(
+          404,
+          "Class subject not found"
+        );
+      }
+
+      // =========================
+      // MAP RESPONSE
+      // =========================
+      return toClassSubjectResponse(
+        classSubject as ClassSubjectDB
+      );
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(
+        500,
+        "Failed to fetch class subject"
+      );
+    }
+  }
+}
   // ===================================
   // GET CLASSES BY SUBJECT LOGIC
   // ===================================
@@ -102,4 +141,3 @@ export class ClassSubjectService {
   // ===================================
   // ARCHIVE ALL SUBJECTS FOR A CLASS LOGIC
   // ===================================
-}
