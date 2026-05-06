@@ -1,6 +1,12 @@
 import { ApiError } from "@utils/app-error";
 import { prisma } from "@utils/prisma";
-import { toUpdateUserDB, toUserId, toUserListResponse, toUserResponse, UserDB } from "mappers/user.mapper";
+import {
+  toUpdateUserDB,
+  toUserId,
+  toUserListResponse,
+  toUserResponse,
+  UserDB,
+} from "mappers/user.mapper";
 import { UpdateUserInput, UserIdParam } from "schemas/user.schema";
 
 type GetUserParams = {
@@ -92,12 +98,12 @@ export class UserService {
       }
       throw new ApiError(500, "Failed to fetch user by email");
     }
-}
+  }
 
-// ===========================
-// UPDATE USER DETAILS LOGIC
-// ===========================
-async updateUserDetails(input: UpdateUserInput) {
+  // ===========================
+  // UPDATE USER DETAILS LOGIC
+  // ===========================
+  async updateUserDetails(input: UpdateUserInput) {
     try {
       const { id, ...updateData } = input;
       // Check if user exists
@@ -176,11 +182,21 @@ async updateUserDetails(input: UpdateUserInput) {
     }
   }
 
+   // ===============================
+  // COUNT ALL USERS LOGIC
+  // ===============================
+  async getUserCount() {
+    try {
+      const count = await prisma.users.count({
+        where: {
+          is_active: true,
+          deleted_at: null,
+        },
+      });
+
+      return count;
+    } catch (error) {
+      throw new ApiError(500, "Failed to get user count");
+    }
+  }
 }
-
-
-
-
-// =========================
-// COUNT ALL USERS BY  EMAIL LOGIC
-// =========================
