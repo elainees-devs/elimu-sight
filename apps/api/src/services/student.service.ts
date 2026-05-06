@@ -365,13 +365,68 @@ export class StudentService {
       );
     }
   }
+ // ===============================
+  // DEACTIVATE STUDENT LOGIC
+  // ===============================
+  async deactivateStudent(params: StudentIdParam) {
+    try {
+      // =========================
+      // VALIDATE ID
+      // =========================
+      const id = toStudentId(params);
+
+      // =========================
+      // CHECK IF STUDENT EXISTS
+      // =========================
+      const existing = await prisma.students.findUnique({
+        where: { id },
+      });
+
+      if (!existing) {
+        throw new ApiError(404, "Student not found");
+      }
+
+      // =========================
+      // CHECK IF ALREADY INACTIVE
+      // =========================
+      if (!existing.is_active) {
+        throw new ApiError(
+          400,
+          "Student is already inactive"
+        );
+      }
+
+      // =========================
+      // DEACTIVATE STUDENT
+      // =========================
+      const updated = await prisma.students.update({
+        where: { id },
+        data: {
+          is_active: false,
+          updated_at: new Date(),
+        },
+      });
+
+      // =========================
+      // MAP RESPONSE
+      // =========================
+      return toStudentResponse(updated as StudentDB);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+
+      throw new ApiError(
+        500,
+        "Failed to deactivate student"
+      );
+    }
+  }
 
 }
 
 
-// ===============================
-// DEACTIVATE STUDENT LOGIC
-// ===============================
+
 
 // ===============================
 // GET STUDENTS BY CLASS LOGIC
