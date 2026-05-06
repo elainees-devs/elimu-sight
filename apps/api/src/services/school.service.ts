@@ -1,6 +1,7 @@
 import { ApiError } from "@utils/app-error";
 import { prisma } from "@utils/prisma";
-import { toSchoolListResponse } from "mappers/school.mapper";
+import { toCreateSchoolDB, toSchoolListResponse, toSchoolResponse } from "mappers/school.mapper";
+import { CreateSchoolInput } from "schemas";
 
 type GetSchoolsParams = {
   page?: number;
@@ -92,7 +93,44 @@ export const SchoolService = {
       }
       throw new ApiError(500, "Failed to fetch school by email");
     }
-  }
+  },
   // =========================
+  // CREATE NEW SCHOOL
+  // =========================
+  async createSchool(input: CreateSchoolInput) {
+    try {
+      const { email } = input;
 
+      // Check if email already exists
+      const existingSchool = await prisma.schools.findFirst({
+        where: {
+          email,
+          deleted_at: null,
+        },
+      });
+
+      if (existingSchool) {
+        throw new ApiError(400, "Email already in use");
+      }
+
+      // =========================
+      // MAP INPUT → DB SHAPE
+      // =========================
+      const dbData = toCreateSchoolDB(input);
+
+      const newSchool = await prisma.schools.create({
+        data: dbData,
+      });
+
+      // =========================
+      // MAP DB → API RESPONSE
+      // =========================
+      return toSchoolResponse(newSchool);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(500, "Failed to create school");
+    }
+  },
 };
