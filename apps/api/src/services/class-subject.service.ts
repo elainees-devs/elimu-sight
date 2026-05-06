@@ -608,11 +608,51 @@ export class ClassSubjectService {
       );
     }
   }
+// ===================================
+  // ARCHIVE ALL SUBJECTS FOR A CLASS LOGIC
+  // ===================================
+  async archiveAllSubjectsForClass(classId: string) {
+    try {
+      const result = await prisma.$transaction(
+        async (tx: Prisma.TransactionClient) => {
+          // =========================
+          // ARCHIVE ALL SUBJECTS
+          // =========================
+          await tx.classSubjects.updateMany({
+            where: {
+              class_id: classId,
+            },
+            data: {
+              updated_at: new Date(),
+              deleted_at: new Date(),
+            },
+          });
+
+          // =========================
+          // RETURN ARCHIVED STATE
+          // =========================
+          return tx.classSubjects.findMany({
+            where: {
+              class_id: classId,
+            },
+            orderBy: {
+              created_at: "desc",
+            },
+          });
+        }
+      );
+
+      return toClassSubjectListResponse(result);
+    } catch (error) {
+      throw new ApiError(
+        500,
+        "Failed to archive class subjects"
+      );
+    }
+  }
 
 
 }
  
 
-  // ===================================
-  // ARCHIVE ALL SUBJECTS FOR A CLASS LOGIC
-  // ===================================
+
