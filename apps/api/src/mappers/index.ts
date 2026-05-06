@@ -17,7 +17,7 @@ export {toClassSubjectResponse, toClassSubjectListResponse, toCreateClassSubject
 export {toStudentResponse, toStudentListResponse, toCreateStudentDB, toUpdateStudentDB} from "./student.mapper";
 
 // assessment mappers
-export {toAssessmentResponse, toAssessmentListResponse, toCreateAssessmentDB, toUpdateAssessmentDB} from "./assessment.mappers";
+export {AssessmentDB,toAssessmentResponse, toAssessmentListResponse, toCreateAssessmentDB, toUpdateAssessmentDB} from "./assessment.mappers";
 
 // insight mappers
 export {toInsightResponse, toInsightListResponse, toCreateInsightDB, toUpdateInsightDB} from "./insight.mapper";
