@@ -1,6 +1,7 @@
 import { ApiError, prisma } from "@utils/index";
-import { toAssessmentListResponse } from "mappers";
+import { toAssessmentListResponse, toUpdateAssessmentDB } from "mappers";
 import { AssessmentDB, toAssessmentResponse } from "mappers/index";
+import { UpdateAssessmentInput } from "schemas/assessment.schema";
 
 type GetAssessmentParams = {
   page?: number;
@@ -98,10 +99,52 @@ export class AssessmentService {
       throw new ApiError(500, "Failed to fetch assessment");
     }
   }
-}
+
   // ===============================
   // UPDATE ASSESSMENT DETAILS LOGIC
   // ===============================
+  async updateAssessmentDetails(input: UpdateAssessmentInput) {
+    try {
+      const { id, ...updateData } = input;
+
+      // =========================
+      // CHECK IF ASSESSMENT EXISTS
+      // =========================
+      const existingAssessment = await prisma.assessments.findUnique({
+        where: { id },
+      });
+
+      if (!existingAssessment) {
+        throw new ApiError(404, "Assessment not found");
+      }
+
+      // =========================
+      // MAP INPUT → DB
+      // =========================
+      const dbData = toUpdateAssessmentDB(updateData);
+
+      // =========================
+      // UPDATE ASSESSMENT
+      // =========================
+      const updatedAssessment = await prisma.assessments.update({
+        where: { id },
+        data: dbData,
+      });
+
+      // =========================
+      // MAP RESPONSE
+      // =========================
+      return toAssessmentResponse(updatedAssessment as AssessmentDB);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(500, "Failed to update assessment");
+    }
+  }
+
+}
+ 
 
   // ===============================
   // SOFT DELETE ASSESSMENTS LOGIC
