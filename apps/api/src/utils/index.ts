@@ -9,3 +9,6 @@ export {prisma} from "./prisma";
 
 // app error
 export {ApiError} from "./app-error";
+
+// hash
+export {hashPassword, comparePassword} from "./hash";
