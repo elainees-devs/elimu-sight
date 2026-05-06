@@ -1,5 +1,6 @@
 import { ApiError, prisma } from "@utils/index";
 import { toAssessmentListResponse } from "mappers";
+import { AssessmentDB, toAssessmentResponse } from "mappers/index";
 
 type GetAssessmentParams = {
   page?: number;
@@ -70,11 +71,34 @@ export class AssessmentService {
     }
   }
 
-
-  // ===============================
+// ===============================
   // GET ASSESSMENT BY NAME LOGIC
   // ===============================
+  async getAssessmentByName(schoolId: string, examType: string) {
+    try {
+      const assessment = await prisma.assessments.findFirst({
+        where: {
+          school_id: schoolId,
+          exam_type: {
+            equals: examType,
+            mode: "insensitive",
+          },
+        },
+      });
 
+      if (!assessment) {
+        throw new ApiError(404, "Assessment not found");
+      }
+
+      return toAssessmentResponse(assessment as AssessmentDB);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(500, "Failed to fetch assessment");
+    }
+  }
+}
   // ===============================
   // UPDATE ASSESSMENT DETAILS LOGIC
   // ===============================
@@ -86,4 +110,3 @@ export class AssessmentService {
   // ===============================
   // COUNT ALL ASSESSMENTS LOGIC
   // ===============================
-}
