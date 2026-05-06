@@ -422,15 +422,95 @@ export class StudentService {
       );
     }
   }
+// ===============================
+  // GET STUDENTS BY CLASS LOGIC
+  // ===============================
+  async getStudentsByClass(
+    classId: string,
+    params: GetStudentParams
+  ) {
+    try {
+      const {
+        page = 1,
+        limit = 10,
+        search,
+        isActive,
+      } = params;
+
+      const skip = (page - 1) * limit;
+
+      // =========================
+      // FILTER
+      // =========================
+      const where: any = {
+        class_id: classId,
+      };
+
+      if (isActive !== undefined) {
+        where.is_active = isActive;
+      }
+
+      if (search) {
+        where.OR = [
+          {
+            full_name: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+          {
+            admission_number: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+          {
+            guardian_name: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+        ];
+      }
+
+      // =========================
+      // QUERY
+      // =========================
+      const [students, total] = await Promise.all([
+        prisma.students.findMany({
+          where,
+          orderBy: {
+            created_at: "desc",
+          },
+          skip,
+          take: limit,
+        }),
+
+        prisma.students.count({ where }),
+      ]);
+
+      // =========================
+      // RESPONSE
+      // =========================
+      return {
+        data: toStudentListResponse(students),
+        meta: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      };
+    } catch (error) {
+      throw new ApiError(
+        500,
+        "Failed to fetch students by class"
+      );
+    }
+  }
 
 }
 
-
-
-
-// ===============================
-// GET STUDENTS BY CLASS LOGIC
-// ===============================
 
 // ===============================
 // COUNT ALL STUDENTS LOGIC
