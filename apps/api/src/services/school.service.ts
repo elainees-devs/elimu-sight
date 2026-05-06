@@ -11,7 +11,7 @@ type GetSchoolsParams = {
   search?: string;
 };
 
-export const SchoolService = {
+export class SchoolService {
   // =========================
   // GET ALL SCHOOLS LOGIC
   // =========================
@@ -69,7 +69,7 @@ export const SchoolService = {
     } catch (error) {
       throw new ApiError(500, "Failed to fetch schools");
     }
-  },
+  }
   // =========================
   // GET SCHOOL BY EMAIL LOGIC
   // =========================
@@ -93,7 +93,7 @@ export const SchoolService = {
       }
       throw new ApiError(500, "Failed to fetch school by email");
     }
-  },
+  }
   // =========================
   // CREATE NEW SCHOOL LOGIC
   // =========================
@@ -132,7 +132,7 @@ export const SchoolService = {
       }
       throw new ApiError(500, "Failed to create school");
     }
-  },
+  }
 // =========================
 // UPDATE SCHOOL DETAILS LOGIC
 // =========================
@@ -194,7 +194,7 @@ async updateSchool(input: UpdateSchoolInput) {
     }
     throw new ApiError(500, "Failed to update school");
   }
-},
+}
 // =========================
 // SOFT DELETE SCHOOL LOGIC
 // =========================
@@ -247,7 +247,7 @@ async deleteSchool(params: SchoolIdParam) {
     }
     throw new ApiError(500, "Failed to delete school");
   }
-},
+}
 
 // =========================
 // GET SCHOOL COUNT LOGIC
