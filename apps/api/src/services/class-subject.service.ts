@@ -1,6 +1,7 @@
 import { ApiError, prisma } from "@utils/index";
 import { toClassSubjectListResponse, ClassSubjectDB , toClassSubjectId, toClassSubjectResponse, toCreateClassSubjectDB, toUpdateClassSubjectDB} from "mappers";
 import { ClassSubjectIdParam, CreateClassSubjectInput, UpdateClassSubjectInput } from "schemas";
+import { Prisma } from "@prisma/client";
 
 type GetClassSubjectParams = {
   page?: number;
@@ -476,13 +477,61 @@ export class ClassSubjectService {
       );
     }
   }
-}
-
-
-  // ===================================
   // REPLACE ALL SUBJECTS FOR A CLASS LOGIC
   // ===================================
+  async replaceSubjectsForClass(
+    classId: string,
+    subjects: CreateClassSubjectInput[]
+  ) {
+    try {
+      // =========================
+      // TRANSACTION: SAFE REPLACEMENT
+      // =========================
+      const result = await prisma.$transaction(
+  async (tx: Prisma.TransactionClient) => {
+    // 1. DELETE EXISTING SUBJECTS
+    await tx.classSubjects.deleteMany({
+      where: {
+        class_id: classId,
+      },
+    });
 
+    // 2. PREPARE NEW RECORDS
+    const newRecords = subjects.map((subject) => ({
+      ...toCreateClassSubjectDB(subject),
+      class_id: classId,
+    }));
+
+    // 3. BULK INSERT
+    await tx.classSubjects.createMany({
+      data: newRecords,
+    });
+
+    // 4. RETURN UPDATED DATA
+    return tx.classSubjects.findMany({
+      where: {
+        class_id: classId,
+      },
+      orderBy: {
+        created_at: "desc",
+      },
+    });
+  }
+);
+
+      // =========================
+      // MAP RESPONSE
+      // =========================
+      return toClassSubjectListResponse(result);
+    } catch (error) {
+      throw new ApiError(
+        500,
+        "Failed to replace class subjects"
+      );
+    }
+  }
+
+}
   // ===================================
   // SYNC SUBJECTS FOR A CLASS LOGIC
   // ===================================
