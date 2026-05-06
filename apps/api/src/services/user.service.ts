@@ -1,4 +1,5 @@
 import { ApiError } from "@utils/app-error";
+import { roles } from "@utils/constants";
 import { prisma } from "@utils/prisma";
 import {
   toUpdateUserDB,
@@ -46,6 +47,13 @@ export class UserService {
           { email: { contains: search, mode: "insensitive" } },
           { role: { contains: search, mode: "insensitive" } },
         ];
+      }
+
+      // =========================
+      // ROLE FILTER
+      // =========================
+      if (roles) {
+        where.roles = roles;
       }
 
       // =========================
@@ -182,7 +190,7 @@ export class UserService {
     }
   }
 
-   // ===============================
+  // ===============================
   // COUNT ALL USERS LOGIC
   // ===============================
   async getUserCount() {
