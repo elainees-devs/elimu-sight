@@ -1,6 +1,7 @@
 import { ApiError } from "@utils/app-error";
 import { prisma } from "@utils/prisma";
-import { toUserListResponse, toUserResponse } from "mappers/user.mapper";
+import { toUpdateUserDB, toUserListResponse, toUserResponse } from "mappers/user.mapper";
+import { UpdateUserInput } from "schemas/user.schema";
 
 type GetUserParams = {
   page?: number;
@@ -92,11 +93,39 @@ export class UserService {
       throw new ApiError(500, "Failed to fetch user by email");
     }
 }
+
+// ===========================
+// UPDATE USER DETAILS LOGIC
+// ===========================
+async updateUserDetails(input: UpdateUserInput) {
+    try {
+      const { id, ...updateData } = input;
+      // Check if user exists
+      const existingUser = await prisma.users.findUnique({
+        where: { id },
+      });
+
+      if (!existingUser) {
+        throw new ApiError(404, "User not found");
+      }
+      const updatedUser = await prisma.users.update({
+        where: { id },
+        data: {
+          ...toUpdateUserDB(updateData),
+        },
+      });
+
+      return toUserResponse(updatedUser);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(500, "Failed to update user details");
+    }
+  }
+
 }
 
-// =========================
-// UPDATE USER DETAILS LOGIC
-// =========================
 
 // =========================
 // DELETE ALL USERS LOGIC
