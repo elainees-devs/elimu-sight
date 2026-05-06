@@ -1,5 +1,5 @@
 // school mappers
-export {toSchoolResponse, toSchoolListResponse, toCreateSchoolDB, toUpdateSchoolDB} from "./school.mapper";
+export {SchoolDB,toSchoolResponse, toSchoolListResponse, toCreateSchoolDB, toUpdateSchoolDB} from "./school.mapper";
 
 // user mappers
 export {toUserResponse,toUserListResponse ,toCreateUserDB, toUpdateUserDB} from "./user.mapper";
