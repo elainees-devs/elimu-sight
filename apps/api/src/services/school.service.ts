@@ -1,7 +1,7 @@
 import { ApiError } from "@utils/app-error";
 import { prisma } from "@utils/prisma";
-import { toCreateSchoolDB, toSchoolListResponse, toSchoolResponse } from "mappers/school.mapper";
-import { CreateSchoolInput } from "schemas";
+import { toCreateSchoolDB, toSchoolListResponse, toSchoolResponse, toUpdateSchoolDB } from "mappers/school.mapper";
+import { CreateSchoolInput, UpdateSchoolInput } from "schemas";
 
 type GetSchoolsParams = {
   page?: number;
@@ -133,4 +133,66 @@ export const SchoolService = {
       throw new ApiError(500, "Failed to create school");
     }
   },
+// =========================
+// UPDATE SCHOOL DETAILS
+// =========================
+async updateSchool(input: UpdateSchoolInput) {
+  try {
+    const { id, email } = input;
+
+    // =========================
+    // CHECK IF SCHOOL EXISTS
+    // =========================
+    const existingSchool = await prisma.schools.findFirst({
+      where: {
+        id,
+        deleted_at: null,
+      },
+    });
+
+    if (!existingSchool) {
+      throw new ApiError(404, "School not found");
+    }
+
+    // =========================
+    // OPTIONAL: CHECK EMAIL CONFLICT
+    // =========================
+    if (email && email !== existingSchool.email) {
+      const emailTaken = await prisma.schools.findFirst({
+        where: {
+          email,
+          deleted_at: null,
+          NOT: { id },
+        },
+      });
+
+      if (emailTaken) {
+        throw new ApiError(400, "Email already in use");
+      }
+    }
+
+    // =========================
+    // MAP INPUT → DB SHAPE
+    // =========================
+    const dbData = toUpdateSchoolDB(input);
+
+    // =========================
+    // UPDATE SCHOOL
+    // =========================
+    const updatedSchool = await prisma.schools.update({
+      where: { id },
+      data: dbData,
+    });
+
+    // =========================
+    // MAP DB → RESPONSE
+    // =========================
+    return toSchoolResponse(updatedSchool);
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new ApiError(500, "Failed to update school");
+  }
+}
 };
