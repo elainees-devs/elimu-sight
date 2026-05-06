@@ -9,6 +9,10 @@ type GetStudentParams = {
   classId?: string;
   isActive?: boolean;
 };
+type CountStudentsParams = {
+  classId?: string;
+  isActive?: boolean;
+};
 export class StudentService {
 // ===============================
   // GET ALL STUDENTS BY SCHOOL LOGIC
@@ -508,13 +512,50 @@ export class StudentService {
       );
     }
   }
+// ===============================
+  // COUNT ALL STUDENTS LOGIC
+  // ===============================
+  async countAllStudents(
+    schoolId: string,
+    params: CountStudentsParams
+  ) {
+    try {
+      const { classId, isActive } = params;
+
+      // =========================
+      // FILTER
+      // =========================
+      const where: any = {
+        school_id: schoolId,
+      };
+
+      if (classId) {
+        where.class_id = classId;
+      }
+
+      if (isActive !== undefined) {
+        where.is_active = isActive;
+      }
+
+      // =========================
+      // COUNT QUERY
+      // =========================
+      const total = await prisma.students.count({
+        where,
+      });
+
+      return {
+        total,
+      };
+    } catch (error) {
+      throw new ApiError(
+        500,
+        "Failed to count students"
+      );
+    }
+  }
 
 }
-
-
-// ===============================
-// COUNT ALL STUDENTS LOGIC
-// ===============================
 
 // ===============================
 // TRANSFER STUDENT CLASS LOGIC
