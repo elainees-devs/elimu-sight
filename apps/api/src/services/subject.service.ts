@@ -213,9 +213,25 @@ export class SubjectService {
       throw new ApiError(500, "Failed to delete subject");
     }
   }
-}
-  // ===============================
+ // ===============================
   // COUNT ALL SUBJECTS LOGIC
   // ===============================
+  async getSubjectCount(schoolId: string) {
+    try {
+      const count = await prisma.subjects.count({
+        where: {
+          school_id: schoolId,
+          deleted_at: null,
+        },
+      });
+
+      return count;
+    } catch (error) {
+      throw new ApiError(500, "Failed to get subject count");
+    }
+  }
+}
+
+
 
 
