@@ -1,17 +1,25 @@
 export class InsightAIService {
-// ===============================
-// GENERATE CLASS INSIGHT LOGIC
-// ===============================
+  // =========================================
+  // GENERATE CLASS INSIGHT (AI ORCHESTRATION)
+  // Calls FastAPI AI service to generate
+  // class-level performance insights
+  // =========================================
 
-// ===============================
-// GENERATE STUDENT INSIGHT LOGIC
-// ===============================
+  // =========================================
+  // GENERATE STUDENT INSIGHT (AI ORCHESTRATION)
+  // Calls FastAPI AI service to generate
+  // student-level performance insights
+  // =========================================
 
-// ===============================
-// GENERATE SUBJECT INSIGHT LOGIC
-// ===============================
+  // =========================================
+  // GENERATE SUBJECT INSIGHT (AI ORCHESTRATION)
+  // Calls FastAPI AI service to generate
+  // subject-level performance insights
+  // =========================================
 
-// ===============================
-// REFRESH INSIGHT DATA LOGIC
-// ===============================
+  // =========================================
+  // REFRESH INSIGHT DATA (AI ORCHESTRATION)
+  // Re-fetches latest data and triggers
+  // regeneration of insights via FastAPI
+  // =========================================
 }
