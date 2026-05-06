@@ -101,10 +101,57 @@ export class ClassSubjectService {
       );
     }
   }
-}
-  // ===================================
+// ===================================
   // GET CLASSES BY SUBJECT LOGIC
   // ===================================
+  async getClassesBySubject(
+    subjectId: string,
+    params: GetClassSubjectParams
+  ) {
+    try {
+      const { page = 1, limit = 10 } = params;
+
+      const skip = (page - 1) * limit;
+
+      // =========================
+      // QUERY
+      // =========================
+      const [classSubjects, total] = await Promise.all([
+        prisma.classSubjects.findMany({
+          where: {
+            subject_id: subjectId,
+          },
+          skip,
+          take: limit,
+          orderBy: {
+            created_at: "desc",
+          },
+        }),
+
+        prisma.classSubjects.count({
+          where: {
+            subject_id: subjectId,
+          },
+        }),
+      ]);
+
+      return {
+        data: toClassSubjectListResponse(classSubjects),
+        meta: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      };
+    } catch (error) {
+      throw new ApiError(
+        500,
+        "Failed to fetch classes by subject"
+      );
+    }
+  }
+}
 
   // ===================================
   // COUNT ALL SUBJECTS FOR A CLASS LOGIC
