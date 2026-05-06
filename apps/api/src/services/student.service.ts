@@ -1,6 +1,6 @@
 import { ApiError, prisma } from "@utils/index";;
-import { StudentDB, toCreateStudentDB, toStudentListResponse, toStudentResponse, toStudentId } from "mappers";
-import { CreateStudentInput, StudentIdParam } from "schemas";
+import { StudentDB, toCreateStudentDB, toStudentListResponse, toStudentResponse, toStudentId, toUpdateStudentDB } from "mappers";
+import { CreateStudentInput, StudentIdParam, UpdateStudentInput } from "schemas";
 
 type GetStudentParams = {
   page?: number;
@@ -209,14 +209,60 @@ export class StudentService {
     }
   }
 
+// ===============================
+  // UPDATE STUDENT DETAILS LOGIC
+  // ===============================
+  async updateStudentDetails(input: UpdateStudentInput) {
+    try {
+      const { id, ...updateData } = input;
+
+      // =========================
+      // VALIDATE ID
+      // =========================
+      const studentId = toStudentId({ id });
+
+      // =========================
+      // CHECK IF STUDENT EXISTS
+      // =========================
+      const existing = await prisma.students.findUnique({
+        where: { id: studentId },
+      });
+
+      if (!existing) {
+        throw new ApiError(404, "Student not found");
+      }
+
+      // =========================
+      // MAP INPUT → DB
+      // =========================
+      const dbData = toUpdateStudentDB(updateData);
+
+      // =========================
+      // UPDATE STUDENT
+      // =========================
+      const updated = await prisma.students.update({
+        where: { id: studentId },
+        data: dbData,
+      });
+
+      // =========================
+      // MAP RESPONSE
+      // =========================
+      return toStudentResponse(updated as StudentDB);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+
+      throw new ApiError(
+        500,
+        "Failed to update student details"
+      );
+    }
+  }
 
 }
 
-
-
-// ===============================
-// UPDATE STUDENT DETAILS LOGIC
-// ===============================
 
 // ===============================
 // SOFT DELETE STUDENT LOGIC
