@@ -293,13 +293,75 @@ export class ClassSubjectService {
       );
     }
   }
+// ===================================
+  // SOFT DELETE CLASS SUBJECT LOGIC
+  // ===================================
+  async deleteClassSubject(params: ClassSubjectIdParam) {
+    try {
+      // =========================
+      // VALIDATE ID
+      // =========================
+      const id = toClassSubjectId(params);
 
+      // =========================
+      // SOFT DELETE
+      // =========================
+      const updated = await prisma.classSubjects.updateMany({
+        where: {
+          id,
+        },
+        data: {
+          updated_at: new Date(),
+          deleted_at: new Date(),
+        },
+      });
 
+      // =========================
+      // NOT FOUND CHECK
+      // =========================
+      if (updated.count === 0) {
+        throw new ApiError(
+          404,
+          "Class subject not found"
+        );
+      }
+
+      // =========================
+      // FETCH UPDATED RECORD
+      // =========================
+      const classSubject =
+        await prisma.classSubjects.findUnique({
+          where: { id },
+        });
+
+      if (!classSubject) {
+        throw new ApiError(
+          404,
+          "Class subject not found after deletion"
+        );
+      }
+
+      // =========================
+      // MAP RESPONSE
+      // =========================
+      return toClassSubjectResponse(
+        classSubject as ClassSubjectDB
+      );
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(
+        500,
+        "Failed to delete class subject"
+      );
+    }
+  }
 }
 
-  // ===================================
-  // DELETE CLASS SUBJECT LOGIC
-  // ===================================
+
+
+ 
 
   // ===================================
   // ASSIGN TEACHER TO CLASS SUBJECT LOGIC
