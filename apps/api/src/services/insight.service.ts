@@ -1,34 +1,18 @@
+import { InsightAnalyticsService, InsightAIService, InsightCrudService, InsightQueryService, InsightAdvancedService } from './insights';
 
 export class InsightService {
+    constructor(
+        private crud: InsightCrudService,
+        private query: InsightQueryService,
+        private analytics: InsightAnalyticsService,
+        private ai: InsightAIService,
+        private advanced: InsightAdvancedService
+    ) {
 
-
-
-// ===============================
-// C. DASHBOARD AGGREGRATION LOGIC
-// ===============================
-// ===============================
-// COUNT ALL INSIGHTS LOGIC
-// ===============================
-
-// ===============================
-// GET INSIGHT STATISTICS LOGIC
-// ===============================
-
-// ====================================
-// GET INSIGHT DISTRIBUTION BY TYPE LOGIC
-// ====================================
-
-// ====================================
-// GET INSIGHT DISTRIBUTION BY CLASS LOGIC
-// ====================================
-
-// ===================================
-// GET INSIGHT CONFIDENCE AVERAGE LOGIC
-// ===================================
-
-
-
-
-
-
+    }
 }
+
+
+
+
+
