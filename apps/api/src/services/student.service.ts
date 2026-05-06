@@ -554,12 +554,81 @@ export class StudentService {
       );
     }
   }
+  // ===============================
+  // TRANSFER STUDENT CLASS LOGIC
+  // ===============================
+  async transferStudentClass(
+    params: StudentIdParam,
+    newClassId: string
+  ) {
+    try {
+      // =========================
+      // VALIDATE ID
+      // =========================
+      const id = toStudentId(params);
+
+      // =========================
+      // CHECK IF STUDENT EXISTS
+      // =========================
+      const existing = await prisma.students.findUnique({
+        where: { id },
+      });
+
+      if (!existing) {
+        throw new ApiError(404, "Student not found");
+      }
+
+      // =========================
+      // CHECK IF ALREADY IN SAME CLASS
+      // =========================
+      if (existing.class_id === newClassId) {
+        throw new ApiError(
+          400,
+          "Student is already in this class"
+        );
+      }
+
+      // =========================
+      // OPTIONAL: VALIDATE CLASS EXISTS
+      // =========================
+      const classExists = await prisma.classes.findUnique({
+        where: { id: newClassId },
+      });
+
+      if (!classExists) {
+        throw new ApiError(404, "Class not found");
+      }
+
+      // =========================
+      // UPDATE CLASS
+      // =========================
+      const updated = await prisma.students.update({
+        where: { id },
+        data: {
+          class_id: newClassId,
+          updated_at: new Date(),
+        },
+      });
+
+      // =========================
+      // MAP RESPONSE
+      // =========================
+      return toStudentResponse(updated as StudentDB);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+
+      throw new ApiError(
+        500,
+        "Failed to transfer student class"
+      );
+    }
+  }
+
 
 }
 
-// ===============================
-// TRANSFER STUDENT CLASS LOGIC
-// ===============================
 
 // ===============================
 // GET STUDENT STATISTICS LOGIC
