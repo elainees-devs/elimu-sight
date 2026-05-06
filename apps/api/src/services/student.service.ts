@@ -261,12 +261,57 @@ export class StudentService {
     }
   }
 
+   // ===============================
+  // SOFT DELETE STUDENT LOGIC
+  // ===============================
+  async deleteStudent(params: StudentIdParam) {
+    try {
+      // =========================
+      // VALIDATE ID
+      // =========================
+      const id = toStudentId(params);
+
+      // =========================
+      // CHECK IF STUDENT EXISTS
+      // =========================
+      const existing = await prisma.students.findUnique({
+        where: { id },
+      });
+
+      if (!existing) {
+        throw new ApiError(404, "Student not found");
+      }
+
+      // =========================
+      // SOFT DELETE (DEACTIVATE)
+      // =========================
+      const updated = await prisma.students.update({
+        where: { id },
+        data: {
+          is_active: false,
+          updated_at: new Date(),
+        },
+      });
+
+      // =========================
+      // MAP RESPONSE
+      // =========================
+      return toStudentResponse(updated as StudentDB);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+
+      throw new ApiError(
+        500,
+        "Failed to delete student"
+      );
+    }
+  }
 }
 
 
-// ===============================
-// SOFT DELETE STUDENT LOGIC
-// ===============================
+
 
 // ===============================
 // ACTIVATE STUDENT LOGIC
