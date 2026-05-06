@@ -11,7 +11,7 @@ export {toSubjectResponse, toSubjectListResponse, toCreateSubjectDB, toUpdateSub
 export {toClassResponse, toClassListResponse, toCreateClassDB, toUpdateClassDB} from "./class.mapper";
 
 // class-subject mappers
-export {toClassSubjectResponse, toClassSubjectListResponse, toCreateClassSubjectDB, toUpdateClassSubjectDB} from "./class-subject.mapper";
+export {ClassSubjectDB,toClassSubjectId,toClassSubjectResponse, toClassSubjectListResponse, toCreateClassSubjectDB, toUpdateClassSubjectDB} from "./class-subject.mapper";
 
 // student mappers
 export {toStudentResponse, toStudentListResponse, toCreateStudentDB, toUpdateStudentDB} from "./student.mapper";
