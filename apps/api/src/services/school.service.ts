@@ -1,7 +1,7 @@
 import { ApiError } from "@utils/app-error";
 import { prisma } from "@utils/prisma";
-import { toCreateSchoolDB, toSchoolListResponse, toSchoolResponse, toUpdateSchoolDB } from "mappers/school.mapper";
-import { CreateSchoolInput, UpdateSchoolInput } from "schemas";
+import { SchoolDB, toCreateSchoolDB, toSchoolId, toSchoolListResponse, toSchoolResponse, toUpdateSchoolDB } from "mappers/school.mapper";
+import { CreateSchoolInput, SchoolIdParam, UpdateSchoolInput } from "schemas";
 
 type GetSchoolsParams = {
   page?: number;
@@ -194,5 +194,58 @@ async updateSchool(input: UpdateSchoolInput) {
     }
     throw new ApiError(500, "Failed to update school");
   }
+},
+// =========================
+// SOFT DELETE SCHOOL
+// =========================
+async deleteSchool(params: SchoolIdParam) {
+  try {
+    // =========================
+    // VALIDATE ID
+    // =========================
+    const id = toSchoolId(params);
+
+    // =========================
+    // SOFT DELETE (RETURN UPDATED ROW)
+    // =========================
+    const updated = await prisma.schools.updateMany({
+      where: {
+        id,
+        deleted_at: null,
+      },
+      data: {
+        deleted_at: new Date(),
+        updated_at: new Date(),
+      },
+    });
+
+    // =========================
+    // NOT FOUND CHECK
+    // =========================
+    if (updated.count === 0) {
+      throw new ApiError(404, "School not found");
+    }
+
+    // =========================
+    // FETCH UPDATED RECORD (FOR MAPPER)
+    // =========================
+    const school = await prisma.schools.findFirst({
+      where: { id },
+    });
+
+    if (!school) {
+      throw new ApiError(404, "School not found after deletion");
+    }
+
+    // =========================
+    // MAP TO API RESPONSE
+    // =========================
+    return toSchoolResponse(school as SchoolDB);
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new ApiError(500, "Failed to delete school");
+  }
 }
-};
+}
