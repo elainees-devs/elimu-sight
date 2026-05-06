@@ -247,5 +247,22 @@ async deleteSchool(params: SchoolIdParam) {
     }
     throw new ApiError(500, "Failed to delete school");
   }
+},
+
+// =========================
+// GET SCHOOL COUNT
+// =========================
+async getSchoolCount() {
+  try {
+    const count = await prisma.schools.count({
+      where: {
+        deleted_at: null,
+      },
+    });
+
+    return count;
+  } catch (error) {
+    throw new ApiError(500, "Failed to get school count");
+  }
 }
 }
