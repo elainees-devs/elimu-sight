@@ -1,6 +1,7 @@
 import { ApiError } from "@utils/app-error";
 import { prisma } from "@utils/prisma";
-import { toClassListResponse } from "mappers/class.mapper";
+import { ClassDB, toClassId, toClassListResponse, toClassResponse } from "mappers/class.mapper";
+import { ClassIdParam } from "schemas/class.schema";
 
 type GetClassParams = {
   page?: number;
@@ -71,12 +72,43 @@ export class ClassService {
       throw new ApiError(500, "Failed to fetch classes");
     }
   }
-}
-  
 
   // ===============================
   // GET CLASSES BY ID LOGIC
   // ===============================
+  async getClassById(params: ClassIdParam) {
+    try {
+      // =========================
+      // VALIDATE ID
+      // =========================
+      const id = toClassId(params);
+
+      // =========================
+      // FETCH CLASS
+      // =========================
+      const classData = await prisma.classes.findUnique({
+        where: { id },
+      });
+
+      // =========================
+      // NOT FOUND CHECK
+      // =========================
+      if (!classData) {
+        throw new ApiError(404, "Class not found");
+      }
+
+      // =========================
+      // MAP TO RESPONSE
+      // =========================
+      return toClassResponse(classData as ClassDB);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(500, "Failed to fetch class");
+    }
+  }
+
 
   // ===============================
   // CREATE NEW CLASS LOGIC
