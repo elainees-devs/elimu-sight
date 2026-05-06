@@ -1,7 +1,8 @@
 
 import { ApiError, prisma } from "@utils/index";
 import { toSubjectListResponse, toSubjectResponse , SubjectDB, toUpdateSubjectDB} from "mappers";
-import { UpdateSubjectInput } from "schemas";
+import { toSubjectId } from "mappers/subject.mapper";
+import { SubjectIdParam, UpdateSubjectInput } from "schemas";
 
 
 type GetSubjectParams = {
@@ -160,12 +161,59 @@ export class SubjectService {
       throw new ApiError(500, "Failed to update subject");
     }
   }
-}
-
-  // ===============================
+ // ===============================
   // SOFT DELETE SUBJECT LOGIC
   // ===============================
+  async deleteSubject(params: SubjectIdParam) {
+    try {
+      // =========================
+      // VALIDATE ID
+      // =========================
+      const id = toSubjectId(params);
 
+      // =========================
+      // SOFT DELETE
+      // =========================
+      const updated = await prisma.subjects.updateMany({
+        where: {
+          id,
+        },
+        data: {
+          updated_at: new Date(),
+          deleted_at: new Date(),
+        },
+      });
+
+      // =========================
+      // NOT FOUND CHECK
+      // =========================
+      if (updated.count === 0) {
+        throw new ApiError(404, "Subject not found");
+      }
+
+      // =========================
+      // FETCH UPDATED RECORD
+      // =========================
+      const subject = await prisma.subjects.findUnique({
+        where: { id },
+      });
+
+      if (!subject) {
+        throw new ApiError(404, "Subject not found after deletion");
+      }
+
+      // =========================
+      // MAP RESPONSE
+      // =========================
+      return toSubjectResponse(subject as SubjectDB);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(500, "Failed to delete subject");
+    }
+  }
+}
   // ===============================
   // COUNT ALL SUBJECTS LOGIC
   // ===============================
