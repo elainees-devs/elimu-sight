@@ -1,6 +1,6 @@
 import { ApiError, prisma } from "@utils/index";;
-import { StudentDB, toCreateStudentDB, toStudentListResponse, toStudentResponse } from "mappers";
-import { CreateStudentInput } from "schemas";
+import { StudentDB, toCreateStudentDB, toStudentListResponse, toStudentResponse, toStudentId } from "mappers";
+import { CreateStudentInput, StudentIdParam } from "schemas";
 
 type GetStudentParams = {
   page?: number;
@@ -167,13 +167,52 @@ export class StudentService {
       );
     }
   }
-  
+  // ===============================
+  // GET STUDENT BY ID LOGIC
+  // ===============================
+  async getStudentById(params: StudentIdParam) {
+    try {
+      // =========================
+      // VALIDATE ID
+      // =========================
+      const id = toStudentId(params);
+
+      // =========================
+      // FETCH STUDENT
+      // =========================
+      const student = await prisma.students.findFirst({
+        where: {
+          id,
+        },
+      });
+
+      // =========================
+      // NOT FOUND CHECK
+      // =========================
+      if (!student) {
+        throw new ApiError(404, "Student not found");
+      }
+
+      // =========================
+      // MAP RESPONSE
+      // =========================
+      return toStudentResponse(student as StudentDB);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+
+      throw new ApiError(
+        500,
+        "Failed to fetch student"
+      );
+    }
+  }
+
 
 }
 
-// ===============================
-// GET STUDENT BY ID LOGIC
-// ===============================
+
 
 // ===============================
 // UPDATE STUDENT DETAILS LOGIC
