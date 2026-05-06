@@ -1,7 +1,7 @@
 import { ApiError, prisma } from "@utils/index";
-import { toAssessmentListResponse, toUpdateAssessmentDB } from "mappers";
+import { toAssessmentListResponse, toUpdateAssessmentDB, toAssessmentId} from "mappers";
 import { AssessmentDB, toAssessmentResponse } from "mappers/index";
-import { UpdateAssessmentInput } from "schemas/assessment.schema";
+import { AssessmentIdParam, UpdateAssessmentInput } from "schemas";
 
 type GetAssessmentParams = {
   page?: number;
@@ -143,12 +143,68 @@ export class AssessmentService {
     }
   }
 
-}
- 
-
   // ===============================
   // SOFT DELETE ASSESSMENTS LOGIC
   // ===============================
+  async deleteAssessment(params: AssessmentIdParam) {
+    try {
+      // =========================
+      // VALIDATE ID
+      // =========================
+      const id = toAssessmentId(params);
+
+      // =========================
+      // SOFT DELETE
+      // =========================
+      const updated = await prisma.assessments.updateMany({
+        where: {
+          id,
+        },
+        data: {
+          updated_at: new Date(),
+          deleted_at: new Date(),
+        },
+      });
+
+      // =========================
+      // NOT FOUND CHECK
+      // =========================
+      if (updated.count === 0) {
+        throw new ApiError(404, "Assessment not found");
+      }
+
+      // =========================
+      // FETCH UPDATED RECORD
+      // =========================
+      const assessment = await prisma.assessments.findUnique({
+        where: { id },
+      });
+
+      if (!assessment) {
+        throw new ApiError(
+          404,
+          "Assessment not found after deletion"
+        );
+      }
+
+      // =========================
+      // MAP RESPONSE
+      // =========================
+      return toAssessmentResponse(
+        assessment as AssessmentDB
+      );
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(500, "Failed to delete assessment");
+    }
+  }
+
+
+}
+ 
+
 
   // ===============================
   // COUNT ALL ASSESSMENTS LOGIC
