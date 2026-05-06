@@ -1,6 +1,6 @@
 import { ApiError } from "@utils/app-error";
 import { prisma } from "@utils/prisma";
-import { toUserListResponse } from "mappers/user.mapper";
+import { toUserListResponse, toUserResponse } from "mappers/user.mapper";
 
 type GetUserParams = {
   page?: number;
@@ -71,9 +71,27 @@ export class UserService {
     }
   }
 
-  // ==========================
+  // ============================
   // GET A USER BY  EMAIL LOGIC
-  // ==========================
+  // ============================
+  async getUserByEmail(email: string) {
+    try {
+      const user = await prisma.users.findUnique({
+        where: { email },
+      });
+
+      if (!user) {
+        throw new ApiError(404, "User not found");
+      }
+
+      return toUserResponse(user);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(500, "Failed to fetch user by email");
+    }
+}
 }
 
 // =========================
