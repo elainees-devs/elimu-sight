@@ -1,8 +1,113 @@
 import { ApiError, prisma } from "@utils/index";;
-import { StudentDB, toCreateStudentDB, toStudentResponse } from "mappers";
+import { StudentDB, toCreateStudentDB, toStudentListResponse, toStudentResponse } from "mappers";
 import { CreateStudentInput } from "schemas";
 
+type GetStudentParams = {
+  page?: number;
+  limit?: number;
+  search?: string;
+  classId?: string;
+  isActive?: boolean;
+};
 export class StudentService {
+// ===============================
+  // GET ALL STUDENTS BY SCHOOL LOGIC
+  // ===============================
+  async getAllStudentsBySchool(
+    schoolId: string,
+    params: GetStudentParams
+  ) {
+    try {
+      const {
+        page = 1,
+        limit = 10,
+        search,
+        classId,
+        isActive,
+      } = params;
+
+      const skip = (page - 1) * limit;
+
+      // =========================
+      // FILTER
+      // =========================
+      const where: any = {
+        school_id: schoolId,
+      };
+
+      if (classId) {
+        where.class_id = classId;
+      }
+
+      if (isActive !== undefined) {
+        where.is_active = isActive;
+      }
+
+      if (search) {
+        where.OR = [
+          {
+            full_name: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+          {
+            admission_number: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+          {
+            guardian_name: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+          {
+            guardian_phone: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+        ];
+      }
+
+      // =========================
+      // QUERY
+      // =========================
+      const [students, total] = await Promise.all([
+        prisma.students.findMany({
+          where,
+          orderBy: {
+            created_at: "desc",
+          },
+          skip,
+          take: limit,
+        }),
+
+        prisma.students.count({ where }),
+      ]);
+
+      // =========================
+      // RESPONSE
+      // =========================
+      return {
+        data: toStudentListResponse(students),
+        meta: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      };
+    } catch (error) {
+      throw new ApiError(
+        500,
+        "Failed to fetch students"
+      );
+    }
+  }
+
 // ===============================
 // CREATE STUDENT LOGIC
 // ===============================
@@ -63,11 +168,8 @@ export class StudentService {
     }
   }
   
-}
 
-// ===============================
-// GET ALL STUDENTS BY SCHOOL LOGIC
-// ===============================
+}
 
 // ===============================
 // GET STUDENT BY ID LOGIC
