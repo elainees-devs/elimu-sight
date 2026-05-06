@@ -308,14 +308,66 @@ export class StudentService {
       );
     }
   }
+  // ===============================
+  // ACTIVATE STUDENT LOGIC
+  // ===============================
+  async activateStudent(params: StudentIdParam) {
+    try {
+      // =========================
+      // VALIDATE ID
+      // =========================
+      const id = toStudentId(params);
+
+      // =========================
+      // CHECK IF STUDENT EXISTS
+      // =========================
+      const existing = await prisma.students.findUnique({
+        where: { id },
+      });
+
+      if (!existing) {
+        throw new ApiError(404, "Student not found");
+      }
+
+      // =========================
+      // CHECK IF ALREADY ACTIVE
+      // =========================
+      if (existing.is_active) {
+        throw new ApiError(
+          400,
+          "Student is already active"
+        );
+      }
+
+      // =========================
+      // ACTIVATE STUDENT
+      // =========================
+      const updated = await prisma.students.update({
+        where: { id },
+        data: {
+          is_active: true,
+          updated_at: new Date(),
+        },
+      });
+
+      // =========================
+      // MAP RESPONSE
+      // =========================
+      return toStudentResponse(updated as StudentDB);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+
+      throw new ApiError(
+        500,
+        "Failed to activate student"
+      );
+    }
+  }
+
 }
 
-
-
-
-// ===============================
-// ACTIVATE STUDENT LOGIC
-// ===============================
 
 // ===============================
 // DEACTIVATE STUDENT LOGIC
