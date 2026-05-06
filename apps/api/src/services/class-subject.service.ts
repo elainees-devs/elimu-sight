@@ -357,15 +357,80 @@ export class ClassSubjectService {
       );
     }
   }
+  // =====================================
+  // ASSIGN TEACHER TO CLASS SUBJECT LOGIC
+  // =====================================
+  async assignTeacherToClassSubject(
+    classSubjectId: string,
+    teacherId: string
+  ) {
+    try {
+      // =========================
+      // CHECK IF RECORD EXISTS
+      // =========================
+      const existing =
+        await prisma.classSubjects.findUnique({
+          where: { id: classSubjectId },
+        });
+
+      if (!existing) {
+        throw new ApiError(
+          404,
+          "Class subject not found"
+        );
+      }
+
+      // =========================
+      // OPTIONAL: PREVENT DUPLICATE ASSIGNMENT
+      // =========================
+      const duplicate =
+        await prisma.classSubjects.findFirst({
+          where: {
+            class_id: existing.class_id,
+            subject_id: existing.subject_id,
+            teacher_id: teacherId,
+            NOT: { id: classSubjectId },
+          },
+        });
+
+      if (duplicate) {
+        throw new ApiError(
+          400,
+          "Teacher already assigned to this class subject"
+        );
+      }
+
+      // =========================
+      // UPDATE ASSIGNMENT
+      // =========================
+      const updated =
+        await prisma.classSubjects.update({
+          where: { id: classSubjectId },
+          data: {
+            teacher_id: teacherId,
+            updated_at: new Date(),
+          },
+        });
+
+      // =========================
+      // MAP RESPONSE
+      // =========================
+      return toClassSubjectResponse(
+        updated as ClassSubjectDB
+      );
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(
+        500,
+        "Failed to assign teacher"
+      );
+    }
+  }
+
 }
 
-
-
- 
-
-  // ===================================
-  // ASSIGN TEACHER TO CLASS SUBJECT LOGIC
-  // ===================================
 
   // ===================================
   // REMOVE TEACHER FROM CLASS SUBJECT LOGIC
