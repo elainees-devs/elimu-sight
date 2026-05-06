@@ -5,7 +5,7 @@ export {SchoolDB,toSchoolResponse, toSchoolListResponse, toCreateSchoolDB, toUpd
 export {toUserResponse,toUserListResponse ,toCreateUserDB, toUpdateUserDB} from "./user.mapper";
 
 // subject mappers
-export {toSubjectResponse, toSubjectListResponse, toCreateSubjectDB, toUpdateSubjectDB} from "./subject.mapper";
+export {toSubjectResponse, toSubjectListResponse, toCreateSubjectDB, toUpdateSubjectDB, SubjectDB} from "./subject.mapper";
 
 // class mappers
 export {toClassResponse, toClassListResponse, toCreateClassDB, toUpdateClassDB} from "./class.mapper";
