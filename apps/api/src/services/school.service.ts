@@ -69,4 +69,30 @@ export const SchoolService = {
       throw new ApiError(500, "Failed to fetch schools");
     }
   },
+  // =========================
+  // GET SCHOOL BY EMAIL
+  // =========================
+  async getSchoolByEmail(email: string) {
+    try {
+      const school = await prisma.schools.findFirst({
+        where: {
+          email,
+          deleted_at: null,
+        },
+      });
+
+      if (!school) {
+        throw new ApiError(404, "School not found");
+      }
+
+      return school;
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(500, "Failed to fetch school by email");
+    }
+  }
+  // =========================
+
 };
