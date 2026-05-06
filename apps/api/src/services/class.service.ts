@@ -224,12 +224,63 @@ export class ClassService {
       throw new ApiError(500, "Failed to update class");
     }
   }
+   // ===============================
+  // SOFT DELETE CLASS LOGIC
+  // ===============================
+  async deleteClass(params: ClassIdParam) {
+    try {
+      // =========================
+      // VALIDATE ID
+      // =========================
+      const id = toClassId(params);
+
+      // =========================
+      // SOFT DELETE
+      // =========================
+      const updated = await prisma.classes.updateMany({
+        where: {
+          id,
+          deleted_at: null,
+        },
+        data: {
+          deleted_at: new Date(),
+          updated_at: new Date(),
+        },
+      });
+
+      // =========================
+      // NOT FOUND CHECK
+      // =========================
+      if (updated.count === 0) {
+        throw new ApiError(404, "Class not found");
+      }
+
+      // =========================
+      // FETCH UPDATED RECORD
+      // =========================
+      const classData = await prisma.classes.findFirst({
+        where: { id },
+      });
+
+      if (!classData) {
+        throw new ApiError(404, "Class not found after deletion");
+      }
+
+      // =========================
+      // MAP RESPONSE
+      // =========================
+      return toClassResponse(classData as ClassDB);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(500, "Failed to delete class");
+    }
+  }
 }
 
 
-  // ===============================
-  // SOFT DELETE CLASS LOGIC
-  // ===============================
+
 
   // ===============================
   // COUNT ALL CLASSES LOGIC
