@@ -13,7 +13,7 @@ type GetSchoolsParams = {
 
 export const SchoolService = {
   // =========================
-  // GET ALL SCHOOLS
+  // GET ALL SCHOOLS LOGIC
   // =========================
   async getAllSchools(params: GetSchoolsParams) {
     try {
@@ -71,7 +71,7 @@ export const SchoolService = {
     }
   },
   // =========================
-  // GET SCHOOL BY EMAIL
+  // GET SCHOOL BY EMAIL LOGIC
   // =========================
   async getSchoolByEmail(email: string) {
     try {
@@ -95,7 +95,7 @@ export const SchoolService = {
     }
   },
   // =========================
-  // CREATE NEW SCHOOL
+  // CREATE NEW SCHOOL LOGIC
   // =========================
   async createSchool(input: CreateSchoolInput) {
     try {
@@ -134,7 +134,7 @@ export const SchoolService = {
     }
   },
 // =========================
-// UPDATE SCHOOL DETAILS
+// UPDATE SCHOOL DETAILS LOGIC
 // =========================
 async updateSchool(input: UpdateSchoolInput) {
   try {
@@ -196,7 +196,7 @@ async updateSchool(input: UpdateSchoolInput) {
   }
 },
 // =========================
-// SOFT DELETE SCHOOL
+// SOFT DELETE SCHOOL LOGIC
 // =========================
 async deleteSchool(params: SchoolIdParam) {
   try {
@@ -250,7 +250,7 @@ async deleteSchool(params: SchoolIdParam) {
 },
 
 // =========================
-// GET SCHOOL COUNT
+// GET SCHOOL COUNT LOGIC
 // =========================
 async getSchoolCount() {
   try {
