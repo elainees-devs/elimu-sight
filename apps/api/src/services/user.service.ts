@@ -1,7 +1,7 @@
 import { ApiError } from "@utils/app-error";
 import { prisma } from "@utils/prisma";
-import { toUpdateUserDB, toUserListResponse, toUserResponse } from "mappers/user.mapper";
-import { UpdateUserInput } from "schemas/user.schema";
+import { toUpdateUserDB, toUserId, toUserListResponse, toUserResponse, UserDB } from "mappers/user.mapper";
+import { UpdateUserInput, UserIdParam } from "schemas/user.schema";
 
 type GetUserParams = {
   page?: number;
@@ -124,16 +124,62 @@ async updateUserDetails(input: UpdateUserInput) {
     }
   }
 
+  // =========================
+  // SOFT DELETE USER LOGIC
+  // =========================
+  async deleteUser(params: UserIdParam) {
+    try {
+      // =========================
+      // VALIDATE ID
+      // =========================
+      const id = toUserId(params);
+
+      // =========================
+      // SOFT DELETE (RETURN UPDATED ROW)
+      // =========================
+      const updated = await prisma.users.updateMany({
+        where: {
+          id,
+        },
+        data: {
+          is_active: false,
+          updated_at: new Date(),
+          deleted_at: new Date() || null,
+        },
+      });
+
+      // =========================
+      // NOT FOUND CHECK
+      // =========================
+      if (updated.count === 0) {
+        throw new ApiError(404, "User not found");
+      }
+
+      // =========================
+      // FETCH UPDATED RECORD (FOR MAPPER)
+      // =========================
+      const user = await prisma.users.findUnique({
+        where: { id },
+      });
+
+      if (!user) {
+        throw new ApiError(404, "User not found after deletion");
+      }
+
+      // =========================
+      // MAP TO API RESPONSE
+      // =========================
+      return toUserResponse(user as UserDB);
+    } catch (error) {
+      if (error instanceof ApiError) throw error;
+      throw new ApiError(500, "Failed to delete user");
+    }
+  }
+
 }
 
 
-// =========================
-// DELETE ALL USERS LOGIC
-// =========================
 
-// ================================
-// SOFT DELETE A USER BY  EMAIL LOGIC
-// =================================
 
 // =========================
 // COUNT ALL USERS BY  EMAIL LOGIC
