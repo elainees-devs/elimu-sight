@@ -625,11 +625,85 @@ export class StudentService {
       );
     }
   }
+// ===============================
+  // GET STUDENT STATISTICS LOGIC
+  // ===============================
+  async getStudentStatistics(schoolId: string) {
+    try {
+      // =========================
+      // TOTAL STUDENTS
+      // =========================
+      const totalStudents = await prisma.students.count({
+        where: {
+          school_id: schoolId,
+        },
+      });
+
+      // =========================
+      // ACTIVE STUDENTS
+      // =========================
+      const activeStudents = await prisma.students.count({
+        where: {
+          school_id: schoolId,
+          is_active: true,
+        },
+      });
+
+      // =========================
+      // INACTIVE STUDENTS
+      // =========================
+      const inactiveStudents = await prisma.students.count({
+        where: {
+          school_id: schoolId,
+          is_active: false,
+        },
+      });
+
+      // =========================
+      // STUDENTS PER CLASS
+      // =========================
+      const byClass = await prisma.students.groupBy({
+        by: ["class_id"],
+        where: {
+          school_id: schoolId,
+        },
+        _count: {
+          id: true,
+        },
+      });
+
+      // =========================
+      // GENDER DISTRIBUTION (optional)
+      // =========================
+      const byGender = await prisma.students.groupBy({
+        by: ["gender"],
+        where: {
+          school_id: schoolId,
+        },
+        _count: {
+          id: true,
+        },
+      });
+
+      // =========================
+      // RESPONSE
+      // =========================
+      return {
+        totalStudents,
+        activeStudents,
+        inactiveStudents,
+        byClass,
+        byGender,
+      };
+    } catch (error) {
+      throw new ApiError(
+        500,
+        "Failed to fetch student statistics"
+      );
+    }
+  }
 
 
 }
 
 
-// ===============================
-// GET STUDENT STATISTICS LOGIC
-// ===============================
