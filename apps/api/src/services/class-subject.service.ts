@@ -428,13 +428,56 @@ export class ClassSubjectService {
       );
     }
   }
+// ========================================
+  // REMOVE TEACHER FROM CLASS SUBJECT LOGIC
+  // ========================================
+  async removeTeacherFromClassSubject(classSubjectId: string) {
+    try {
+      // =========================
+      // CHECK IF RECORD EXISTS
+      // =========================
+      const existing =
+        await prisma.classSubjects.findUnique({
+          where: { id: classSubjectId },
+        });
 
+      if (!existing) {
+        throw new ApiError(
+          404,
+          "Class subject not found"
+        );
+      }
+
+      // =========================
+      // REMOVE TEACHER ASSIGNMENT
+      // =========================
+      const updated =
+        await prisma.classSubjects.update({
+          where: { id: classSubjectId },
+          data: {
+            teacher_id: null,
+            updated_at: new Date(),
+          },
+        });
+
+      // =========================
+      // MAP RESPONSE
+      // =========================
+      return toClassSubjectResponse(
+        updated as ClassSubjectDB
+      );
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(
+        500,
+        "Failed to remove teacher from class subject"
+      );
+    }
+  }
 }
 
-
-  // ===================================
-  // REMOVE TEACHER FROM CLASS SUBJECT LOGIC
-  // ===================================
 
   // ===================================
   // REPLACE ALL SUBJECTS FOR A CLASS LOGIC
