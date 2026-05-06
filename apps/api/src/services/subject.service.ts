@@ -1,6 +1,7 @@
 
 import { ApiError, prisma } from "@utils/index";
-import { toSubjectListResponse, toSubjectResponse , SubjectDB} from "mappers";
+import { toSubjectListResponse, toSubjectResponse , SubjectDB, toUpdateSubjectDB} from "mappers";
+import { UpdateSubjectInput } from "schemas";
 
 
 type GetSubjectParams = {
@@ -103,6 +104,63 @@ export class SubjectService {
   // ===============================
   // UPDATE SUBJECT DETAILS LOGIC
   // ===============================
+  async updateSubjectDetails(input: UpdateSubjectInput) {
+    try {
+      const { id, ...updateData } = input;
+
+      // =========================
+      // CHECK IF SUBJECT EXISTS
+      // =========================
+      const existingSubject = await prisma.subjects.findUnique({
+        where: { id },
+      });
+
+      if (!existingSubject) {
+        throw new ApiError(404, "Subject not found");
+      }
+
+      // =========================
+      // OPTIONAL: DUPLICATE NAME CHECK
+      // =========================
+      if (updateData.name) {
+        const duplicate = await prisma.subjects.findFirst({
+          where: {
+            school_id: existingSubject.school_id,
+            name: updateData.name,
+            NOT: { id },
+          },
+        });
+
+        if (duplicate) {
+          throw new ApiError(400, "Subject name already exists");
+        }
+      }
+
+      // =========================
+      // MAP INPUT → DB
+      // =========================
+      const dbData = toUpdateSubjectDB(updateData);
+
+      // =========================
+      // UPDATE SUBJECT
+      // =========================
+      const updatedSubject = await prisma.subjects.update({
+        where: { id },
+        data: dbData,
+      });
+
+      // =========================
+      // MAP RESPONSE
+      // =========================
+      return toSubjectResponse(updatedSubject as SubjectDB);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(500, "Failed to update subject");
+    }
+  }
+}
 
   // ===============================
   // SOFT DELETE SUBJECT LOGIC
@@ -113,4 +171,3 @@ export class SubjectService {
   // ===============================
 
 
-}
