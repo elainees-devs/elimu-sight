@@ -7,20 +7,22 @@ import Joi from "joi";
  * =========================
  */
 const assessmentBase = {
-  schoolId: Joi.string().uuid(),
-  classId: Joi.string().uuid(),
-  studentId: Joi.string().uuid(),
-  subjectId: Joi.string().uuid(),
-  createdBy: Joi.string().uuid(),
+  schoolId: Joi.string().uuid().required(),
+  classId: Joi.string().uuid().required(),
+  studentId: Joi.string().uuid().required(),
+  subjectId: Joi.string().uuid().required(),
+  createdBy: Joi.string().uuid().required(),
 
-  term: Joi.string().max(50),
-  examType: Joi.string().valid(...examTypes),
+  term: Joi.string().trim().max(50),
+  examType: Joi.string()
+    .valid(...examTypes)
+    .required(),
 
-  score: Joi.number().min(0).max(100),
-  totalMarks: Joi.number().min(0).max(100),
+  score: Joi.number().min(0).max(100).required(),
+  totalMarks: Joi.number().min(0).max(100).required(),
 
-  grade: Joi.string().max(5),
-  remarks: Joi.string(),
+  grade: Joi.string().trim().max(5),
+  remarks: Joi.string().trim().allow("").optional(),
 };
 
 /**
@@ -32,6 +34,8 @@ export const assessmentSchema = Joi.object({
   id: Joi.string().uuid().required(),
   ...assessmentBase,
   createdAt: Joi.date().required(),
+}).options({
+  stripUnknown: true,
 });
 
 /**
@@ -40,20 +44,22 @@ export const assessmentSchema = Joi.object({
  * =========================
  */
 export const createAssessmentSchema = Joi.object({
-  schoolId: assessmentBase.schoolId.required(),
-  classId: assessmentBase.classId.required(),
-  studentId: assessmentBase.studentId.required(),
-  subjectId: assessmentBase.subjectId.required(),
-  createdBy: assessmentBase.createdBy.required(),
+  schoolId: assessmentBase.schoolId,
+  classId: assessmentBase.classId,
+  studentId: assessmentBase.studentId,
+  subjectId: assessmentBase.subjectId,
+  createdBy: assessmentBase.createdBy,
 
   term: assessmentBase.term.required(),
-  examType: assessmentBase.examType.required(),
+  examType: assessmentBase.examType,
 
-  score: assessmentBase.score.required(),
-  totalMarks: assessmentBase.totalMarks.required(),
+  score: assessmentBase.score,
+  totalMarks: assessmentBase.totalMarks,
 
   grade: assessmentBase.grade.optional(),
   remarks: assessmentBase.remarks.optional(),
+}).options({
+  stripUnknown: true,
 });
 
 /**
@@ -64,13 +70,19 @@ export const createAssessmentSchema = Joi.object({
  * - at least one field required
  */
 export const updateAssessmentSchema = Joi.object({
-  term: assessmentBase.term.optional(),
-  examType: assessmentBase.examType.optional(),
-  score: assessmentBase.score.optional(),
-  totalMarks: assessmentBase.totalMarks.optional(),
-  grade: assessmentBase.grade.optional(),
-  remarks: assessmentBase.remarks.optional(),
-}).min(1);
+  term: assessmentBase.term,
+  examType: Joi.string().valid(...examTypes),
+
+  score: assessmentBase.score,
+  totalMarks: assessmentBase.totalMarks,
+
+  grade: assessmentBase.grade,
+  remarks: assessmentBase.remarks,
+})
+  .min(1)
+  .options({
+    stripUnknown: true,
+  });
 
 /**
  * =========================
@@ -79,9 +91,17 @@ export const updateAssessmentSchema = Joi.object({
  */
 export const assessmentIdParamSchema = Joi.object({
   id: Joi.string().uuid().required(),
+}).options({
+  stripUnknown: true,
 });
 
+/**
+ * =========================
+ * TYPES
+ * =========================
+ */
 export type InferSchema<T> = T extends Joi.ObjectSchema<infer U> ? U : never;
+
 export type Assessment = InferSchema<typeof assessmentSchema>;
 export type CreateAssessmentInput = InferSchema<typeof createAssessmentSchema>;
 export type UpdateAssessmentInput = InferSchema<typeof updateAssessmentSchema>;
