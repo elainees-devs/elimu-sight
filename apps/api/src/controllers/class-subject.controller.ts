@@ -1,10 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { ClassSubjectService } from "@services/index";
-import {
-  toClassIdParam,
-  toIdParam,
-  toSubjectIdParam,
-} from "@utils/index";
+import { toClassSubjectId } from "mappers";
+import { ClassSubjectIdParam } from "schemas";
 
 const classSubjectService = new ClassSubjectService();
 
@@ -12,26 +9,14 @@ export class ClassSubjectController {
   // ===================================
   // GET SUBJECTS BY CLASS
   // ===================================
-  async getSubjectsByClass(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  async getSubjectsByClass(req: Request, res: Response, next: NextFunction) {
     try {
-      const { classId } = toClassIdParam(req);
+      const id = toClassSubjectId({ id: req.params.id } as ClassSubjectIdParam);
 
-      const result =
-        await classSubjectService.getSubjectsByClass(
-          classId,
-          {
-            page: req.query.page
-              ? Number(req.query.page)
-              : undefined,
-            limit: req.query.limit
-              ? Number(req.query.limit)
-              : undefined,
-          }
-        );
+      const result = await classSubjectService.getSubjectsByClass(id, {
+        page: req.query.page ? Number(req.query.page) : undefined,
+        limit: req.query.limit ? Number(req.query.limit) : undefined,
+      });
 
       return res.status(200).json({
         success: true,
@@ -46,16 +31,11 @@ export class ClassSubjectController {
   // ===================================
   // GET CLASS SUBJECT BY ID
   // ===================================
-  async getClassSubjectById(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  async getClassSubjectById(req: Request, res: Response, next: NextFunction) {
     try {
-      const result =
-        await classSubjectService.getClassSubjectById(
-          toIdParam(req)
-        );
+      const id = toClassSubjectId({ id: req.params.id } as ClassSubjectIdParam);
+
+      const result = await classSubjectService.getClassSubjectById({ id });
 
       return res.status(200).json({
         success: true,
@@ -70,31 +50,18 @@ export class ClassSubjectController {
   // ===================================
   // GET CLASSES BY SUBJECT
   // ===================================
-  async getClassesBySubject(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  async getClassesBySubject(req: Request, res: Response, next: NextFunction) {
     try {
-      const { subjectId } = toSubjectIdParam(req);
+      const subjectId = toClassSubjectId({ id: req.params.subjectId } as ClassSubjectIdParam);
 
-      const result =
-        await classSubjectService.getClassesBySubject(
-          subjectId,
-          {
-            page: req.query.page
-              ? Number(req.query.page)
-              : undefined,
-            limit: req.query.limit
-              ? Number(req.query.limit)
-              : undefined,
-          }
-        );
+      const result = await classSubjectService.getClassesBySubject(subjectId, {
+        page: req.query.page ? Number(req.query.page) : undefined,
+        limit: req.query.limit ? Number(req.query.limit) : undefined,
+      });
 
       return res.status(200).json({
         success: true,
-        message:
-          "Classes by subject fetched successfully",
+        message: "Classes by subject fetched successfully",
         ...result,
       });
     } catch (error) {
@@ -105,26 +72,16 @@ export class ClassSubjectController {
   // =====================================
   // GET CLASS SUBJECT COUNT
   // =====================================
-  async getClassSubjectCount(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  async getClassSubjectCount(req: Request, res: Response, next: NextFunction) {
     try {
-      const { classId } = toClassIdParam(req);
+      const classId = toClassSubjectId({ id: req.params.classId } as ClassSubjectIdParam);
 
-      const count =
-        await classSubjectService.getClassSubjectCount(
-          classId
-        );
+      const count = await classSubjectService.getClassSubjectCount(classId);
 
       return res.status(200).json({
         success: true,
-        message:
-          "Class subject count fetched successfully",
-        data: {
-          count,
-        },
+        message: "Class subject count fetched successfully",
+        data: { count },
       });
     } catch (error) {
       return next(error);
@@ -134,21 +91,13 @@ export class ClassSubjectController {
   // ===================================
   // CREATE CLASS SUBJECT
   // ===================================
-  async createClassSubject(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  async createClassSubject(req: Request, res: Response, next: NextFunction) {
     try {
-      const classSubject =
-        await classSubjectService.createClassSubject(
-          req.body
-        );
+      const classSubject = await classSubjectService.createClassSubject(req.body);
 
       return res.status(201).json({
         success: true,
-        message:
-          "Class subject created successfully",
+        message: "Class subject created successfully",
         data: classSubject,
       });
     } catch (error) {
@@ -159,21 +108,15 @@ export class ClassSubjectController {
   // ===================================
   // DELETE CLASS SUBJECT
   // ===================================
-  async deleteClassSubject(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  async deleteClassSubject(req: Request, res: Response, next: NextFunction) {
     try {
-      const classSubject =
-        await classSubjectService.deleteClassSubject(
-          toIdParam(req)
-        );
+      const id = toClassSubjectId({ id: req.params.id } as ClassSubjectIdParam);
+
+      const classSubject = await classSubjectService.deleteClassSubject({ id });
 
       return res.status(200).json({
         success: true,
-        message:
-          "Class subject deleted successfully",
+        message: "Class subject deleted successfully",
         data: classSubject,
       });
     } catch (error) {
@@ -182,21 +125,14 @@ export class ClassSubjectController {
   }
 
   // =====================================
-  // ASSIGN TEACHER TO CLASS SUBJECT
+  // ASSIGN TEACHER
   // =====================================
-  async assignTeacherToClassSubject(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  async assignTeacherToClassSubject(req: Request, res: Response, next: NextFunction) {
     try {
       const { classSubjectId, teacherId } = req.body;
 
       const classSubject =
-        await classSubjectService.assignTeacherToClassSubject(
-          classSubjectId,
-          teacherId
-        );
+        await classSubjectService.assignTeacherToClassSubject(classSubjectId, teacherId);
 
       return res.status(200).json({
         success: true,
@@ -208,116 +144,88 @@ export class ClassSubjectController {
     }
   }
 
- // ========================================
-// REMOVE TEACHER FROM CLASS SUBJECT
-// ========================================
-async removeTeacherFromClassSubject(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { id } = toIdParam(req);
+  // =====================================
+  // REMOVE TEACHER
+  // =====================================
+  async removeTeacherFromClassSubject(req: Request, res: Response, next: NextFunction) {
+    try {
+      const classSubjectId = toClassSubjectId({ id: req.params.id } as ClassSubjectIdParam);
+      const newTeacherId = toClassSubjectId({ id: req.body.newTeacherId } as ClassSubjectIdParam);
 
-    const classSubject =
-      await classSubjectService.removeTeacherFromClassSubject(
-        String(id)
-      );
+      const classSubject =
+        await classSubjectService.removeTeacherFromClassSubject(classSubjectId, newTeacherId);
 
-    return res.status(200).json({
-      success: true,
-      message:
-        "Teacher removed from class subject successfully",
-      data: classSubject,
-    });
-  } catch (error) {
-    return next(error);
+      return res.status(200).json({
+        success: true,
+        message: "Teacher removed from class subject successfully",
+        data: classSubject,
+      });
+    } catch (error) {
+      return next(error);
+    }
   }
-}
-// ===================================
-// REPLACE ALL SUBJECTS FOR A CLASS
-// ===================================
-async replaceSubjectsForClass(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { id } = toIdParam(req);
 
-    const subjects = req.body;
+  // ===================================
+  // REPLACE SUBJECTS
+  // ===================================
+  async replaceSubjectsForClass(req: Request, res: Response, next: NextFunction) {
+    try {
+      const classId = toClassSubjectId({ id: req.params.id } as ClassSubjectIdParam);
 
-    const classSubjects =
-      await classSubjectService.replaceSubjectsForClass(
-        String(id),
-        subjects
-      );
+      const subjects = req.body;
 
-    return res.status(200).json({
-      success: true,
-      message:
-        "Class subjects replaced successfully",
-      data: classSubjects,
-    });
-  } catch (error) {
-    return next(error);
+      const classSubjects =
+        await classSubjectService.replaceSubjectsForClass(classId, subjects);
+
+      return res.status(200).json({
+        success: true,
+        message: "Class subjects replaced successfully",
+        data: classSubjects,
+      });
+    } catch (error) {
+      return next(error);
+    }
   }
-}
 
-// ===================================
-// SYNC SUBJECTS FOR A CLASS
-// ===================================
-async syncSubjectsForClass(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { id } = toIdParam(req);
+  // ===================================
+  // SYNC SUBJECTS
+  // ===================================
+  async syncSubjectsForClass(req: Request, res: Response, next: NextFunction) {
+    try {
+      const classId = toClassSubjectId({ id: req.params.id } as ClassSubjectIdParam);
 
-    const subjects = req.body;
+      const subjects = req.body;
 
-    const classSubjects =
-      await classSubjectService.syncSubjectsForClass(
-        String(id),
-        subjects
-      );
+      const classSubjects =
+        await classSubjectService.syncSubjectsForClass(classId, subjects);
 
-    return res.status(200).json({
-      success: true,
-      message:
-        "Class subjects synced successfully",
-      data: classSubjects,
-    });
-  } catch (error) {
-    return next(error);
+      return res.status(200).json({
+        success: true,
+        message: "Class subjects synced successfully",
+        data: classSubjects,
+      });
+    } catch (error) {
+      return next(error);
+    }
   }
-}
 
-// ===================================
-// ARCHIVE ALL SUBJECTS FOR A CLASS
-// ===================================
-async archiveAllSubjectsForClass(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { id } = toIdParam(req);
+  // ===================================
+  // ARCHIVE SUBJECTS
+  // ===================================
+  async archiveAllSubjectsForClass(req: Request, res: Response, next: NextFunction) {
+    try {
+      const classId = toClassSubjectId({ id: req.params.id } as ClassSubjectIdParam);
 
-    const classSubjects =
-      await classSubjectService.archiveAllSubjectsForClass(
-        String(id)
-      );
+      const classSubjects =
+        await classSubjectService.syncSubjectsForClass(classId, []); // sync with empty array to archive all
 
-    return res.status(200).json({
-      success: true,
-      message:
-        "Class subjects archived successfully",
-      data: classSubjects,
-    });
-  } catch (error) {
-    return next(error);
+      return res.status(200).json({
+        success: true,
+        message: "Class subjects archived successfully",
+        data: classSubjects,
+      });
+    } catch (error) {
+      return next(error);
+    }
   }
-}
 }
