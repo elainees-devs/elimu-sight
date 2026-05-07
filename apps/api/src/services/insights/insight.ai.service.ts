@@ -1,68 +1,210 @@
+import { prisma, ApiError } from "@utils/index";
+import { AIService } from "ai/ai.service"; // connecting to the FastAPI AI service
+import { InsightCrudService } from "./insight.crud.service";
+
 export class InsightAIService {
+  private aiService = new AIService();
+  private insightCrudService = new InsightCrudService();
+
   // =========================================
   // GENERATE CLASS INSIGHT (AI ORCHESTRATION)
-  // Fetches class data, prepares payload,
-  // calls AIService, and stores generated
-  // class-level insights in the system.
   // =========================================
+  async generateClassInsight(classId: string, schoolId: string) {
+    const classData = await prisma.class.findUnique({
+      where: { id: classId },
+      include: { students: true, subjects: true },
+    });
 
+    this.validateAIInput(classData, "Class not found");
+
+    const payload = this.prepareAIPayload({
+      type: "CLASS",
+      data: classData,
+    });
+
+    const aiResponse = await this.aiService.generateClassInsight(payload);
+
+    return this.persistGeneratedInsights({
+      schoolId,
+      classId,
+      type: "CLASS_PERFORMANCE",
+      aiResponse,
+    });
+  }
 
   // =========================================
   // GENERATE STUDENT INSIGHT (AI ORCHESTRATION)
-  // Retrieves student data (performance,
-  // assessments), calls AIService, and
-  // persists personalized student insights.
   // =========================================
+  async generateStudentInsight(studentId: string, schoolId: string) {
+    const student = await prisma.student.findUnique({
+      where: { id: studentId },
+      include: {
+        assessments: true,
+        class: true,
+      },
+    });
 
+    this.validateAIInput(student, "Student not found");
+
+    const payload = this.prepareAIPayload({
+      type: "STUDENT",
+      data: student,
+    });
+
+    const aiResponse = await this.aiService.generateStudentInsight(payload);
+
+    return this.persistGeneratedInsights({
+      schoolId,
+      classId: student.class_id,
+      studentId,
+      type: "STUDENT_PERFORMANCE",
+      aiResponse,
+    });
+  }
 
   // =========================================
   // GENERATE SUBJECT INSIGHT (AI ORCHESTRATION)
-  // Aggregates subject performance data,
-  // sends it to AIService, and stores
-  // subject-level insights.
   // =========================================
+  async generateSubjectInsight(subjectId: string, schoolId: string) {
+    const subject = await prisma.subject.findUnique({
+      where: { id: subjectId },
+      include: {
+        assessments: true,
+      },
+    });
 
+    this.validateAIInput(subject, "Subject not found");
+
+    const payload = this.prepareAIPayload({
+      type: "SUBJECT",
+      data: subject,
+    });
+
+    const aiResponse = await this.aiService.generateSubjectInsight(payload);
+
+    return this.persistGeneratedInsights({
+      schoolId,
+      subjectId,
+      type: "SUBJECT_PERFORMANCE",
+      aiResponse,
+    });
+  }
 
   // =========================================
   // REFRESH INSIGHT DATA (AI ORCHESTRATION)
-  // Re-fetches latest academic data and
-  // re-generates insights via AIService,
-  // updating existing stored insights.
   // =========================================
+  async refreshInsight(insightId: string) {
+    const existing = await prisma.insight.findUnique({
+      where: { id: insightId },
+    });
 
+    this.validateAIInput(existing, "Insight not found");
+
+    const payload = this.prepareAIPayload({
+      type: existing.type,
+      data: existing.data,
+    });
+
+    const aiResponse = await this.aiService.refreshInsights(payload);
+
+    return this.insightCrudService.updateInsight(insightId, {
+      title: aiResponse.title,
+      summary: aiResponse.summary,
+      data: aiResponse.data,
+      confidenceScore: aiResponse.confidenceScore,
+    });
+  }
 
   // =========================================
   // GENERATE BULK INSIGHTS (AI ORCHESTRATION)
-  // Coordinates batch processing of multiple
-  // students/classes by calling AIService
-  // and storing results efficiently.
   // =========================================
+  async generateBulkInsights(input: {
+    schoolId: string;
+    studentIds?: string[];
+    classIds?: string[];
+    subjectIds?: string[];
+  }) {
+    const results = [];
 
+    if (input.studentIds?.length) {
+      for (const id of input.studentIds) {
+        results.push(await this.generateStudentInsight(id, input.schoolId));
+      }
+    }
+
+    if (input.classIds?.length) {
+      for (const id of input.classIds) {
+        results.push(await this.generateClassInsight(id, input.schoolId));
+      }
+    }
+
+    if (input.subjectIds?.length) {
+      for (const id of input.subjectIds) {
+        results.push(await this.generateSubjectInsight(id, input.schoolId));
+      }
+    }
+
+    return {
+      generated: results.length,
+      results,
+    };
+  }
 
   // =========================================
   // PREPARE AI PAYLOAD
-  // Transforms internal data models into
-  // structured payloads expected by AIService.
   // =========================================
-
+  private prepareAIPayload(input: { type: string; data: unknown }) {
+    return {
+      type: input.type,
+      context: input.data,
+    };
+  }
 
   // =========================================
   // PERSIST GENERATED INSIGHTS
-  // Saves AI-generated insights using
-  // InsightCrudService after validation.
   // =========================================
+  private async persistGeneratedInsights(input: {
+    schoolId: string;
+    classId?: string;
+    studentId?: string;
+    subjectId?: string;
+    type: string;
+    aiResponse: any;
+  }) {
+    const normalized = this.handleAIResponse(input.aiResponse);
 
+    return this.insightCrudService.createInsight({
+      schoolId: input.schoolId,
+      classId: input.classId,
+      studentId: input.studentId,
+      subjectId: input.subjectId,
+      type: input.type,
+      title: normalized.title,
+      summary: normalized.summary,
+      data: normalized.data,
+      confidenceScore: normalized.confidenceScore,
+      generatedBy: "AI",
+    });
+  }
 
   // =========================================
   // VALIDATE AI INPUT DATA
-  // Ensures required data exists before
-  // sending requests to AIService.
   // =========================================
-
+  private validateAIInput(data: unknown, message: string) {
+    if (!data) {
+      throw new ApiError(404, message);
+    }
+  }
 
   // =========================================
   // HANDLE AI RESPONSE (BUSINESS LEVEL)
-  // Interprets AI results and applies
-  // domain-specific rules before storage.
   // =========================================
+  private handleAIResponse(response: any) {
+    return {
+      title: response?.title || "AI Generated Insight",
+      summary: response?.summary || "",
+      data: response?.data || {},
+      confidenceScore: response?.confidenceScore ?? 50,
+    };
+  }
 }
