@@ -154,5 +154,39 @@ async updateStudent(
   } catch (error) {
     next(error);
   }
+},
+
+// ===============================
+// SOFT DELETE STUDENT
+// ===============================
+async deleteStudent(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    // =========================
+    // EXTRACT PARAMS
+    // =========================
+    const params = {
+      id: Number(req.params.id),
+    };
+
+    // =========================
+    // DELETE STUDENT (SOFT)
+    // =========================
+    const student = await studentService.deleteStudent(params);
+
+    // =========================
+    // SUCCESS RESPONSE
+    // =========================
+    res.status(200).json({
+      success: true,
+      message: "Student deleted successfully",
+      data: student,
+    });
+  } catch (error) {
+    next(error);
+  }
 }
 };
