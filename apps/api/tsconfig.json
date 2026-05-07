@@ -13,6 +13,7 @@
     "outDir": "./dist",
     "baseUrl": "./src",
     "paths": {
+      "@routes/*": ["routes/*"],
       "@controllers/*": ["controllers/*"],
       "@middlewares/*": ["middlewares/*"], 
       "@services/*": ["services/*"],
