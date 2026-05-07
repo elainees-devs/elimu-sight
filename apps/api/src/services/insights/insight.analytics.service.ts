@@ -7,7 +7,7 @@ export class InsightAnalyticsService {
   // ===============================
   async getInsightsByClass(classId: string) {
     try {
-      const insights = await prisma.insight.findMany({
+      const insights = await prisma.insights.findMany({
         where: {
           class_id: classId,
         },
@@ -21,7 +21,7 @@ export class InsightAnalyticsService {
         total: insights.length,
         insights,
       };
-    } catch (error) {
+    } catch {
       throw new ApiError(500, "Failed to fetch insights by class");
     }
   }
@@ -31,7 +31,7 @@ export class InsightAnalyticsService {
   // ===============================
   async getInsightsByStudent(studentId: string) {
     try {
-      const insights = await prisma.insight.findMany({
+      const insights = await prisma.insights.findMany({
         where: {
           student_id: studentId,
         },
@@ -45,7 +45,7 @@ export class InsightAnalyticsService {
         total: insights.length,
         insights,
       };
-    } catch (error) {
+    } catch {
       throw new ApiError(500, "Failed to fetch insights by student");
     }
   }
@@ -55,7 +55,7 @@ export class InsightAnalyticsService {
   // ===============================
   async getInsightsBySubject(subjectId: string) {
     try {
-      const insights = await prisma.insight.findMany({
+      const insights = await prisma.insights.findMany({
         where: {
           subject_id: subjectId,
         },
@@ -69,7 +69,7 @@ export class InsightAnalyticsService {
         total: insights.length,
         insights,
       };
-    } catch (error) {
+    } catch {
       throw new ApiError(500, "Failed to fetch insights by subject");
     }
   }
@@ -79,7 +79,7 @@ export class InsightAnalyticsService {
   // ===============================
   async getInsightsByType(type: string) {
     try {
-      const insights = await prisma.insight.findMany({
+      const insights = await prisma.insights.findMany({
         where: {
           type,
         },
@@ -93,7 +93,7 @@ export class InsightAnalyticsService {
         total: insights.length,
         insights,
       };
-    } catch (error) {
+    } catch {
       throw new ApiError(500, "Failed to fetch insights by type");
     }
   }
@@ -103,7 +103,7 @@ export class InsightAnalyticsService {
   // ===============================
   async getInsightsByPeriod(period: string) {
     try {
-      const insights = await prisma.insight.findMany({
+      const insights = await prisma.insights.findMany({
         where: {
           period,
         },
@@ -117,7 +117,7 @@ export class InsightAnalyticsService {
         total: insights.length,
         insights,
       };
-    } catch (error) {
+    } catch {
       throw new ApiError(500, "Failed to fetch insights by period");
     }
   }
