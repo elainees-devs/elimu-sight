@@ -52,9 +52,9 @@ export class SchoolController {
     }
   }
 
-  // =========================
-  // GET SCHOOL BY EMAIL
-  // =========================
+  // ===========================
+  // GET SCHOOL BY EMAIL LOGIC
+  // ===========================
   async getSchoolByEmail(req: Request, res: Response, next: NextFunction) {
     try {
       // =========================
@@ -73,6 +73,66 @@ export class SchoolController {
       res.status(200).json({
         success: true,
         message: "School fetched successfully",
+        data: school,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // =========================
+  // CREATE NEW SCHOOL LOGIC
+  // =========================
+  async createSchool(req: Request, res: Response, next: NextFunction) {
+    try {
+      // =========================
+      // EXTRACT REQUEST BODY
+      // =========================
+      const input = req.body;
+
+      // =========================
+      // CREATE SCHOOL
+      // =========================
+      const school = await schoolService.createSchool(input);
+
+      // =========================
+      // SUCCESS RESPONSE
+      // =========================
+      res.status(201).json({
+        success: true,
+        message: "School created successfully",
+        data: school,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // ===========================
+  // UPDATE SCHOOL DETAILS LOGIC
+  // ===========================
+  async updateSchool(req: Request, res: Response, next: NextFunction) {
+    try {
+      // =========================
+      // EXTRACT PARAMS + BODY
+      // =========================
+      const { id } = req.params;
+      const input = {
+        ...req.body,
+        id: Number(id),
+      };
+
+      // =========================
+      // UPDATE SCHOOL
+      // =========================
+      const school = await schoolService.updateSchool(input);
+
+      // =========================
+      // SUCCESS RESPONSE
+      // =========================
+      res.status(200).json({
+        success: true,
+        message: "School updated successfully",
         data: school,
       });
     } catch (error) {
