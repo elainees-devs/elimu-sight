@@ -107,5 +107,34 @@ async updateSubject(req: Request, res: Response, next: NextFunction) {
     next(error);
   }
 }
+// ===============================
+// SOFT DELETE SUBJECT
+// ===============================
+async deleteSubject(req: Request, res: Response, next: NextFunction) {
+  try {
+    // =========================
+    // EXTRACT PARAMS
+    // =========================
+    const params = {
+      id: Number(req.params.id),
+    };
+
+    // =========================
+    // DELETE SUBJECT
+    // =========================
+    const subject = await subjectService.deleteSubject(params);
+
+    // =========================
+    // SUCCESS RESPONSE
+    // =========================
+    res.status(200).json({
+      success: true,
+      message: "Subject deleted successfully",
+      data: subject,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 
 }
