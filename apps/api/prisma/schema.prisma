@@ -7,182 +7,261 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// =========================
+/// AI LOGS
+/// =========================
 model ai_logs {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  school_id     String?   @db.Uuid
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id String @db.Uuid
+
   input_data    Json?
   output_data   Json?
-  model_version String?   @db.VarChar(50)
-  created_at    DateTime? @default(now()) @db.Timestamp(6)
-  schools       schools?  @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  model_version String? @db.VarChar(50)
 
-  @@index([school_id], map: "idx_ai_logs_school_id")
+  created_at DateTime @default(now()) @db.Timestamp(6)
+
+  schools schools @relation(fields: [school_id], references: [id], onDelete: Cascade)
+
+  @@index([school_id])
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model assessments {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  school_id   String?   @db.Uuid
-  class_id    String?   @db.Uuid
-  student_id  String?   @db.Uuid
-  subject_id  String?   @db.Uuid
-  created_by  String?   @db.Uuid
-  term        String?   @db.VarChar(50)
-  exam_type   String?   @db.VarChar(50)
-  score       Decimal?  @db.Decimal(5, 2)
-  total_marks Decimal?  @db.Decimal(5, 2)
-  grade       String?   @db.VarChar(5)
-  remarks     String?
-  created_at  DateTime? @default(now()) @db.Timestamp(6)
-  classes     classes?  @relation(fields: [class_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users       users?    @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  schools     schools?  @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  students    students? @relation(fields: [student_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  subjects    subjects? @relation(fields: [subject_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([class_id], map: "idx_assessments_class_id")
-  @@index([student_id], map: "idx_assessments_student_id")
-  @@index([subject_id], map: "idx_assessments_subject_id")
-}
-
-model class_subjects {
-  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  class_id   String?   @db.Uuid
-  subject_id String?   @db.Uuid
-  teacher_id String?   @db.Uuid
-  created_at DateTime? @default(now()) @db.Timestamp(6)
-  classes    classes?  @relation(fields: [class_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  subjects   subjects? @relation(fields: [subject_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  users      users?    @relation(fields: [teacher_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([class_id], map: "idx_class_subject_class_id")
-  @@index([subject_id], map: "idx_class_subject_subject_id")
-}
-
-model classes {
-  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  school_id        String?          @db.Uuid
-  name             String?          @db.VarChar(100)
-  level            String?          @db.VarChar(50)
-  stream           String?          @db.VarChar(50)
-  academic_year    String?          @db.VarChar(20)
-  class_teacher_id String?          @db.Uuid
-  created_at       DateTime?        @default(now()) @db.Timestamp(6)
-  updated_at       DateTime?        @default(now()) @db.Timestamp(6)
-  assessments      assessments[]
-  class_subjects   class_subjects[]
-  users            users?           @relation(fields: [class_teacher_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  schools          schools?         @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  insights         insights[]
-  students         students[]
-
-  @@index([school_id], map: "idx_classes_school_id")
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model insights {
-  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  school_id        String?   @db.Uuid
-  class_id         String?   @db.Uuid
-  student_id       String?   @db.Uuid
-  subject_id       String?   @db.Uuid
-  type             String?   @db.VarChar(50)
-  title            String?   @db.VarChar(255)
-  summary          String?
-  data             Json?
-  confidence_score Decimal?  @db.Decimal(5, 2)
-  generated_by     String?   @db.VarChar(20)
-  period           String?   @db.VarChar(50)
-  created_at       DateTime? @default(now()) @db.Timestamp(6)
-  updated_at       DateTime? @default(now()) @db.Timestamp(6)
-  classes          classes?  @relation(fields: [class_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  schools          schools?  @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  students         students? @relation(fields: [student_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  subjects         subjects? @relation(fields: [subject_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([class_id], map: "idx_insights_class_id")
-  @@index([school_id], map: "idx_insights_school_id")
-  @@index([student_id], map: "idx_insights_student_id")
-  @@index([subject_id], map: "idx_insights_subject_id")
-}
-
+/// =========================
+/// SCHOOLS
+/// =========================
 model schools {
-  id                String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name              String        @db.VarChar(255)
-  email             String       @db.VarChar(255)
-  phone             String       @db.VarChar(50)
-  address           String?
-  subscription_plan String       @db.VarChar(50)
-  is_active         Boolean      @default(true)
-  created_at        DateTime     @default(now()) @db.Timestamp(6)
-  updated_at        DateTime?    @updatedAt
-  deleted_at        DateTime?     
-  ai_logs           ai_logs[]
-  assessments       assessments[]
-  classes           classes[]
-  insights          insights[]
-  students          students[]
-  subjects          subjects[]
-  users             users[]
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
-  @@index([email], map: "idx_schools_email")
+  name    String  @db.VarChar(255)
+  email   String  @db.VarChar(255)
+  phone   String  @db.VarChar(50)
+  address String?
+
+  subscription_plan String @db.VarChar(50)
+
+  is_active Boolean @default(true)
+
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @updatedAt @db.Timestamp(6)
+  deleted_at DateTime?
+
+  ai_logs     ai_logs[]
+  assessments assessments[]
+  classes     classes[]
+  insights    insights[]
+  students    students[]
+  subjects    subjects[]
+  users       users[]
+
+  @@index([email])
 }
 
-model students {
-  id               String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  school_id        String?       @db.Uuid
-  class_id         String?       @db.Uuid
-  admission_number String?       @db.VarChar(100)
-  full_name        String        @db.VarChar(255)
-  gender           String?       @db.VarChar(10)
-  date_of_birth    DateTime?     @db.Date
-  guardian_name    String?       @db.VarChar(255)
-  guardian_phone   String?       @db.VarChar(50)
-  is_active        Boolean?      @default(true)
-  created_at       DateTime?     @default(now()) @db.Timestamp(6)
-  updated_at       DateTime?     @default(now()) @db.Timestamp(6)
-  assessments      assessments[]
-  insights         insights[]
-  classes          classes?      @relation(fields: [class_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  schools          schools?      @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+/// =========================
+/// USERS
+/// =========================
+model users {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
-  @@index([class_id], map: "idx_students_class_id")
-  @@index([school_id], map: "idx_students_school_id")
+  school_id     String @db.Uuid
+  full_name     String @db.VarChar(255)
+  email         String @unique @db.VarChar(255)
+  password_hash String
+
+  role String @db.VarChar(50)
+
+  assigned_class_id String? @db.Uuid
+
+  is_active Boolean @default(true)
+
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @updatedAt @db.Timestamp(6)
+
+  assessments    assessments[]
+  class_subjects class_subjects[]
+  classes        classes[]
+
+  schools schools @relation(fields: [school_id], references: [id], onDelete: Cascade)
+
+  @@index([email])
+  @@index([school_id])
 }
 
-model subjects {
-  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  school_id      String?          @db.Uuid
-  name           String           @db.VarChar(255)
-  code           String?          @db.VarChar(50)
-  description    String?
-  created_at     DateTime?        @default(now()) @db.Timestamp(6)
-  updated_at     DateTime?        @default(now()) @db.Timestamp(6)
+/// =========================
+/// TEACHERS
+/// =========================
+model teachers {
+  id      String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id String @unique @db.Uuid
+
+  user users @relation(fields: [user_id], references: [id])
+}
+
+/// =========================
+/// CLASSES
+/// =========================
+model classes {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  school_id     String  @db.Uuid
+  name          String  @db.VarChar(100)
+  level         String? @db.VarChar(50)
+  stream        String? @db.VarChar(50)
+  academic_year String? @db.VarChar(20)
+
+  class_teacher_id String? @db.Uuid
+
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @updatedAt @db.Timestamp(6)
+
   assessments    assessments[]
   class_subjects class_subjects[]
   insights       insights[]
-  schools        schools?         @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  students       students[]
 
-  @@index([school_id], map: "idx_subjects_school_id")
+  users   users?  @relation(fields: [class_teacher_id], references: [id])
+  schools schools @relation(fields: [school_id], references: [id], onDelete: Cascade)
+
+  @@index([school_id])
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model users {
-  id                String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  school_id         String?          @db.Uuid
-  full_name         String           @db.VarChar(255)
-  email             String           @unique @db.VarChar(255)
-  password_hash     String
-  role              String?          @db.VarChar(50)
-  assigned_class_id String?          @db.Uuid
-  is_active         Boolean?         @default(true)
-  created_at        DateTime?        @default(now()) @db.Timestamp(6)
-  updated_at        DateTime?        @default(now()) @db.Timestamp(6)
-  assessments       assessments[]
-  class_subjects    class_subjects[]
-  classes           classes[]
-  schools           schools?         @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+/// =========================
+/// CLASS SUBJECTS
+/// =========================
+model class_subjects {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
-  @@index([email], map: "idx_users_email")
-  @@index([school_id], map: "idx_users_school_id")
+  class_id   String @db.Uuid
+  subject_id String @db.Uuid
+  teacher_id String @db.Uuid
+
+  created_at DateTime @default(now()) @db.Timestamp(6)
+
+  classes  classes  @relation(fields: [class_id], references: [id], onDelete: Cascade)
+  subjects subjects @relation(fields: [subject_id], references: [id], onDelete: Cascade)
+  users    users    @relation(fields: [teacher_id], references: [id])
+
+  @@index([class_id])
+  @@index([subject_id])
+}
+
+/// =========================
+/// STUDENTS
+/// =========================
+model students {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  school_id String @db.Uuid
+  class_id  String @db.Uuid
+
+  admission_number String?   @db.VarChar(100)
+  full_name        String    @db.VarChar(255)
+  gender           String?   @db.VarChar(10)
+  date_of_birth    DateTime? @db.Date
+
+  guardian_name  String? @db.VarChar(255)
+  guardian_phone String? @db.VarChar(50)
+
+  is_active Boolean @default(true)
+
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @updatedAt @db.Timestamp(6)
+
+  assessments assessments[]
+  insights    insights[]
+
+  classes classes @relation(fields: [class_id], references: [id], onDelete: Cascade)
+  schools schools @relation(fields: [school_id], references: [id], onDelete: Cascade)
+
+  @@index([school_id])
+  @@index([class_id])
+}
+
+/// =========================
+/// SUBJECTS
+/// =========================
+model subjects {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  school_id String @db.Uuid
+
+  name        String  @db.VarChar(255)
+  code        String? @db.VarChar(50)
+  description String?
+
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @updatedAt @db.Timestamp(6)
+
+  assessments    assessments[]
+  class_subjects class_subjects[]
+  insights       insights[]
+
+  schools schools @relation(fields: [school_id], references: [id], onDelete: Cascade)
+
+  @@index([school_id])
+}
+
+/// =========================
+/// ASSESSMENTS
+/// =========================
+model assessments {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  school_id  String @db.Uuid
+  class_id   String @db.Uuid
+  student_id String @db.Uuid
+  subject_id String @db.Uuid
+  created_by String @db.Uuid
+
+  term      String? @db.VarChar(50)
+  exam_type String? @db.VarChar(50)
+
+  score       Decimal? @db.Decimal(5, 2)
+  total_marks Decimal? @db.Decimal(5, 2)
+  grade       String?  @db.VarChar(5)
+  remarks     String?
+
+  created_at DateTime @default(now()) @db.Timestamp(6)
+
+  classes  classes  @relation(fields: [class_id], references: [id])
+  users    users    @relation(fields: [created_by], references: [id])
+  schools  schools  @relation(fields: [school_id], references: [id], onDelete: Cascade)
+  students students @relation(fields: [student_id], references: [id], onDelete: Cascade)
+  subjects subjects @relation(fields: [subject_id], references: [id], onDelete: Cascade)
+
+  @@index([class_id])
+  @@index([student_id])
+  @@index([subject_id])
+}
+
+/// =========================
+/// INSIGHTS
+/// =========================
+model insights {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  school_id  String @db.Uuid
+  class_id   String @db.Uuid
+  student_id String @db.Uuid
+  subject_id String @db.Uuid
+
+  type    String? @db.VarChar(50)
+  title   String? @db.VarChar(255)
+  summary String?
+  data    Json?
+
+  confidence_score Decimal? @db.Decimal(5, 2)
+  generated_by     String?  @db.VarChar(20)
+  period           String?  @db.VarChar(50)
+
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @updatedAt @db.Timestamp(6)
+
+  classes  classes  @relation(fields: [class_id], references: [id])
+  schools  schools  @relation(fields: [school_id], references: [id], onDelete: Cascade)
+  students students @relation(fields: [student_id], references: [id])
+  subjects subjects @relation(fields: [subject_id], references: [id])
+
+  @@index([school_id])
+  @@index([class_id])
+  @@index([student_id])
+  @@index([subject_id])
 }
