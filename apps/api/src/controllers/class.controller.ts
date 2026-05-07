@@ -87,4 +87,32 @@ async getClassById(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+// ===============================
+// CREATE NEW CLASS LOGIC
+// ===============================
+async createClass(req: Request, res: Response, next: NextFunction) {
+  try {
+    // =========================
+    // EXTRACT REQUEST BODY
+    // =========================
+    const input = req.body;
+
+    // =========================
+    // CREATE CLASS
+    // =========================
+    const classData = await classService.createClass(input);
+
+    // =========================
+    // SUCCESS RESPONSE
+    // =========================
+    res.status(201).json({
+      success: true,
+      message: "Class created successfully",
+      data: classData,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 }
