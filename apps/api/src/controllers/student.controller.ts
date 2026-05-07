@@ -117,5 +117,42 @@ async getStudentById(
   } catch (error) {
     next(error);
   }
+},
+
+// ===============================
+// UPDATE STUDENT DETAILS
+// ===============================
+async updateStudent(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    // =========================
+    // EXTRACT PARAMS + BODY
+    // =========================
+    const id = Number(req.params.id);
+
+    const input = {
+      ...req.body,
+      id,
+    };
+
+    // =========================
+    // UPDATE STUDENT
+    // =========================
+    const student = await studentService.updateStudentDetails(input);
+
+    // =========================
+    // SUCCESS RESPONSE
+    // =========================
+    res.status(200).json({
+      success: true,
+      message: "Student updated successfully",
+      data: student,
+    });
+  } catch (error) {
+    next(error);
+  }
 }
 };
