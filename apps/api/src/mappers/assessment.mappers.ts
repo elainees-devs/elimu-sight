@@ -1,3 +1,5 @@
+import { Decimal } from "@prisma/client/runtime/library";
+
 import {
   Assessment,
   CreateAssessmentInput,
@@ -23,8 +25,8 @@ export type AssessmentDB = {
   created_by: string;
   term: string;
   exam_type: string;
-  score: number | string; // Prisma Decimal
-  total_marks: number | string; // Prisma Decimal
+  score: Decimal; // Prisma Decimal
+  total_marks: Decimal; // Prisma Decimal
   grade: string;
   remarks: string;
   created_at: Date;
