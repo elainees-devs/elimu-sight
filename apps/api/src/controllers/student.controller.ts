@@ -224,5 +224,37 @@ async activateStudent(
   }
 },
 
+// ===============================
+// DEACTIVATE STUDENT
+// ===============================
+async deactivateStudent(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    // =========================
+    // EXTRACT PARAMS
+    // =========================
+    const params = {
+      id: Number(req.params.id),
+    };
 
+    // =========================
+    // DEACTIVATE STUDENT
+    // =========================
+    const student = await studentService.deactivateStudent(params);
+
+    // =========================
+    // SUCCESS RESPONSE
+    // =========================
+    res.status(200).json({
+      success: true,
+      message: "Student deactivated successfully",
+      data: student,
+    });
+  } catch (error) {
+    next(error);
+  }
+},
 };
