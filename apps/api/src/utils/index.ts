@@ -2,6 +2,7 @@
 export {
   subscriptionPlans,
   Roles,
+  RoleValues,
   insightTypes,
   generatedBy,
   genders,
