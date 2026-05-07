@@ -46,3 +46,10 @@ export const toEmailParam = (req: Request) => ({
 export const toNameParam = (req: Request) => ({
   name: req.params.name as string,
 });
+
+// ===============================
+// ASSESSMENT ID PARAM
+// ===============================
+export const toAssessmentIdParam = (req: Request) => ({
+  assessmentId: req.params.assessmentId as string,
+});
