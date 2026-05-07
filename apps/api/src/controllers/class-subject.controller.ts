@@ -293,4 +293,31 @@ async syncSubjectsForClass(
     return next(error);
   }
 }
+
+// ===================================
+// ARCHIVE ALL SUBJECTS FOR A CLASS
+// ===================================
+async archiveAllSubjectsForClass(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id } = toIdParam(req);
+
+    const classSubjects =
+      await classSubjectService.archiveAllSubjectsForClass(
+        String(id)
+      );
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Class subjects archived successfully",
+      data: classSubjects,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
 }
