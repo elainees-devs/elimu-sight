@@ -115,4 +115,37 @@ async createClass(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+// ===============================
+// UPDATE CLASS DETAILS
+// ===============================
+async updateClass(req: Request, res: Response, next: NextFunction) {
+  try {
+    // =========================
+    // EXTRACT PARAMS + BODY
+    // =========================
+    const id = Number(req.params.id);
+
+    const input = {
+      ...req.body,
+      id,
+    };
+
+    // =========================
+    // UPDATE CLASS
+    // =========================
+    const updatedClass = await classService.updateClassDetails(input);
+
+    // =========================
+    // SUCCESS RESPONSE
+    // =========================
+    res.status(200).json({
+      success: true,
+      message: "Class updated successfully",
+      data: updatedClass,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 }
