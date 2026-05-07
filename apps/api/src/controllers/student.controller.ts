@@ -272,83 +272,99 @@ export const StudentController = {
   },
 
   // ===============================
-// COUNT ALL STUDENTS
-// ===============================
-async countAllStudents(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    // =========================
-    // EXTRACT PARAMS
-    // =========================
-    const { schoolId } = req.params as { schoolId: string };
+  // COUNT ALL STUDENTS
+  // ===============================
+  async countAllStudents(req: Request, res: Response, next: NextFunction) {
+    try {
+      // =========================
+      // EXTRACT PARAMS
+      // =========================
+      const { schoolId } = req.params as { schoolId: string };
 
-    const params = {
-      classId: req.query.classId as string,
-      isActive:
-        req.query.isActive !== undefined
-          ? req.query.isActive === "true"
-          : undefined,
-    };
+      const params = {
+        classId: req.query.classId as string,
+        isActive:
+          req.query.isActive !== undefined
+            ? req.query.isActive === "true"
+            : undefined,
+      };
 
-    // =========================
-    // FETCH COUNT
-    // =========================
-    const result = await studentService.countAllStudents(
-      schoolId,
-      params
-    );
+      // =========================
+      // FETCH COUNT
+      // =========================
+      const result = await studentService.countAllStudents(schoolId, params);
 
-    // =========================
-    // SUCCESS RESPONSE
-    // =========================
-    res.status(200).json({
-      success: true,
-      message: "Students count fetched successfully",
-      data: result,
-    });
-  } catch (error) {
-    next(error);
-  }
-},
-// ===============================
-// TRANSFER STUDENT CLASS
-// ===============================
-async transferStudentClass(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    // =========================
-    // EXTRACT PARAMS
-    // =========================
-    const params = {
-      id: Number(req.params.id),
-    };
+      // =========================
+      // SUCCESS RESPONSE
+      // =========================
+      res.status(200).json({
+        success: true,
+        message: "Students count fetched successfully",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  // ===============================
+  // TRANSFER STUDENT CLASS
+  // ===============================
+  async transferStudentClass(req: Request, res: Response, next: NextFunction) {
+    try {
+      // =========================
+      // EXTRACT PARAMS
+      // =========================
+      const params = {
+        id: Number(req.params.id),
+      };
 
-    const { newClassId } = req.body;
+      const { newClassId } = req.body;
 
-    // =========================
-    // TRANSFER STUDENT
-    // =========================
-    const student = await studentService.transferStudentClass(
-      params,
-      newClassId
-    );
+      // =========================
+      // TRANSFER STUDENT
+      // =========================
+      const student = await studentService.transferStudentClass(
+        params,
+        newClassId,
+      );
 
-    // =========================
-    // SUCCESS RESPONSE
-    // =========================
-    res.status(200).json({
-      success: true,
-      message: "Student transferred successfully",
-      data: student,
-    });
-  } catch (error) {
-    next(error);
-  }
-}
+      // =========================
+      // SUCCESS RESPONSE
+      // =========================
+      res.status(200).json({
+        success: true,
+        message: "Student transferred successfully",
+        data: student,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  // ===============================
+  // GET STUDENT STATISTICS
+  // ===============================
+  async getStudentStatistics(req: Request, res: Response, next: NextFunction) {
+    try {
+      // =========================
+      // EXTRACT SCHOOL ID
+      // =========================
+      const { schoolId } = req.params as { schoolId: string };
+
+      // =========================
+      // FETCH STATISTICS
+      // =========================
+      const stats = await studentService.getStudentStatistics(schoolId);
+
+      // =========================
+      // SUCCESS RESPONSE
+      // =========================
+      res.status(200).json({
+        success: true,
+        message: "Student statistics fetched successfully",
+        data: stats,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
