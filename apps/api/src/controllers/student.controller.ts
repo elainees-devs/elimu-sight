@@ -188,5 +188,41 @@ async deleteStudent(
   } catch (error) {
     next(error);
   }
-}
+},
+
+// ===============================
+// ACTIVATE STUDENT
+// ===============================
+async activateStudent(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    // =========================
+    // EXTRACT PARAMS
+    // =========================
+    const params = {
+      id: Number(req.params.id),
+    };
+
+    // =========================
+    // ACTIVATE STUDENT
+    // =========================
+    const student = await studentService.activateStudent(params);
+
+    // =========================
+    // SUCCESS RESPONSE
+    // =========================
+    res.status(200).json({
+      success: true,
+      message: "Student activated successfully",
+      data: student,
+    });
+  } catch (error) {
+    next(error);
+  }
+},
+
+
 };
