@@ -1,30 +1,28 @@
-import { prisma } from "@utils/index";
-import { ApiError } from "@utils/index";
+import { prisma, ApiError } from "@utils/index";
 
 export class InsightQueryService {
   // ===============================
-  // GET ALL INSIGHTS BY SCHOOL LOGIC
+  // GET ALL INSIGHTS BY SCHOOL
   // ===============================
-
   async getAllInsightsBySchool(schoolId: string) {
     try {
-      const insights = await prisma.insight.findMany({
-        where: {
-          school_id: schoolId,
-        },
-        orderBy: {
-          created_at: "desc",
-        },
+      const insights = await prisma.insights.findMany({
+        where: { school_id: schoolId },
+        orderBy: { created_at: "desc" },
       });
 
-      return insights;
-    } catch (error) {
+      return {
+        schoolId,
+        total: insights.length,
+        insights,
+      };
+    } catch {
       throw new ApiError(500, "Failed to fetch insights");
     }
   }
 
   // ===============================
-  // ARCHIVE INSIGHTS LOGIC
+  // ARCHIVE INSIGHTS
   // ===============================
   async archiveInsights(insightIds: string[]) {
     try {
@@ -32,27 +30,23 @@ export class InsightQueryService {
         throw new ApiError(400, "No insight IDs provided");
       }
 
-      const archived = await prisma.insight.updateMany({
-        where: {
-          id: { in: insightIds },
-        },
+      const archived = await prisma.insights.updateMany({
+        where: { id: { in: insightIds } },
         data: {
           updated_at: new Date(),
-          // If you have archive field, uncomment:
-          // is_archived: true,
         },
       });
 
       return {
         archivedCount: archived.count,
       };
-    } catch (error) {
+    } catch {
       throw new ApiError(500, "Failed to archive insights");
     }
   }
 
   // ===============================
-  // BULK GENERATE INSIGHTS LOGIC
+  // BULK GENERATE INSIGHTS
   // ===============================
   async bulkGenerateInsights(payload: {
     schoolId: string;
@@ -63,77 +57,129 @@ export class InsightQueryService {
     try {
       const { schoolId, classIds, studentIds, subjectIds } = payload;
 
-      // Step 1: fetch relevant data (example structure)
       const [students, classes, subjects] = await Promise.all([
         studentIds?.length
-          ? prisma.student.findMany({ where: { id: { in: studentIds } } })
+          ? prisma.students.findMany({
+              where: { id: { in: studentIds } },
+            })
           : [],
         classIds?.length
-          ? prisma.class.findMany({ where: { id: { in: classIds } } })
+          ? prisma.classes.findMany({
+              where: { id: { in: classIds } },
+            })
           : [],
         subjectIds?.length
-          ? prisma.subject.findMany({ where: { id: { in: subjectIds } } })
+          ? prisma.subjects.findMany({
+              where: { id: { in: subjectIds } },
+            })
           : [],
       ]);
 
       if (!students.length && !classes.length && !subjects.length) {
-        throw new ApiError(400, "No valid data found for insight generation");
+        throw new ApiError(
+          400,
+          "No valid data found for insight generation"
+        );
       }
 
-      // Step 2: placeholder AI generation loop (replace with AIService later)
-      const generatedInsights = [];
+      const data: any[] = [];
 
+      // =========================
+      // STUDENTS
+      // =========================
       for (const student of students) {
-        generatedInsights.push({
+        data.push({
           school_id: schoolId,
+          class_id: student.class_id,
           student_id: student.id,
+          subject_id: subjectIds?.[0] ?? "",
+
           type: "STUDENT_PERFORMANCE",
-          title: `Auto-generated insight for ${student.name}`,
+          title: `Auto-generated insight for ${student.full_name}`,
           summary: "Bulk generated insight placeholder",
           data: { source: "bulk_generator" },
+
           confidence_score: 70,
           generated_by: "SYSTEM",
           period: "current",
         });
       }
 
-      // Step 3: store in DB
-      const created = await prisma.insight.createMany({
-        data: generatedInsights,
+      // =========================
+      // CLASSES
+      // =========================
+      for (const cls of classes) {
+        data.push({
+          school_id: schoolId,
+          class_id: cls.id,
+          student_id: studentIds?.[0] ?? "",
+          subject_id: subjectIds?.[0] ?? "",
+
+          type: "CLASS_PERFORMANCE",
+          title: `Auto-generated insight for class`,
+          summary: "Bulk generated insight placeholder",
+          data: { source: "bulk_generator" },
+
+          confidence_score: 70,
+          generated_by: "SYSTEM",
+          period: "current",
+        });
+      }
+
+      // =========================
+      // SUBJECTS
+      // =========================
+      for (const subject of subjects) {
+        data.push({
+          school_id: schoolId,
+          class_id: classIds?.[0] ?? "",
+          student_id: studentIds?.[0] ?? "",
+          subject_id: subject.id,
+
+          type: "SUBJECT_PERFORMANCE",
+          title: `Auto-generated insight for subject`,
+          summary: "Bulk generated insight placeholder",
+          data: { source: "bulk_generator" },
+
+          confidence_score: 70,
+          generated_by: "SYSTEM",
+          period: "current",
+        });
+      }
+
+      const created = await prisma.insights.createMany({
+        data,
       });
 
       return {
         generatedCount: created.count,
       };
-    } catch (error) {
+    } catch {
       throw new ApiError(500, "Failed to bulk generate insights");
     }
   }
 
   // ===============================
-  // TREND ANALYSIS INSIGHTS LOGIC
+  // TREND ANALYSIS
   // ===============================
   async generateTrendAnalysis(schoolId: string) {
     try {
-      // Step 1: fetch historical insights
-      const insights = await prisma.insight.findMany({
-        where: {
-          school_id: schoolId,
-        },
-        orderBy: {
-          created_at: "asc",
-        },
+      const insights = await prisma.insights.findMany({
+        where: { school_id: schoolId },
+        orderBy: { created_at: "asc" },
       });
 
       if (!insights.length) {
-        throw new ApiError(404, "No insights available for trend analysis");
+        throw new ApiError(
+          404,
+          "No insights available for trend analysis"
+        );
       }
 
-      // Step 2: simple trend aggregation (replace with AI later)
       const trendMap: Record<string, number> = {};
 
       for (const insight of insights) {
-        const type = insight.type;
+        const type = insight.type ?? "UNKNOWN";
         trendMap[type] = (trendMap[type] || 0) + 1;
       }
 
@@ -142,14 +188,13 @@ export class InsightQueryService {
         count,
       }));
 
-      // Step 3: return structured trend result
       return {
         schoolId,
-        totalInsights: insights.length,
+        total: insights.length,
         trends,
         generatedAt: new Date(),
       };
-    } catch (error) {
+    } catch {
       throw new ApiError(500, "Failed to generate trend analysis");
     }
   }
