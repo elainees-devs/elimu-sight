@@ -4,8 +4,9 @@ import {
   toUpdateAssessmentDB,
   toAssessmentId,
   toCreateAssessmentDB,
+  toAssessmentResponse,
+  AssessmentDB,
 } from "mappers";
-import { AssessmentDB, toAssessmentResponse } from "mappers/index";
 import {
   AssessmentIdParam,
   CreateAssessmentInput,
@@ -22,7 +23,7 @@ type GetAssessmentParams = {
 
 export class AssessmentService {
   // ===============================
-  // GET ALL ASSESSMENTS LOGIC
+  // GET ALL ASSESSMENTS
   // ===============================
   async getAllAssessments(schoolId: string, params: GetAssessmentParams) {
     try {
@@ -36,9 +37,6 @@ export class AssessmentService {
 
       const skip = (page - 1) * limit;
 
-      // =========================
-      // FILTER
-      // =========================
       const where: any = {
         school_id: schoolId,
       };
@@ -51,19 +49,13 @@ export class AssessmentService {
         ];
       }
 
-      // =========================
-      // QUERY
-      // =========================
       const [assessments, total] = await Promise.all([
         prisma.assessments.findMany({
           where,
-          orderBy: {
-            [sortBy]: sortOrder,
-          },
+          orderBy: { [sortBy]: sortOrder },
           skip,
           take: limit,
         }),
-
         prisma.assessments.count({ where }),
       ]);
 
@@ -76,13 +68,13 @@ export class AssessmentService {
           totalPages: Math.ceil(total / limit),
         },
       };
-    } catch (error) {
+    } catch {
       throw new ApiError(500, "Failed to fetch assessments");
     }
   }
 
   // ===============================
-  // GET ASSESSMENT BY NAME LOGIC
+  // GET BY EXAM TYPE
   // ===============================
   async getAssessmentByName(schoolId: string, examType: string) {
     try {
@@ -102,24 +94,19 @@ export class AssessmentService {
 
       return toAssessmentResponse(assessment as AssessmentDB);
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
+      if (error instanceof ApiError) throw error;
       throw new ApiError(500, "Failed to fetch assessment");
     }
   }
 
-  // =========================
-  // CREATE NEW ASSESSMENT LOGIC
-  // =========================
+  // ===============================
+  // CREATE
+  // ===============================
   async createAssessment(input: CreateAssessmentInput) {
     try {
       const { schoolId, classId, studentId, subjectId, examType, term } = input;
 
-      // =========================
-      // CHECK DUPLICATE ASSESSMENT
-      // =========================
-      const existingAssessment = await prisma.assessments.findFirst({
+      const existing = await prisma.assessments.findFirst({
         where: {
           school_id: schoolId,
           class_id: classId,
@@ -127,149 +114,95 @@ export class AssessmentService {
           subject_id: subjectId,
           exam_type: examType,
           term,
-          deleted_at: null,
         },
       });
 
-      if (existingAssessment) {
+      if (existing) {
         throw new ApiError(
           400,
-          "Assessment already exists for this student, subject, term and exam type",
+          "Assessment already exists for this combination"
         );
       }
 
-      // =========================
-      // MAP INPUT → DB
-      // =========================
       const dbData = toCreateAssessmentDB(input);
 
-      // =========================
-      // CREATE ASSESSMENT
-      // =========================
-      const newAssessment = await prisma.assessments.create({
+      const assessment = await prisma.assessments.create({
         data: dbData,
       });
 
-      // =========================
-      // DB → RESPONSE
-      // =========================
-      return toAssessmentResponse(newAssessment);
+      return toAssessmentResponse(assessment as AssessmentDB);
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
+      if (error instanceof ApiError) throw error;
       throw new ApiError(500, "Failed to create assessment");
     }
   }
+
   // ===============================
-  // UPDATE ASSESSMENT DETAILS LOGIC
+  // UPDATE
   // ===============================
   async updateAssessmentDetails(input: UpdateAssessmentInput) {
     try {
       const { id, ...updateData } = input;
 
-      // =========================
-      // CHECK IF ASSESSMENT EXISTS
-      // =========================
-      const existingAssessment = await prisma.assessments.findUnique({
+      const existing = await prisma.assessments.findUnique({
         where: { id },
       });
 
-      if (!existingAssessment) {
+      if (!existing) {
         throw new ApiError(404, "Assessment not found");
       }
 
-      // =========================
-      // MAP INPUT → DB
-      // =========================
       const dbData = toUpdateAssessmentDB(updateData);
 
-      // =========================
-      // UPDATE ASSESSMENT
-      // =========================
-      const updatedAssessment = await prisma.assessments.update({
+      const updated = await prisma.assessments.update({
         where: { id },
         data: dbData,
       });
 
-      // =========================
-      // MAP RESPONSE
-      // =========================
-      return toAssessmentResponse(updatedAssessment as AssessmentDB);
+      return toAssessmentResponse(updated as AssessmentDB);
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
+      if (error instanceof ApiError) throw error;
       throw new ApiError(500, "Failed to update assessment");
     }
   }
 
   // ===============================
-  // SOFT DELETE ASSESSMENTS LOGIC
+  // DELETE (HARD DELETE FIXED)
   // ===============================
   async deleteAssessment(params: AssessmentIdParam) {
     try {
-      // =========================
-      // VALIDATE ID
-      // =========================
       const id = toAssessmentId(params);
 
-      // =========================
-      // SOFT DELETE
-      // =========================
-      const updated = await prisma.assessments.updateMany({
-        where: {
-          id,
-        },
-        data: {
-          updated_at: new Date(),
-          deleted_at: new Date(),
-        },
-      });
-
-      // =========================
-      // NOT FOUND CHECK
-      // =========================
-      if (updated.count === 0) {
-        throw new ApiError(404, "Assessment not found");
-      }
-
-      // =========================
-      // FETCH UPDATED RECORD
-      // =========================
-      const assessment = await prisma.assessments.findUnique({
+      const existing = await prisma.assessments.findUnique({
         where: { id },
       });
 
-      if (!assessment) {
-        throw new ApiError(404, "Assessment not found after deletion");
+      if (!existing) {
+        throw new ApiError(404, "Assessment not found");
       }
 
-      // =========================
-      // MAP RESPONSE
-      // =========================
-      return toAssessmentResponse(assessment as AssessmentDB);
+      const deleted = await prisma.assessments.delete({
+        where: { id },
+      });
+
+      return toAssessmentResponse(deleted as AssessmentDB);
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
+      if (error instanceof ApiError) throw error;
       throw new ApiError(500, "Failed to delete assessment");
     }
   }
+
   // ===============================
-  // COUNT ALL ASSESSMENTS LOGIC
+  // COUNT
   // ===============================
   async getAssessmentCount(schoolId: string) {
     try {
-      const count = await prisma.assessments.count({
+      return await prisma.assessments.count({
         where: {
           school_id: schoolId,
-          deleted_at: null,
         },
       });
-
-      return count;
-    } catch (error) {
+    } catch {
       throw new ApiError(500, "Failed to get assessment count");
     }
   }
