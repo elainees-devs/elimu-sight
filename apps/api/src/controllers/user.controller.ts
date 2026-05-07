@@ -1,115 +1,119 @@
 import { Request, Response, NextFunction } from "express";
 import { UserService } from "@services/index";
-import {
-  toSchoolIdParam,toIdParam,
-  toEmailParam
-} from "@utils/index";
+
+import { toUserId, toSchoolId } from "mappers";
+import { UserIdParam, SchoolIdParam } from "schemas";
 
 const userService = new UserService();
 
-export const UserController = {
-  // ===============================
-  // GET ALL USERS BY SCHOOL LOGIC
-  // ===============================
+export class UserController {
+  // ===================================
+  // GET ALL USERS BY SCHOOL
+  // ===================================
   async getAllUsersBySchool(req: Request, res: Response, next: NextFunction) {
     try {
-      const { schoolId } = toSchoolIdParam(req);
+      const schoolId = toSchoolId({
+        id: req.params.schoolId,
+      } as SchoolIdParam);
 
-      const params = {
+      const result = await userService.getAllUsersBySchool(schoolId, {
         page: req.query.page ? Number(req.query.page) : undefined,
         limit: req.query.limit ? Number(req.query.limit) : undefined,
         sortBy: req.query.sortBy as "full_name" | "created_at",
         sortOrder: req.query.sortOrder as "asc" | "desc",
-        search: req.query.search as string,
-      };
+        search: req.query.search ? String(req.query.search) : undefined,
+      });
 
-      const result = await userService.getAllUsersBySchool(
-        schoolId,
-        params
-      );
-
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: "Users fetched successfully",
         ...result,
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
-  },
+  }
 
-  // ===============================
-  // GET USER BY EMAIL LOGIC
-  // ===============================
+  // ===================================
+  // GET USER BY EMAIL
+  // ===================================
   async getUserByEmail(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email } = toEmailParam(req);
+      const email = req.params.email as string;
 
       const user = await userService.getUserByEmail(email);
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: "User fetched successfully",
         data: user,
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
-  },
+  }
 
-  // ===============================
-  // UPDATE USER DETAILS LOGIC
-  // ===============================
+  // ===================================
+  // UPDATE USER DETAILS
+  // ===================================
   async updateUserDetails(req: Request, res: Response, next: NextFunction) {
     try {
+      const id = toUserId({
+        id: req.params.id,
+      } as UserIdParam);
+
       const input = {
         ...req.body,
-        id: toIdParam(req).id,
+        id,
       };
 
       const user = await userService.updateUserDetails(input);
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: "User updated successfully",
         data: user,
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
-  },
+  }
 
-  // ===============================
-  // DELETE USER LOGIC
-  // ===============================
+  // ===================================
+  // DELETE USER
+  // ===================================
   async deleteUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const user = await userService.deleteUser(toIdParam(req));
+      const id = toUserId({
+        id: req.params.id,
+      } as UserIdParam);
 
-      res.status(200).json({
+      const user = await userService.deleteUser({ id });
+
+      return res.status(200).json({
         success: true,
         message: "User deleted successfully",
         data: user,
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
-  },
+  }
 
-  // ===============================
-  // GET USER COUNT LOGIC
-  // ===============================
+  // ===================================
+  // GET USER COUNT
+  // ===================================
   async getUserCount(req: Request, res: Response, next: NextFunction) {
     try {
       const count = await userService.getUserCount();
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: "User count fetched successfully",
-        data: count,
+        data: { count },
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
-  },
-};
+  }
+}
