@@ -263,4 +263,34 @@ async replaceSubjectsForClass(
     return next(error);
   }
 }
+
+// ===================================
+// SYNC SUBJECTS FOR A CLASS
+// ===================================
+async syncSubjectsForClass(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id } = toIdParam(req);
+
+    const subjects = req.body;
+
+    const classSubjects =
+      await classSubjectService.syncSubjectsForClass(
+        String(id),
+        subjects
+      );
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Class subjects synced successfully",
+      data: classSubjects,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
 }
