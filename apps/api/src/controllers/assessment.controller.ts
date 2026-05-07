@@ -1,98 +1,72 @@
-import {Request, Response, NextFunction} from "express";
-import {toAssessmentIdParam, toSchoolIdParam} from "utils/index";
-import {AssessmentService} from "@services/index";
-import { CreateAssessmentInput, UpdateAssessmentInput } from "schemas/index";
+import { Request, Response, NextFunction } from "express";
+import { AssessmentService } from "@services/index";
+import { toAssessmentId, toSchoolId } from "mappers";
+import { AssessmentIdParam, SchoolIdParam } from "schemas";
 
 const assessmentService = new AssessmentService();
 
-
-// ===============================
-// ALLOWED SORT FIELDS (TYPE SAFE)
-// ===============================
-const allowedSortBy = ["term", "exam_type", "grade", "created_at"] as const;
-type SortBy = (typeof allowedSortBy)[number];
-
 export class AssessmentController {
-  // ===============================
+  // ===================================
   // GET ALL ASSESSMENTS
-  // ===============================
-  async getAllAssessments(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  // ===================================
+  async getAllAssessments(req: Request, res: Response, next: NextFunction) {
     try {
-      const { schoolId } = toSchoolIdParam(req);
-      const { page, limit, sortBy: sortByRaw, sortOrder, search } =
-        req.query;
+      const schoolId = toSchoolId({
+        id: req.params.schoolId,
+      } as SchoolIdParam);
 
-      const sortBy: SortBy = allowedSortBy.includes(sortByRaw as SortBy)
-        ? (sortByRaw as SortBy)
-        : "created_at";
+      const { page, limit, sortBy, sortOrder, search } = req.query;
 
-      const result = await assessmentService.getAllAssessments(
-        schoolId,
-        {
-          page: page ? Number(page) : 1,
-          limit: limit ? Number(limit) : 10,
-          sortBy,
-          sortOrder: sortOrder === "asc" ? "asc" : "desc",
-          search: search ? String(search) : undefined,
-        }
-      );
+      const result = await assessmentService.getAllAssessments(schoolId, {
+        page: page ? Number(page) : undefined,
+        limit: limit ? Number(limit) : undefined,
+        sortBy: sortBy as any,
+        sortOrder: sortOrder === "asc" ? "asc" : "desc",
+        search: search ? String(search) : undefined,
+      });
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: "Assessments fetched successfully",
         ...result,
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 
-  // ===============================
-// GET ASSESSMENT BY NAME
-// ===============================
-async getAssessmentByName(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { schoolId } = toSchoolIdParam(req);
-    const { examType } = req.params;
+  // ===================================
+  // GET ASSESSMENT BY EXAM TYPE
+  // ===================================
+  async getAssessmentByName(req: Request, res: Response, next: NextFunction) {
+    try {
+      const schoolId = toSchoolId({
+        id: req.params.schoolId,
+      } as SchoolIdParam);
 
-    const assessment =
-      await assessmentService.getAssessmentByName(
-        String(schoolId),
+      const { examType } = req.params;
+
+      const assessment = await assessmentService.getAssessmentByName(
+        schoolId,
         String(examType)
       );
 
-    return res.status(200).json({
-      success: true,
-      message: "Assessment fetched successfully",
-      data: assessment,
-    });
-  } catch (error) {
-    return next(error);
+      return res.status(200).json({
+        success: true,
+        message: "Assessment fetched successfully",
+        data: assessment,
+      });
+    } catch (error) {
+      return next(error);
+    }
   }
-}
 
-// ===============================
-// CREATE ASSESSMENT
-// ===============================
-
-  async createAssessment(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  // ===================================
+  // CREATE ASSESSMENT
+  // ===================================
+  async createAssessment(req: Request, res: Response, next: NextFunction) {
     try {
-      const input = req.body as CreateAssessmentInput;
-
-      const assessment =
-        await assessmentService.createAssessment(input);
+      const assessment = await assessmentService.createAssessment(req.body);
 
       return res.status(201).json({
         success: true,
@@ -104,77 +78,62 @@ async getAssessmentByName(
     }
   }
 
-// ===============================
-// UPDATE ASSESSMENT DETAILS
-// ===============================
-async updateAssessmentDetails(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const input = req.body as UpdateAssessmentInput;
+  // ===================================
+  // UPDATE ASSESSMENT
+  // ===================================
+  async updateAssessmentDetails(req: Request, res: Response, next: NextFunction) {
+    try {
+      const assessment = await assessmentService.updateAssessmentDetails(req.body);
 
-    const updatedAssessment =
-      await assessmentService.updateAssessmentDetails(input);
-
-    return res.status(200).json({
-      success: true,
-      message: "Assessment updated successfully",
-      data: updatedAssessment,
-    });
-  } catch (error) {
-    return next(error);
+      return res.status(200).json({
+        success: true,
+        message: "Assessment updated successfully",
+        data: assessment,
+      });
+    } catch (error) {
+      return next(error);
+    }
   }
-}
-// ===============================
-// SOFT DELETE ASSESSMENT
-// ===============================
-async deleteAssessment(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const params = toAssessmentIdParam(req);
 
-    const deletedAssessment =
-      await assessmentService.deleteAssessment(params);
+  // ===================================
+  // DELETE ASSESSMENT
+  // ===================================
+  async deleteAssessment(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = toAssessmentId({
+        id: req.params.id,
+      } as AssessmentIdParam);
 
-    return res.status(200).json({
-      success: true,
-      message: "Assessment deleted successfully",
-      data: deletedAssessment,
-    });
-  } catch (error) {
-    return next(error);
+      const assessment = await assessmentService.deleteAssessment({ id });
+
+      return res.status(200).json({
+        success: true,
+        message: "Assessment deleted successfully",
+        data: assessment,
+      });
+    } catch (error) {
+      return next(error);
+    }
   }
-}
 
-// ===============================
-// GET ASSESSMENT COUNT
-// ===============================
-async getAssessmentCount(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { schoolId } = toSchoolIdParam(req);
+  // ===================================
+  // GET ASSESSMENT COUNT
+  // ===================================
+  async getAssessmentCount(req: Request, res: Response, next: NextFunction) {
+    try {
+      const schoolId = toSchoolId({
+        id: req.params.schoolId,
+      } as SchoolIdParam);
 
-    const count =
-      await assessmentService.getAssessmentCount(
-        String(schoolId)
-      );
+      const count = await assessmentService.getAssessmentCount(schoolId);
 
-    return res.status(200).json({
-      success: true,
-      message: "Assessment count fetched successfully",
-      data: count,
-    });
-  } catch (error) {
-    return next(error);
+      return res.status(200).json({
+        success: true,
+        message: "Assessment count fetched successfully",
+        data: { count },
+      });
+    } catch (error) {
+      return next(error);
+    }
   }
-}
-
 }
