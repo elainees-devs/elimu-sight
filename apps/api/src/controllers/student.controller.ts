@@ -83,5 +83,39 @@ async createStudent(
   } catch (error) {
     next(error);
   }
+},
+
+// ===============================
+// GET STUDENT BY ID
+// ===============================
+async getStudentById(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    // =========================
+    // EXTRACT PARAMS
+    // =========================
+    const params = {
+      id: Number(req.params.id),
+    };
+
+    // =========================
+    // FETCH STUDENT
+    // =========================
+    const student = await studentService.getStudentById(params);
+
+    // =========================
+    // SUCCESS RESPONSE
+    // =========================
+    res.status(200).json({
+      success: true,
+      message: "Student fetched successfully",
+      data: student,
+    });
+  } catch (error) {
+    next(error);
+  }
 }
 };
