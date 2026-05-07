@@ -136,5 +136,33 @@ async deleteSubject(req: Request, res: Response, next: NextFunction) {
     next(error);
   }
 }
+// ===============================
+// GET SUBJECT COUNT
+// ===============================
+async getSubjectCount(req: Request, res: Response, next: NextFunction) {
+  try {
+    // =========================
+    // EXTRACT SCHOOL ID
+    // =========================
+    const { schoolId } = req.params as { schoolId: string };
 
+    // =========================
+    // FETCH COUNT
+    // =========================
+    const count = await subjectService.getSubjectCount(schoolId);
+
+    // =========================
+    // SUCCESS RESPONSE
+    // =========================
+    res.status(200).json({
+      success: true,
+      message: "Subject count fetched successfully",
+      data: {
+        count,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 }
