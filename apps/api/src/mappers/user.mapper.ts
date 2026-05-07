@@ -16,16 +16,22 @@ import {
  */
 export type UserDB = {
   id: string;
+
   school_id: string;
   full_name: string;
   email: string;
   password_hash: string;
+
   role: string;
+
   assigned_class_id: string | null;
+
   is_active: boolean;
+
   created_at: Date;
   updated_at: Date;
-  teacher?: unknown; // relation (optional, not always selected)
+
+  teacher?: unknown;
 };
 
 /**
@@ -36,11 +42,17 @@ export type UserDB = {
 export const toUserResponse = (db: UserDB): User => {
   const mapped: User = {
     id: db.id,
+
+    schoolId: db.school_id,
     fullName: db.full_name,
     email: db.email,
+
     role: db.role,
-    schoolId: db.school_id,
+
+    assignedClassId: db.assigned_class_id ?? undefined,
+
     isActive: db.is_active,
+
     createdAt: db.created_at,
     updatedAt: db.updated_at,
   };
@@ -78,11 +90,15 @@ export const toCreateUserDB = (
   }
 
   return {
+    school_id: value.schoolId,
     full_name: value.fullName,
     email: value.email,
     role: value.role,
-    school_id: value.schoolId,
+
     password_hash: input.passwordHash,
+
+    assigned_class_id: value.assignedClassId ?? null,
+
     is_active: true,
   };
 };
@@ -104,6 +120,11 @@ export const toUpdateUserDB = (input: UpdateUserInput) => {
   if (value.fullName !== undefined) update.full_name = value.fullName;
   if (value.email !== undefined) update.email = value.email;
   if (value.role !== undefined) update.role = value.role;
+
+  if (value.assignedClassId !== undefined) {
+    update.assigned_class_id = value.assignedClassId;
+  }
+
   if (value.isActive !== undefined) update.is_active = value.isActive;
 
   update.updated_at = new Date();
