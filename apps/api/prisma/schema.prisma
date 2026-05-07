@@ -81,6 +81,8 @@ model users {
 
   schools schools @relation(fields: [school_id], references: [id], onDelete: Cascade)
 
+  teacher teachers?  
+
   @@index([email])
   @@index([school_id])
 }
