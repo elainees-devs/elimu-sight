@@ -1,5 +1,5 @@
 import { prisma, ApiError } from "@utils/index";
-import { AIService } from "ai/ai.service"; // connecting to the FastAPI AI service
+import { AIService } from "ai/ai.service";
 import { InsightCrudService } from "./insight.crud.service";
 
 export class InsightAIService {
@@ -10,19 +10,17 @@ export class InsightAIService {
   // GENERATE CLASS INSIGHT (AI ORCHESTRATION)
   // =========================================
   async generateClassInsight(classId: string, schoolId: string) {
-    const classData = await prisma.class.findUnique({
+    const classData = await prisma.classes.findUnique({
       where: { id: classId },
       include: { students: true, subjects: true },
     });
 
     this.validateAIInput(classData, "Class not found");
 
-    const payload = this.prepareAIPayload({
+    const aiResponse = await this.aiService.generateClassInsight({
       type: "CLASS",
-      data: classData,
+      context: classData,
     });
-
-    const aiResponse = await this.aiService.generateClassInsight(payload);
 
     return this.persistGeneratedInsights({
       schoolId,
@@ -36,7 +34,7 @@ export class InsightAIService {
   // GENERATE STUDENT INSIGHT (AI ORCHESTRATION)
   // =========================================
   async generateStudentInsight(studentId: string, schoolId: string) {
-    const student = await prisma.student.findUnique({
+    const student = await prisma.students.findUnique({
       where: { id: studentId },
       include: {
         assessments: true,
@@ -46,16 +44,14 @@ export class InsightAIService {
 
     this.validateAIInput(student, "Student not found");
 
-    const payload = this.prepareAIPayload({
+    const aiResponse = await this.aiService.generateStudentInsight({
       type: "STUDENT",
-      data: student,
+      context: student,
     });
-
-    const aiResponse = await this.aiService.generateStudentInsight(payload);
 
     return this.persistGeneratedInsights({
       schoolId,
-      classId: student.class_id,
+      classId: student!.class_id,
       studentId,
       type: "STUDENT_PERFORMANCE",
       aiResponse,
@@ -66,7 +62,7 @@ export class InsightAIService {
   // GENERATE SUBJECT INSIGHT (AI ORCHESTRATION)
   // =========================================
   async generateSubjectInsight(subjectId: string, schoolId: string) {
-    const subject = await prisma.subject.findUnique({
+    const subject = await prisma.subjects.findUnique({
       where: { id: subjectId },
       include: {
         assessments: true,
@@ -75,12 +71,10 @@ export class InsightAIService {
 
     this.validateAIInput(subject, "Subject not found");
 
-    const payload = this.prepareAIPayload({
+    const aiResponse = await this.aiService.generateSubjectInsight({
       type: "SUBJECT",
-      data: subject,
+      context: subject,
     });
-
-    const aiResponse = await this.aiService.generateSubjectInsight(payload);
 
     return this.persistGeneratedInsights({
       schoolId,
@@ -94,18 +88,16 @@ export class InsightAIService {
   // REFRESH INSIGHT DATA (AI ORCHESTRATION)
   // =========================================
   async refreshInsight(insightId: string) {
-    const existing = await prisma.insight.findUnique({
+    const existing = await prisma.insights.findUnique({
       where: { id: insightId },
     });
 
     this.validateAIInput(existing, "Insight not found");
 
-    const payload = this.prepareAIPayload({
-      type: existing.type,
-      data: existing.data,
+    const aiResponse = await this.aiService.refreshInsights({
+      type: existing!.type,
+      context: existing!.data,
     });
-
-    const aiResponse = await this.aiService.refreshInsights(payload);
 
     return this.insightCrudService.updateInsight(insightId, {
       title: aiResponse.title,
@@ -116,7 +108,7 @@ export class InsightAIService {
   }
 
   // =========================================
-  // GENERATE BULK INSIGHTS (AI ORCHESTRATION)
+  // BULK GENERATION
   // =========================================
   async generateBulkInsights(input: {
     schoolId: string;
@@ -151,12 +143,23 @@ export class InsightAIService {
   }
 
   // =========================================
-  // PREPARE AI PAYLOAD
+  // VALIDATION
   // =========================================
-  private prepareAIPayload(input: { type: string; data: unknown }) {
+  private validateAIInput(data: unknown, message: string) {
+    if (!data) {
+      throw new ApiError(404, message);
+    }
+  }
+
+  // =========================================
+  // NORMALIZE AI RESPONSE
+  // =========================================
+  private handleAIResponse(response: any) {
     return {
-      type: input.type,
-      context: input.data,
+      title: response?.title ?? "AI Generated Insight",
+      summary: response?.summary ?? "",
+      data: response?.data ?? {},
+      confidenceScore: response?.confidenceScore ?? 50,
     };
   }
 
@@ -185,26 +188,5 @@ export class InsightAIService {
       confidenceScore: normalized.confidenceScore,
       generatedBy: "AI",
     });
-  }
-
-  // =========================================
-  // VALIDATE AI INPUT DATA
-  // =========================================
-  private validateAIInput(data: unknown, message: string) {
-    if (!data) {
-      throw new ApiError(404, message);
-    }
-  }
-
-  // =========================================
-  // HANDLE AI RESPONSE (BUSINESS LEVEL)
-  // =========================================
-  private handleAIResponse(response: any) {
-    return {
-      title: response?.title || "AI Generated Insight",
-      summary: response?.summary || "",
-      data: response?.data || {},
-      confidenceScore: response?.confidenceScore ?? 50,
-    };
   }
 }
