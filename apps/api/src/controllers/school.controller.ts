@@ -139,4 +139,34 @@ export class SchoolController {
       next(error);
     }
   }
+
+  // =========================
+// SOFT DELETE SCHOOL
+// =========================
+async deleteSchool(req: Request, res: Response, next: NextFunction) {
+  try {
+    // =========================
+    // EXTRACT PARAMS
+    // =========================
+    const params = {
+      id: Number(req.params.id),
+    };
+
+    // =========================
+    // DELETE SCHOOL
+    // =========================
+    const school = await schoolService.deleteSchool(params);
+
+    // =========================
+    // SUCCESS RESPONSE
+    // =========================
+    res.status(200).json({
+      success: true,
+      message: "School deleted successfully",
+      data: school,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 }
