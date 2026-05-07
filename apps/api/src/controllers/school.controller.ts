@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { SchoolService } from "@services/index"
+import { SchoolService } from "@services/index";
 
 const schoolService = new SchoolService();
 
@@ -18,21 +18,14 @@ export class SchoolController {
       // =========================
       // EXTRACT QUERY PARAMS
       // =========================
-      const {
-        page,
-        limit,
-        sortBy: sortByRaw,
-        sortOrder,
-        search,
-      } = req.query;
+      const { page, limit, sortBy: sortByRaw, sortOrder, search } = req.query;
 
       // =========================
       // TYPE-SAFE SORT BY
       // =========================
-      const sortBy: SortBy =
-        allowedSortBy.includes(sortByRaw as SortBy)
-          ? (sortByRaw as SortBy)
-          : "created_at";
+      const sortBy: SortBy = allowedSortBy.includes(sortByRaw as SortBy)
+        ? (sortByRaw as SortBy)
+        : "created_at";
 
       // =========================
       // CALL SERVICE
@@ -56,6 +49,34 @@ export class SchoolController {
       });
     } catch (error) {
       return next(error);
+    }
+  }
+
+  // =========================
+  // GET SCHOOL BY EMAIL
+  // =========================
+  async getSchoolByEmail(req: Request, res: Response, next: NextFunction) {
+    try {
+      // =========================
+      // EXTRACT EMAIL PARAM
+      // =========================
+      const { email } = req.params as { email: string };
+
+      // =========================
+      // FETCH SCHOOL BY EMAIL
+      // =========================
+      const school = await schoolService.getSchoolByEmail(email);
+
+      // =========================
+      // SUCCESS RESPONSE
+      // =========================
+      res.status(200).json({
+        success: true,
+        message: "School fetched successfully",
+        data: school,
+      });
+    } catch (error) {
+      next(error);
     }
   }
 }
