@@ -270,4 +270,47 @@ export const StudentController = {
       next(error);
     }
   },
+
+  // ===============================
+// COUNT ALL STUDENTS
+// ===============================
+async countAllStudents(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    // =========================
+    // EXTRACT PARAMS
+    // =========================
+    const { schoolId } = req.params as { schoolId: string };
+
+    const params = {
+      classId: req.query.classId as string,
+      isActive:
+        req.query.isActive !== undefined
+          ? req.query.isActive === "true"
+          : undefined,
+    };
+
+    // =========================
+    // FETCH COUNT
+    // =========================
+    const result = await studentService.countAllStudents(
+      schoolId,
+      params
+    );
+
+    // =========================
+    // SUCCESS RESPONSE
+    // =========================
+    res.status(200).json({
+      success: true,
+      message: "Students count fetched successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 };
