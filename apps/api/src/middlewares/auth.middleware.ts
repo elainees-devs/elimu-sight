@@ -1,7 +1,11 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { prisma } from "../utils";
+import { prisma } from "@utils/index";
 import { AuthRequest } from "../types/express";
+
+type TokenPayload = JwtPayload & {
+  id: string;
+};
 
 export const authenticateMiddleware = async (
   req: AuthRequest,
@@ -9,7 +13,7 @@ export const authenticateMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    const authHeader = req.headers["authorization"]?.trim();
+    const authHeader = req.headers.authorization?.trim();
 
     const token = authHeader?.startsWith("Bearer ")
       ? authHeader.split(" ")[1]
@@ -24,13 +28,13 @@ export const authenticateMiddleware = async (
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET as string
-    ) as JwtPayload & { id: number };
+    ) as TokenPayload;
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { id: decoded.id },
       select: {
         id: true,
-        name: true,
+        full_name: true,
         email: true,
         role: true,
       },
@@ -42,7 +46,12 @@ export const authenticateMiddleware = async (
       });
     }
 
-    req.user = user;
+    req.user = {
+      id: user.id,
+      name: user.full_name,
+      email: user.email,
+      role: user.role ?? "user",
+    };
 
     return next();
   } catch {
