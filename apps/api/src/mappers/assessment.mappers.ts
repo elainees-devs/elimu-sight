@@ -11,55 +11,44 @@ import {
 
 /**
  * =========================
- * DB TYPE (explicit)
+ * DB TYPE (STRICT)
  * =========================
  */
 export type AssessmentDB = {
   id: string;
-
   school_id: string;
   class_id: string;
   student_id: string;
   subject_id: string;
   created_by: string;
-
-  term: string | null;
-  exam_type: string | null;
-
-  score: number | string; // Prisma Decimal → string | number
-  total_marks: number | string; // Prisma Decimal → string | number
-
-  grade: string | null;
-  remarks: string | null;
-
+  term: string;
+  exam_type: string;
+  score: number | string; // Prisma Decimal
+  total_marks: number | string; // Prisma Decimal
+  grade: string;
+  remarks: string;
   created_at: Date;
 };
 
 /**
  * =========================
- * DB → DOMAIN (API RESPONSE)
+ * DB → DOMAIN
  * =========================
  */
 export const toAssessmentResponse = (db: AssessmentDB): Assessment => {
   const mapped: Assessment = {
     id: db.id,
-
     schoolId: db.school_id,
     classId: db.class_id,
     studentId: db.student_id,
     subjectId: db.subject_id,
     createdBy: db.created_by,
-
-    term: db.term ?? undefined,
-    examType: db.exam_type ?? undefined,
-
-    // Prisma Decimal safe conversion
+    term: db.term,
+    examType: db.exam_type,
     score: Number(db.score),
     totalMarks: Number(db.total_marks),
-
-    grade: db.grade ?? undefined,
-    remarks: db.remarks ?? undefined,
-
+    grade: db.grade,
+    remarks: db.remarks,
     createdAt: db.created_at,
   };
 
@@ -76,9 +65,7 @@ export const toAssessmentResponse = (db: AssessmentDB): Assessment => {
  * DB[] → DOMAIN[]
  * =========================
  */
-export const toAssessmentListResponse = (
-  rows: AssessmentDB[]
-): Assessment[] => {
+export const toAssessmentListResponse = (rows: AssessmentDB[]): Assessment[] => {
   return rows.map(toAssessmentResponse);
 };
 
@@ -89,6 +76,7 @@ export const toAssessmentListResponse = (
  */
 export const toCreateAssessmentDB = (input: CreateAssessmentInput) => {
   const { error, value } = createAssessmentSchema.validate(input);
+
   if (error) {
     throw new Error(`Invalid create assessment payload: ${error.message}`);
   }
@@ -99,15 +87,12 @@ export const toCreateAssessmentDB = (input: CreateAssessmentInput) => {
     student_id: value.studentId,
     subject_id: value.subjectId,
     created_by: value.createdBy,
-
-    term: value.term ?? null,
-    exam_type: value.examType ?? null,
-
+    term: value.term,
+    exam_type: value.examType,
     score: value.score,
     total_marks: value.totalMarks,
-
-    grade: value.grade ?? null,
-    remarks: value.remarks ?? null,
+    grade: value.grade,
+    remarks: value.remarks,
   };
 };
 
@@ -118,6 +103,7 @@ export const toCreateAssessmentDB = (input: CreateAssessmentInput) => {
  */
 export const toUpdateAssessmentDB = (input: UpdateAssessmentInput) => {
   const { error, value } = updateAssessmentSchema.validate(input);
+
   if (error) {
     throw new Error(`Invalid update assessment payload: ${error.message}`);
   }
