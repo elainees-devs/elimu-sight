@@ -39,7 +39,7 @@ router.get(
 router.post(
   "/",
   authenticateMiddleware,
-  validateSchoolAccess(),
+  validateSchoolAccess,
   validate(createSubjectSchema, "body"),
   (req, res, next) =>
     subjectController.createSubject(req, res, next)
@@ -60,7 +60,7 @@ router.delete(
   "/:id",
   authenticateMiddleware,
   validate(subjectIdParamSchema, "params"),
-  validateSchoolAccess(),
+  validateSchoolAccess,
   (req, res, next) =>
     subjectController.deleteSubject(req, res, next)
 );
