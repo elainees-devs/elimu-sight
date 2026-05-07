@@ -4,6 +4,8 @@ export const subscriptionPlans = ["FREE", "BASIC", "PREMIUM"] as const;
 // User roles
 export const Roles = ["ADMIN", "TEACHER", "HEADTEACHER", "ACCOUNTANT"] as const;
 
+export const RoleValues = [...Roles];
+
 // Insight types
 export const insightTypes = [
   "STUDENT_PERFORMANCE",
