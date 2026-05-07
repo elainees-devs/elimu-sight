@@ -41,5 +41,38 @@ async getAllSubjects(req: Request, res: Response, next: NextFunction) {
     next(error);
   }
 }
+// ===============================
+// GET SUBJECT BY NAME
+// ===============================
+async getSubjectByName(req: Request, res: Response, next: NextFunction) {
+  try {
+    // =========================
+    // EXTRACT PARAMS
+    // =========================
+    const { schoolId, name } = req.params as {
+      schoolId: string;
+      name: string;
+    };
+
+    // =========================
+    // FETCH SUBJECT
+    // =========================
+    const subject = await subjectService.getSubjectByName(
+      schoolId,
+      name
+    );
+
+    // =========================
+    // SUCCESS RESPONSE
+    // =========================
+    res.status(200).json({
+      success: true,
+      message: "Subject fetched successfully",
+      data: subject,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 
 }
