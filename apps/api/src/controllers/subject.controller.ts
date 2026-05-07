@@ -65,7 +65,7 @@ export class SubjectController {
     try {
       const input = {
         ...req.body,
-        id: Number(req.params.id),
+        id: toIdParam(req).id,
       };
 
       const subject = await subjectService.updateSubjectDetails(input);
