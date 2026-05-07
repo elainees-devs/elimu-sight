@@ -1,9 +1,19 @@
-import { ApiError } from "@utils/app-error";
-import { prisma } from "@utils/prisma";
-import { SchoolDB, toCreateSchoolDB, toSchoolId, toSchoolListResponse, toSchoolResponse, toUpdateSchoolDB } from "mappers/school.mapper";
-import { CreateSchoolInput, SchoolIdParam, UpdateSchoolInput } from "schemas";
+import { ApiError, prisma } from "@utils/index";
+import {
+  SchoolDB,
+  toSchoolId,
+  toSchoolListResponse,
+  toSchoolResponse,
+  toCreateSchoolDB,
+  toUpdateSchoolDB,
+} from "mappers/school.mapper";
+import {
+  SchoolIdParam,
+  CreateSchoolInput,
+  UpdateSchoolInput,
+} from "schemas/school.schema";
 
-type GetSchoolsParams = {
+type GetSchoolParams = {
   page?: number;
   limit?: number;
   sortBy?: "name" | "created_at";
@@ -12,10 +22,10 @@ type GetSchoolsParams = {
 };
 
 export class SchoolService {
-  // =========================
-  // GET ALL SCHOOLS LOGIC
-  // =========================
-  async getAllSchools(params: GetSchoolsParams) {
+  // ===================================
+  // GET ALL SCHOOLS
+  // ===================================
+  async getAllSchools(params: GetSchoolParams) {
     try {
       const {
         page = 1,
@@ -27,9 +37,6 @@ export class SchoolService {
 
       const skip = (page - 1) * limit;
 
-      // =========================
-      // FILTERING
-      // =========================
       const where: any = {
         deleted_at: null,
       };
@@ -42,9 +49,6 @@ export class SchoolService {
         ];
       }
 
-      // =========================
-      // QUERY
-      // =========================
       const [schools, total] = await Promise.all([
         prisma.schools.findMany({
           where,
@@ -58,7 +62,7 @@ export class SchoolService {
       ]);
 
       return {
-        data: toSchoolListResponse(schools),
+        data: toSchoolListResponse(schools as SchoolDB[]),
         meta: {
           page,
           limit,
@@ -66,13 +70,39 @@ export class SchoolService {
           totalPages: Math.ceil(total / limit),
         },
       };
-    } catch (error) {
+    } catch {
       throw new ApiError(500, "Failed to fetch schools");
     }
   }
-  // =========================
-  // GET SCHOOL BY EMAIL LOGIC
-  // =========================
+
+  // ===================================
+  // GET SCHOOL BY ID
+  // ===================================
+  async getSchoolById(params: SchoolIdParam) {
+    try {
+      const id = toSchoolId(params);
+
+      const school = await prisma.schools.findFirst({
+        where: {
+          id,
+          deleted_at: null,
+        },
+      });
+
+      if (!school) {
+        throw new ApiError(404, "School not found");
+      }
+
+      return toSchoolResponse(school as SchoolDB);
+    } catch (error) {
+      if (error instanceof ApiError) throw error;
+      throw new ApiError(500, "Failed to fetch school");
+    }
+  }
+
+  // ===================================
+  // GET SCHOOL BY EMAIL
+  // ===================================
   async getSchoolByEmail(email: string) {
     try {
       const school = await prisma.schools.findFirst({
@@ -86,183 +116,134 @@ export class SchoolService {
         throw new ApiError(404, "School not found");
       }
 
-      return school;
+      return toSchoolResponse(school as SchoolDB);
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
+      if (error instanceof ApiError) throw error;
       throw new ApiError(500, "Failed to fetch school by email");
     }
   }
-  // =========================
-  // CREATE NEW SCHOOL LOGIC
-  // =========================
+
+  // ===================================
+  // CREATE SCHOOL
+  // ===================================
   async createSchool(input: CreateSchoolInput) {
     try {
       const { email } = input;
 
-      // Check if email already exists
-      const existingSchool = await prisma.schools.findFirst({
+      const existing = await prisma.schools.findFirst({
         where: {
           email,
           deleted_at: null,
         },
       });
 
-      if (existingSchool) {
+      if (existing) {
         throw new ApiError(400, "Email already in use");
       }
 
-      // =========================
-      // MAP INPUT → DB SHAPE
-      // =========================
       const dbData = toCreateSchoolDB(input);
 
-      const newSchool = await prisma.schools.create({
+      const created = await prisma.schools.create({
         data: dbData,
       });
 
-      // =========================
-      // MAP DB → API RESPONSE
-      // =========================
-      return toSchoolResponse(newSchool);
+      return toSchoolResponse(created as SchoolDB);
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
+      if (error instanceof ApiError) throw error;
       throw new ApiError(500, "Failed to create school");
     }
   }
-// =========================
-// UPDATE SCHOOL DETAILS LOGIC
-// =========================
-async updateSchool(input: UpdateSchoolInput) {
-  try {
-    const { id, email } = input;
 
-    // =========================
-    // CHECK IF SCHOOL EXISTS
-    // =========================
-    const existingSchool = await prisma.schools.findFirst({
-      where: {
-        id,
-        deleted_at: null,
-      },
-    });
+  // ===================================
+  // UPDATE SCHOOL
+  // ===================================
+  async updateSchool(input: UpdateSchoolInput) {
+    try {
+      const { id, email } = input;
 
-    if (!existingSchool) {
-      throw new ApiError(404, "School not found");
-    }
-
-    // =========================
-    // OPTIONAL: CHECK EMAIL CONFLICT
-    // =========================
-    if (email && email !== existingSchool.email) {
-      const emailTaken = await prisma.schools.findFirst({
+      const existing = await prisma.schools.findFirst({
         where: {
-          email,
+          id,
           deleted_at: null,
-          NOT: { id },
         },
       });
 
-      if (emailTaken) {
-        throw new ApiError(400, "Email already in use");
+      if (!existing) {
+        throw new ApiError(404, "School not found");
       }
+
+      if (email && email !== existing.email) {
+        const emailTaken = await prisma.schools.findFirst({
+          where: {
+            email,
+            deleted_at: null,
+            NOT: { id },
+          },
+        });
+
+        if (emailTaken) {
+          throw new ApiError(400, "Email already in use");
+        }
+      }
+
+      const dbUpdate = toUpdateSchoolDB(input);
+
+      const updated = await prisma.schools.update({
+        where: { id },
+        data: dbUpdate,
+      });
+
+      return toSchoolResponse(updated as SchoolDB);
+    } catch (error) {
+      if (error instanceof ApiError) throw error;
+      throw new ApiError(500, "Failed to update school");
     }
-
-    // =========================
-    // MAP INPUT → DB SHAPE
-    // =========================
-    const dbData = toUpdateSchoolDB(input);
-
-    // =========================
-    // UPDATE SCHOOL
-    // =========================
-    const updatedSchool = await prisma.schools.update({
-      where: { id },
-      data: dbData,
-    });
-
-    // =========================
-    // MAP DB → RESPONSE
-    // =========================
-    return toSchoolResponse(updatedSchool);
-  } catch (error) {
-    if (error instanceof ApiError) {
-      throw error;
-    }
-    throw new ApiError(500, "Failed to update school");
   }
-}
-// =========================
-// SOFT DELETE SCHOOL LOGIC
-// =========================
-async deleteSchool(params: SchoolIdParam) {
-  try {
-    // =========================
-    // VALIDATE ID
-    // =========================
-    const id = toSchoolId(params);
 
-    // =========================
-    // SOFT DELETE (RETURN UPDATED ROW)
-    // =========================
-    const updated = await prisma.schools.updateMany({
-      where: {
-        id,
-        deleted_at: null,
-      },
-      data: {
-        deleted_at: new Date(),
-        updated_at: new Date(),
-      },
-    });
+  // ===================================
+  // DELETE SCHOOL (SOFT DELETE)
+  // ===================================
+  async deleteSchool(params: SchoolIdParam) {
+    try {
+      const id = toSchoolId(params);
 
-    // =========================
-    // NOT FOUND CHECK
-    // =========================
-    if (updated.count === 0) {
-      throw new ApiError(404, "School not found");
+      const existing = await prisma.schools.findFirst({
+        where: {
+          id,
+          deleted_at: null,
+        },
+      });
+
+      if (!existing) {
+        throw new ApiError(404, "School not found");
+      }
+
+      const deleted = await prisma.schools.update({
+        where: { id },
+        data: {
+          deleted_at: new Date(),
+        },
+      });
+
+      return toSchoolResponse(deleted as SchoolDB);
+    } catch (error) {
+      if (error instanceof ApiError) throw error;
+      throw new ApiError(500, "Failed to delete school");
     }
-
-    // =========================
-    // FETCH UPDATED RECORD (FOR MAPPER)
-    // =========================
-    const school = await prisma.schools.findFirst({
-      where: { id },
-    });
-
-    if (!school) {
-      throw new ApiError(404, "School not found after deletion");
-    }
-
-    // =========================
-    // MAP TO API RESPONSE
-    // =========================
-    return toSchoolResponse(school as SchoolDB);
-  } catch (error) {
-    if (error instanceof ApiError) {
-      throw error;
-    }
-    throw new ApiError(500, "Failed to delete school");
   }
-}
 
-// =========================
-// GET SCHOOL COUNT LOGIC
-// =========================
-async getSchoolCount() {
-  try {
-    const count = await prisma.schools.count({
-      where: {
-        deleted_at: null,
-      },
-    });
-
-    return count;
-  } catch (error) {
-    throw new ApiError(500, "Failed to get school count");
+  // ===================================
+  // COUNT SCHOOLS
+  // ===================================
+  async getSchoolCount() {
+    try {
+      return prisma.schools.count({
+        where: {
+          deleted_at: null,
+        },
+      });
+    } catch {
+      throw new ApiError(500, "Failed to get school count");
+    }
   }
-}
 }
