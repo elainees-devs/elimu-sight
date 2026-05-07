@@ -15,12 +15,14 @@ import {
   StudentIdParam,
   SubjectIdParam,
 } from "schemas";
+import { InsightAnalyticsService } from "@services/insights/insight.analytics.service";
+import { InsightCrudService, InsightQueryService } from "@services/insights";
 
 export class InsightController {
   private insightService = new InsightService(
-    new (require("@services/index").InsightCrudService)(),
-    new (require("@services/index").InsightQueryService)(),
-    new (require("@services/index").InsightAnalyticsService)()
+    new InsightCrudService(),
+    new InsightQueryService(),
+    new InsightAnalyticsService()
   );
 
   // =========================================
