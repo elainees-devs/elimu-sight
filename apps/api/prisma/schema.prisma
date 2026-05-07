@@ -105,9 +105,9 @@ model classes {
 
   school_id     String  @db.Uuid
   name          String  @db.VarChar(100)
-  level         String? @db.VarChar(50)
-  stream        String? @db.VarChar(50)
-  academic_year String? @db.VarChar(20)
+  level         String @db.VarChar(50)
+  stream        String @db.VarChar(50)
+  academic_year String @db.VarChar(20)
 
   class_teacher_id String? @db.Uuid
 
@@ -128,22 +128,134 @@ model classes {
 /// =========================
 /// CLASS SUBJECTS
 /// =========================
-model class_subjects {
-  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+// src/modules/class-subject/class-subject.mapper.ts
 
-  class_id   String @db.Uuid
-  subject_id String @db.Uuid
-  teacher_id String @db.Uuid
+import {
+  ClassSubject,
+  CreateClassSubjectInput,
+  UpdateClassSubjectInput,
+  ClassSubjectIdParam,
+  classSubjectSchema,
+  createClassSubjectSchema,
+  updateClassSubjectSchema,
+  classSubjectIdParamSchema,
+} from "schemas";
 
-  created_at DateTime @default(now()) @db.Timestamp(6)
+/**
+ * =========================
+ * DB TYPE (matches Prisma exactly)
+ * =========================
+ */
+export type ClassSubjectDB = {
+  id: string;
+  class_id: string;
+  subject_id: string;
+  teacher_id: string | null;
+  created_at: Date;
+};
 
-  classes  classes  @relation(fields: [class_id], references: [id], onDelete: Cascade)
-  subjects subjects @relation(fields: [subject_id], references: [id], onDelete: Cascade)
-  users    users    @relation(fields: [teacher_id], references: [id])
+/**
+ * =========================
+ * DB → DOMAIN (API RESPONSE)
+ * =========================
+ */
+export const toClassSubjectResponse = (
+  db: ClassSubjectDB
+): ClassSubject => {
+  const mapped: ClassSubject = {
+    id: db.id,
+    classId: db.class_id,
+    subjectId: db.subject_id,
+    teacherId: db.teacher_id ?? undefined,
+    createdAt: db.created_at,
+  };
 
-  @@index([class_id])
-  @@index([subject_id])
-}
+  const { error, value } = classSubjectSchema.validate(mapped);
+
+  if (error) {
+    throw new Error(`ClassSubject mapping failed: ${error.message}`);
+  }
+
+  return value;
+};
+
+/**
+ * =========================
+ * DB[] → DOMAIN[]
+ * =========================
+ */
+export const toClassSubjectListResponse = (
+  rows: ClassSubjectDB[]
+): ClassSubject[] => {
+  return rows.map(toClassSubjectResponse);
+};
+
+/**
+ * =========================
+ * INPUT → DB (CREATE)
+ * =========================
+ */
+export const toCreateClassSubjectDB = (
+  input: CreateClassSubjectInput
+) => {
+  const { error, value } = createClassSubjectSchema.validate(input);
+
+  if (error) {
+    throw new Error(
+      `Invalid create class-subject payload: ${error.message}`
+    );
+  }
+
+  return {
+    class_id: value.classId,
+    subject_id: value.subjectId,
+    teacher_id: value.teacherId ?? null,
+  };
+};
+
+/**
+ * =========================
+ * INPUT → DB (UPDATE)
+ * =========================
+ */
+export const toUpdateClassSubjectDB = (
+  input: UpdateClassSubjectInput
+) => {
+  const { error, value } = updateClassSubjectSchema.validate(input);
+
+  if (error) {
+    throw new Error(
+      `Invalid update class-subject payload: ${error.message}`
+    );
+  }
+
+  const update: Record<string, unknown> = {};
+
+  if (value.teacherId !== undefined) {
+    update.teacher_id = value.teacherId;
+  }
+
+  // NOTE: Prisma does NOT define updated_at in model,
+  // so we only update fields that exist in schema.
+  return update;
+};
+
+/**
+ * =========================
+ * PARAM → SAFE ID
+ * =========================
+ */
+export const toClassSubjectId = (
+  params: ClassSubjectIdParam
+): string => {
+  const { error, value } = classSubjectIdParamSchema.validate(params);
+
+  if (error) {
+    throw new Error(`Invalid class-subject ID param: ${error.message}`);
+  }
+
+  return value.id;
+};
 
 /// =========================
 /// STUDENTS
