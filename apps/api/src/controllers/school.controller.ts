@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { SchoolService } from "@services/index";
+import { toEmailParam, toIdParam } from "@utils/index";
 
 const schoolService = new SchoolService();
 
@@ -11,25 +12,16 @@ type SortBy = (typeof allowedSortBy)[number];
 
 export class SchoolController {
   // ===============================
-  // GET ALL SCHOOLS LOGIC
+  // GET ALL SCHOOLS
   // ===============================
   async getAllSchools(req: Request, res: Response, next: NextFunction) {
     try {
-      // =========================
-      // EXTRACT QUERY PARAMS
-      // =========================
       const { page, limit, sortBy: sortByRaw, sortOrder, search } = req.query;
 
-      // =========================
-      // TYPE-SAFE SORT BY
-      // =========================
       const sortBy: SortBy = allowedSortBy.includes(sortByRaw as SortBy)
         ? (sortByRaw as SortBy)
         : "created_at";
 
-      // =========================
-      // CALL SERVICE
-      // =========================
       const result = await schoolService.getAllSchools({
         page: page ? Number(page) : 1,
         limit: limit ? Number(limit) : 10,
@@ -38,9 +30,6 @@ export class SchoolController {
         search: search ? String(search) : undefined,
       });
 
-      // =========================
-      // RESPONSE
-      // =========================
       return res.status(200).json({
         success: true,
         message: "Schools fetched successfully",
@@ -52,24 +41,15 @@ export class SchoolController {
     }
   }
 
-  // ===========================
-  // GET SCHOOL BY EMAIL LOGIC
-  // ===========================
+  // ===============================
+  // GET SCHOOL BY EMAIL
+  // ===============================
   async getSchoolByEmail(req: Request, res: Response, next: NextFunction) {
     try {
-      // =========================
-      // EXTRACT EMAIL PARAM
-      // =========================
-      const { email } = req.params as { email: string };
+      const { email } = toEmailParam(req);
 
-      // =========================
-      // FETCH SCHOOL BY EMAIL
-      // =========================
       const school = await schoolService.getSchoolByEmail(email);
 
-      // =========================
-      // SUCCESS RESPONSE
-      // =========================
       res.status(200).json({
         success: true,
         message: "School fetched successfully",
@@ -80,24 +60,13 @@ export class SchoolController {
     }
   }
 
-  // =========================
-  // CREATE NEW SCHOOL LOGIC
-  // =========================
+  // ===============================
+  // CREATE SCHOOL
+  // ===============================
   async createSchool(req: Request, res: Response, next: NextFunction) {
     try {
-      // =========================
-      // EXTRACT REQUEST BODY
-      // =========================
-      const input = req.body;
+      const school = await schoolService.createSchool(req.body);
 
-      // =========================
-      // CREATE SCHOOL
-      // =========================
-      const school = await schoolService.createSchool(input);
-
-      // =========================
-      // SUCCESS RESPONSE
-      // =========================
       res.status(201).json({
         success: true,
         message: "School created successfully",
@@ -108,28 +77,18 @@ export class SchoolController {
     }
   }
 
-  // ===========================
-  // UPDATE SCHOOL DETAILS LOGIC
-  // ===========================
+  // ===============================
+  // UPDATE SCHOOL
+  // ===============================
   async updateSchool(req: Request, res: Response, next: NextFunction) {
     try {
-      // =========================
-      // EXTRACT PARAMS + BODY
-      // =========================
-      const { id } = req.params;
       const input = {
         ...req.body,
-        id: Number(id),
+        id: Number(req.params.id),
       };
 
-      // =========================
-      // UPDATE SCHOOL
-      // =========================
       const school = await schoolService.updateSchool(input);
 
-      // =========================
-      // SUCCESS RESPONSE
-      // =========================
       res.status(200).json({
         success: true,
         message: "School updated successfully",
@@ -140,58 +99,39 @@ export class SchoolController {
     }
   }
 
-// =========================
-// SOFT DELETE SCHOOL LOGIC
-// =========================
-async deleteSchool(req: Request, res: Response, next: NextFunction) {
-  try {
-    // =========================
-    // EXTRACT PARAMS
-    // =========================
-    const params = {
-      id: Number(req.params.id),
-    };
+  // ===============================
+  // DELETE SCHOOL
+  // ===============================
+  async deleteSchool(req: Request, res: Response, next: NextFunction) {
+    try {
+      const school = await schoolService.deleteSchool(toIdParam(req));
 
-    // =========================
-    // DELETE SCHOOL
-    // =========================
-    const school = await schoolService.deleteSchool(params);
-
-    // =========================
-    // SUCCESS RESPONSE
-    // =========================
-    res.status(200).json({
-      success: true,
-      message: "School deleted successfully",
-      data: school,
-    });
-  } catch (error) {
-    next(error);
+      res.status(200).json({
+        success: true,
+        message: "School deleted successfully",
+        data: school,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
-// =========================
-// GET SCHOOL COUNT LOGIC
-// =========================
-async getSchoolCount(req: Request, res: Response, next: NextFunction) {
-  try {
-    // =========================
-    // FETCH SCHOOL COUNT
-    // =========================
-    const count = await schoolService.getSchoolCount();
+  // ===============================
+  // GET SCHOOL COUNT
+  // ===============================
+  async getSchoolCount(req: Request, res: Response, next: NextFunction) {
+    try {
+      const count = await schoolService.getSchoolCount();
 
-    // =========================
-    // SUCCESS RESPONSE
-    // =========================
-    res.status(200).json({
-      success: true,
-      message: "School count fetched successfully",
-      data: {
-        count,
-      },
-    });
-  } catch (error) {
-    next(error);
+      res.status(200).json({
+        success: true,
+        message: "School count fetched successfully",
+        data: {
+          count,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-}
 }
