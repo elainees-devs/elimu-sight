@@ -73,7 +73,7 @@ export {
 // user schemas
 export {
   userSchema,
-  authenticateUserSchema,
+  loginSchema,
   createUserSchema,
   updateUserSchema,
   userIdParamSchema,
