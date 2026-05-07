@@ -1,250 +1,257 @@
 import { Request, Response, NextFunction } from "express";
 import { StudentService } from "@services/index";
-import { toSchoolIdParam, toIdParam, toClassIdParam, toStudentIdParam } from "@utils/index";
 
-const studentService = new StudentService();
+import {
+  toSchoolId,
+  toClassId,
+  toStudentId,
+} from "mappers";
 
-export const StudentController = {
-  // =================================
-  // GET ALL STUDENTS BY SCHOOL LOGIC
-  // =================================
-  async getAllStudentsBySchool(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { schoolId } = toSchoolIdParam(req);
+import {
+  SchoolIdParam,
+  ClassIdParam,
+  StudentIdParam,
+} from "schemas";
 
-      const params = {
-        page: req.query.page ? Number(req.query.page) : undefined,
-        limit: req.query.limit ? Number(req.query.limit) : undefined,
-        search: req.query.search as string,
-        classId: req.query.classId as string,
-        isActive:
-          req.query.isActive !== undefined
-            ? req.query.isActive === "true"
-            : undefined,
-      };
+export class StudentController {
+  private studentService = new StudentService();
 
-      const result = await studentService.getAllStudentsBySchool(
-        schoolId,
-        params
-      );
+  // =========================================
+  // CRUD OPERATIONS
+  // =========================================
 
-      res.status(200).json({
-        success: true,
-        message: "Students fetched successfully",
-        ...result,
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  // ===============================
-  // CREATE STUDENT LOGIC
-  // ===============================
   async createStudent(req: Request, res: Response, next: NextFunction) {
     try {
-      const student = await studentService.createStudent(req.body);
+      const result = await this.studentService.createStudent(req.body);
 
-      res.status(201).json({
+      return res.status(201).json({
         success: true,
-        message: "Student created successfully",
-        data: student,
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  // ===============================
-  // GET STUDENT BY ID LOGIC
-  // ===============================
-  async getStudentById(req: Request, res: Response, next: NextFunction) {
-    try {
-      const student = await studentService.getStudentById(toStudentIdParam(req));
-
-      res.status(200).json({
-        success: true,
-        message: "Student fetched successfully",
-        data: student,
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  // ===============================
-  // UPDATE STUDENT LOGIC
-  // ===============================
-  async updateStudent(req: Request, res: Response, next: NextFunction) {
-    try {
-      const input = {
-        ...req.body,
-        id: toIdParam(req).id,
-      };
-
-      const student = await studentService.updateStudentDetails(input);
-
-      res.status(200).json({
-        success: true,
-        message: "Student updated successfully",
-        data: student,
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  // ===============================
-  // DELETE STUDENT LOGIC
-  // ===============================
-  async deleteStudent(req: Request, res: Response, next: NextFunction) {
-    try {
-      const student = await studentService.deleteStudent(toIdParam(req));
-
-      res.status(200).json({
-        success: true,
-        message: "Student deleted successfully",
-        data: student,
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  // ===============================
-  // ACTIVATE STUDENT LOGIC
-  // ===============================
-  async activateStudent(req: Request, res: Response, next: NextFunction) {
-    try {
-      const student = await studentService.activateStudent(toIdParam(req));
-
-      res.status(200).json({
-        success: true,
-        message: "Student activated successfully",
-        data: student,
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  // ===============================
-  // DEACTIVATE STUDENT LOGIC
-  // ===============================
-  async deactivateStudent(req: Request, res: Response, next: NextFunction) {
-    try {
-      const student = await studentService.deactivateStudent(toIdParam(req));
-
-      res.status(200).json({
-        success: true,
-        message: "Student deactivated successfully",
-        data: student,
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  // ===============================
-  // GET STUDENTS BY CLASS LOGIC
-  // ===============================
-  async getStudentsByClass(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { classId } = toClassIdParam(req);
-
-      const params = {
-        page: req.query.page ? Number(req.query.page) : undefined,
-        limit: req.query.limit ? Number(req.query.limit) : undefined,
-        search: req.query.search as string,
-        isActive:
-          req.query.isActive !== undefined
-            ? req.query.isActive === "true"
-            : undefined,
-      };
-
-      const result = await studentService.getStudentsByClass(
-        classId,
-        params
-      );
-
-      res.status(200).json({
-        success: true,
-        message: "Students fetched successfully",
-        ...result,
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  // ===============================
-  // COUNT ALL STUDENTS LOGIC   
-  // ===============================
-  async countAllStudents(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { schoolId } = toSchoolIdParam(req);
-
-      const params = {
-        classId: toClassIdParam(req).classId,
-        isActive:
-          req.query.isActive !== undefined
-            ? req.query.isActive === "true"
-            : undefined,
-      };
-
-      const result = await studentService.countAllStudents(
-        schoolId,
-        params
-      );
-
-      res.status(200).json({
-        success: true,
-        message: "Students count fetched successfully",
         data: result,
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
-  },
+  }
 
-  // ===============================
-  // TRANSFER STUDENT CLASS LOGIC
-  // ===============================
-  async transferStudentClass(req: Request, res: Response, next: NextFunction) {
+  async getStudentById(req: Request, res: Response, next: NextFunction) {
     try {
-      const { newClassId } = req.body;
+      const studentId = toStudentId({
+        id: req.params.id,
+      } as StudentIdParam);
 
-      const student = await studentService.transferStudentClass(
-        toIdParam(req),
-        newClassId
+      const result = await this.studentService.getStudentById({
+        id: studentId,
+      } as StudentIdParam);
+
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async updateStudent(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await this.studentService.updateStudentDetails({
+        ...req.body,
+        id: req.params.id,
+      });
+
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async deleteStudent(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await this.studentService.deleteStudent({
+        id: req.params.id,
+      } as StudentIdParam);
+
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  // =========================================
+  // QUERY OPERATIONS
+  // =========================================
+
+  async getAllStudentsBySchool(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const schoolId = toSchoolId({
+        id: req.params.schoolId,
+      } as SchoolIdParam);
+
+      const result = await this.studentService.getAllStudentsBySchool(
+        schoolId,
+        {
+          page: req.query.page ? Number(req.query.page) : undefined,
+          limit: req.query.limit ? Number(req.query.limit) : undefined,
+          search: req.query.search as string,
+          classId: req.query.classId as string,
+          isActive:
+            req.query.isActive !== undefined
+              ? req.query.isActive === "true"
+              : undefined,
+        }
       );
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
-        message: "Student transferred successfully",
-        data: student,
+        ...result,
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
-  },
+  }
 
-  // ===============================
-  // GET STUDENT STATISTICS LOGIC
-  // ===============================
-  async getStudentStatistics(req: Request, res: Response, next: NextFunction) {
+  async getStudentsByClass(req: Request, res: Response, next: NextFunction) {
     try {
-      const { schoolId } = toSchoolIdParam(req);
+      const classId = toClassId({
+        id: req.params.classId,
+      } as ClassIdParam);
 
-      const stats = await studentService.getStudentStatistics(schoolId);
+      const result = await this.studentService.getStudentsByClass(
+        classId,
+        {
+          page: req.query.page ? Number(req.query.page) : undefined,
+          limit: req.query.limit ? Number(req.query.limit) : undefined,
+          search: req.query.search as string,
+          isActive:
+            req.query.isActive !== undefined
+              ? req.query.isActive === "true"
+              : undefined,
+        }
+      );
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
-        message: "Student statistics fetched successfully",
-        data: stats,
+        ...result,
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
-  },
-};
+  }
+
+  async countAllStudents(req: Request, res: Response, next: NextFunction) {
+    try {
+      const schoolId = toSchoolId({
+        id: req.params.schoolId,
+      } as SchoolIdParam);
+
+      const result = await this.studentService.countAllStudents(
+        schoolId,
+        {
+          classId: req.query.classId as string,
+          isActive:
+            req.query.isActive !== undefined
+              ? req.query.isActive === "true"
+              : undefined,
+        }
+      );
+
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  // =========================================
+  // STATUS OPERATIONS
+  // =========================================
+
+  async activateStudent(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await this.studentService.activateStudent({
+        id: req.params.id,
+      } as StudentIdParam);
+
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async deactivateStudent(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await this.studentService.deactivateStudent({
+        id: req.params.id,
+      } as StudentIdParam);
+
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  // =========================================
+  // BUSINESS OPERATIONS
+  // =========================================
+
+  async transferStudentClass(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const result = await this.studentService.transferStudentClass(
+        { id: req.params.id } as StudentIdParam,
+        req.body.newClassId
+      );
+
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async getStudentStatistics(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const schoolId = toSchoolId({
+        id: req.params.schoolId,
+      } as SchoolIdParam);
+
+      const result = await this.studentService.getStudentStatistics(
+        schoolId
+      );
+
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+}
