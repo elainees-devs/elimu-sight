@@ -1,5 +1,5 @@
 import {Request, Response, NextFunction} from "express";
-import {toIdParam, toSchoolIdParam} from "utils/index";
+import {toAssessmentIdParam, toIdParam, toSchoolIdParam} from "utils/index";
 import {AssessmentService} from "@services/index";
 import { UpdateAssessmentInput } from "schemas/assessment.schema";
 
@@ -96,6 +96,29 @@ async updateAssessmentDetails(
       success: true,
       message: "Assessment updated successfully",
       data: updatedAssessment,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+// ===============================
+// SOFT DELETE ASSESSMENT
+// ===============================
+async deleteAssessment(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const params = toAssessmentIdParam(req);
+
+    const deletedAssessment =
+      await assessmentService.deleteAssessment(params);
+
+    return res.status(200).json({
+      success: true,
+      message: "Assessment deleted successfully",
+      data: deletedAssessment,
     });
   } catch (error) {
     return next(error);
