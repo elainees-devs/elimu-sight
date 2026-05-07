@@ -1,5 +1,3 @@
-// src/modules/user/user.mapper.ts
-
 import {
   User,
   CreateUserInput,
@@ -13,19 +11,21 @@ import {
 
 /**
  * =========================
- * DB TYPE (explicit)
+ * DB TYPE (MATCHES PRISMA)
  * =========================
  */
 export type UserDB = {
   id: string;
+  school_id: string;
   full_name: string;
   email: string;
   password_hash: string;
   role: string;
-  school_id: string;
+  assigned_class_id: string | null;
   is_active: boolean;
   created_at: Date;
-  updated_at: Date | null;
+  updated_at: Date;
+  teacher?: unknown; // relation (optional, not always selected)
 };
 
 /**
@@ -42,10 +42,11 @@ export const toUserResponse = (db: UserDB): User => {
     schoolId: db.school_id,
     isActive: db.is_active,
     createdAt: db.created_at,
-    updatedAt: db.updated_at ?? undefined,
+    updatedAt: db.updated_at,
   };
 
   const { error, value } = userSchema.validate(mapped);
+
   if (error) {
     throw new Error(`User mapping failed: ${error.message}`);
   }
@@ -71,6 +72,7 @@ export const toCreateUserDB = (
   input: CreateUserInput & { passwordHash: string }
 ) => {
   const { error, value } = createUserSchema.validate(input);
+
   if (error) {
     throw new Error(`Invalid create user payload: ${error.message}`);
   }
@@ -92,17 +94,12 @@ export const toCreateUserDB = (
  */
 export const toUpdateUserDB = (input: UpdateUserInput) => {
   const { error, value } = updateUserSchema.validate(input);
+
   if (error) {
     throw new Error(`Invalid update user payload: ${error.message}`);
   }
 
-  const update: Partial<{
-    full_name: string;
-    email: string;
-    role: string;
-    is_active: boolean;
-    updated_at: Date;
-  }> = {};
+  const update: Record<string, unknown> = {};
 
   if (value.fullName !== undefined) update.full_name = value.fullName;
   if (value.email !== undefined) update.email = value.email;
