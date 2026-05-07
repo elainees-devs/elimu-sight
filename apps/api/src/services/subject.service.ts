@@ -1,8 +1,6 @@
-
-import { ApiError, prisma } from "@utils/index";
-import { toSubjectListResponse, toSubjectResponse , SubjectDB, toUpdateSubjectDB} from "mappers";
-import { toSubjectId } from "mappers/subject.mapper";
-import { SubjectIdParam, UpdateSubjectInput } from "schemas";
+import { ApiError, prisma, toSubjectIdParam } from "@utils/index";
+import { toSubjectListResponse, toSubjectResponse , SubjectDB, toUpdateSubjectDB, toCreateSubjectDB} from "mappers";
+import { CreateSubjectInput, SubjectIdParam, UpdateSubjectInput } from "schemas";
 
 
 type GetSubjectParams = {
@@ -101,6 +99,55 @@ export class SubjectService {
     }
   }
 
+  // ===============================
+// CREATE SUBJECT LOGIC
+// ===============================
+async createSubject(input: CreateSubjectInput) {
+  try {
+    const { schoolId, name } = input;
+
+    // =========================
+    // CHECK DUPLICATE SUBJECT NAME
+    // =========================
+    const existing = await prisma.subjects.findFirst({
+      where: {
+        school_id: schoolId,
+        name: {
+          equals: name,
+          mode: "insensitive",
+        },
+      },
+    });
+
+    if (existing) {
+      throw new ApiError(400, "Subject already exists");
+    }
+
+    // =========================
+    // MAP INPUT → DB
+    // =========================
+    const dbData = toCreateSubjectDB(input);
+
+    // =========================
+    // CREATE SUBJECT
+    // =========================
+    const subject = await prisma.subjects.create({
+      data: dbData,
+    });
+
+    // =========================
+    // MAP RESPONSE
+    // =========================
+    return toSubjectResponse(subject as SubjectDB);
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+
+    throw new ApiError(500, "Failed to create subject");
+  }
+}
+
 
   // ===============================
   // UPDATE SUBJECT DETAILS LOGIC
@@ -169,7 +216,7 @@ export class SubjectService {
       // =========================
       // VALIDATE ID
       // =========================
-      const id = toSubjectId(params);
+      const id = toSubjectIdParam(params);
 
       // =========================
       // SOFT DELETE
