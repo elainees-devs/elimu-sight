@@ -1,7 +1,7 @@
 // constants
 export {
   subscriptionPlans,
-  roles,
+  Roles,
   insightTypes,
   generatedBy,
   genders,
