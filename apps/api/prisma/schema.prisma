@@ -213,13 +213,13 @@ model assessments {
   subject_id String @db.Uuid
   created_by String @db.Uuid
 
-  term      String? @db.VarChar(50)
-  exam_type String? @db.VarChar(50)
+  term      String @db.VarChar(50)
+  exam_type String @db.VarChar(50)
 
-  score       Decimal? @db.Decimal(5, 2)
-  total_marks Decimal? @db.Decimal(5, 2)
-  grade       String?  @db.VarChar(5)
-  remarks     String?
+  score       Decimal @db.Decimal(5, 2)
+  total_marks Decimal @db.Decimal(5, 2)
+  grade       String  @db.VarChar(5)
+  remarks     String
 
   created_at DateTime @default(now()) @db.Timestamp(6)
 
