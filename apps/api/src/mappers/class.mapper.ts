@@ -1,5 +1,3 @@
-// src/modules/class/class.mapper.ts
-
 import {
   Class,
   CreateClassInput,
@@ -13,21 +11,19 @@ import {
 
 /**
  * =========================
- * DB TYPE (explicit)
+ * DB TYPE (matches Prisma exactly)
  * =========================
  */
 export type ClassDB = {
   id: string;
-  name: string | null;
-  level: string | null;
-  stream: string | null;
-  academic_year: string | null;
-
+  name: string;
+  level: string;
+  stream: string;
+  academic_year: string;
   school_id: string;
   class_teacher_id: string | null;
-
   created_at: Date;
-  updated_at: Date | null;
+  updated_at: Date;
 };
 
 /**
@@ -38,16 +34,17 @@ export type ClassDB = {
 export const toClassResponse = (db: ClassDB): Class => {
   const mapped: Class = {
     id: db.id,
-    name: db.name ?? undefined,
-    level: db.level ?? undefined,
-    stream: db.stream ?? undefined,
-    academicYear: db.academic_year ?? undefined,
+
+    name: db.name,
+    level: db.level,
+    stream: db.stream,
+    academicYear: db.academic_year,
 
     schoolId: db.school_id,
     classTeacherId: db.class_teacher_id ?? undefined,
 
     createdAt: db.created_at,
-    updatedAt: db.updated_at ?? undefined,
+    updatedAt: db.updated_at,
   };
 
   const { error, value } = classSchema.validate(mapped);
@@ -83,6 +80,7 @@ export const toCreateClassDB = (input: CreateClassInput) => {
     level: value.level,
     stream: value.stream,
     academic_year: value.academicYear,
+
     school_id: value.schoolId,
     class_teacher_id: value.classTeacherId ?? null,
   };
@@ -99,16 +97,18 @@ export const toUpdateClassDB = (input: UpdateClassInput) => {
     throw new Error(`Invalid update class payload: ${error.message}`);
   }
 
-  const update: Record<string, any> = {};
+  const update: Record<string, unknown> = {};
 
   if (value.name !== undefined) update.name = value.name;
   if (value.level !== undefined) update.level = value.level;
   if (value.stream !== undefined) update.stream = value.stream;
-  if (value.academicYear !== undefined)
+  if (value.academicYear !== undefined) {
     update.academic_year = value.academicYear;
+  }
 
-  if (value.classTeacherId !== undefined)
+  if (value.classTeacherId !== undefined) {
     update.class_teacher_id = value.classTeacherId;
+  }
 
   update.updated_at = new Date();
 
