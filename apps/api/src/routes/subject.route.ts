@@ -6,9 +6,11 @@ import {
   validateSchoolAccess,
 } from "@middlewares/index";
 import {
+  createSubjectSchema,
   subjectIdParamSchema,
   updateSubjectSchema,
 } from "../schemas";
+import { create } from "node:domain";
 
 const router = Router();
 const subjectController = new SubjectController();
@@ -38,6 +40,7 @@ router.post(
   "/",
   authenticateMiddleware,
   validateSchoolAccess(),
+  validate(createSubjectSchema, "body"),
   (req, res, next) =>
     subjectController.createSubject(req, res, next)
 );
