@@ -1,25 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import { StudentService } from "@services/index";
+import { toSchoolIdParam, toIdParam, toClassIdParam, toStudentIdParam } from "@utils/index";
 
 const studentService = new StudentService();
 
-// ===============================
-// STUDENT CONTROLLER
-// ===============================
 export const StudentController = {
   // =================================
   // GET ALL STUDENTS BY SCHOOL LOGIC
   // =================================
-  async getAllStudentsBySchool(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) {
+  async getAllStudentsBySchool(req: Request, res: Response, next: NextFunction) {
     try {
-      // =========================
-      // EXTRACT PARAMS
-      // =========================
-      const { schoolId } = req.params as { schoolId: string };
+      const { schoolId } = toSchoolIdParam(req);
 
       const params = {
         page: req.query.page ? Number(req.query.page) : undefined,
@@ -32,17 +23,11 @@ export const StudentController = {
             : undefined,
       };
 
-      // =========================
-      // FETCH STUDENTS
-      // =========================
       const result = await studentService.getAllStudentsBySchool(
         schoolId,
-        params,
+        params
       );
 
-      // =========================
-      // SUCCESS RESPONSE
-      // =========================
       res.status(200).json({
         success: true,
         message: "Students fetched successfully",
@@ -54,23 +39,12 @@ export const StudentController = {
   },
 
   // ===============================
-  // CREATE STUDENT
+  // CREATE STUDENT LOGIC
   // ===============================
   async createStudent(req: Request, res: Response, next: NextFunction) {
     try {
-      // =========================
-      // EXTRACT REQUEST BODY
-      // =========================
-      const input = req.body;
+      const student = await studentService.createStudent(req.body);
 
-      // =========================
-      // CREATE STUDENT
-      // =========================
-      const student = await studentService.createStudent(input);
-
-      // =========================
-      // SUCCESS RESPONSE
-      // =========================
       res.status(201).json({
         success: true,
         message: "Student created successfully",
@@ -82,25 +56,12 @@ export const StudentController = {
   },
 
   // ===============================
-  // GET STUDENT BY ID
+  // GET STUDENT BY ID LOGIC
   // ===============================
   async getStudentById(req: Request, res: Response, next: NextFunction) {
     try {
-      // =========================
-      // EXTRACT PARAMS
-      // =========================
-      const params = {
-        id: Number(req.params.id),
-      };
+      const student = await studentService.getStudentById(toStudentIdParam(req));
 
-      // =========================
-      // FETCH STUDENT
-      // =========================
-      const student = await studentService.getStudentById(params);
-
-      // =========================
-      // SUCCESS RESPONSE
-      // =========================
       res.status(200).json({
         success: true,
         message: "Student fetched successfully",
@@ -112,28 +73,17 @@ export const StudentController = {
   },
 
   // ===============================
-  // UPDATE STUDENT DETAILS
+  // UPDATE STUDENT LOGIC
   // ===============================
   async updateStudent(req: Request, res: Response, next: NextFunction) {
     try {
-      // =========================
-      // EXTRACT PARAMS + BODY
-      // =========================
-      const id = Number(req.params.id);
-
       const input = {
         ...req.body,
-        id,
+        id: Number(req.params.id),
       };
 
-      // =========================
-      // UPDATE STUDENT
-      // =========================
       const student = await studentService.updateStudentDetails(input);
 
-      // =========================
-      // SUCCESS RESPONSE
-      // =========================
       res.status(200).json({
         success: true,
         message: "Student updated successfully",
@@ -145,25 +95,12 @@ export const StudentController = {
   },
 
   // ===============================
-  // SOFT DELETE STUDENT
+  // DELETE STUDENT LOGIC
   // ===============================
   async deleteStudent(req: Request, res: Response, next: NextFunction) {
     try {
-      // =========================
-      // EXTRACT PARAMS
-      // =========================
-      const params = {
-        id: Number(req.params.id),
-      };
+      const student = await studentService.deleteStudent(toIdParam(req));
 
-      // =========================
-      // DELETE STUDENT (SOFT)
-      // =========================
-      const student = await studentService.deleteStudent(params);
-
-      // =========================
-      // SUCCESS RESPONSE
-      // =========================
       res.status(200).json({
         success: true,
         message: "Student deleted successfully",
@@ -175,25 +112,12 @@ export const StudentController = {
   },
 
   // ===============================
-  // ACTIVATE STUDENT
+  // ACTIVATE STUDENT LOGIC
   // ===============================
   async activateStudent(req: Request, res: Response, next: NextFunction) {
     try {
-      // =========================
-      // EXTRACT PARAMS
-      // =========================
-      const params = {
-        id: Number(req.params.id),
-      };
+      const student = await studentService.activateStudent(toIdParam(req));
 
-      // =========================
-      // ACTIVATE STUDENT
-      // =========================
-      const student = await studentService.activateStudent(params);
-
-      // =========================
-      // SUCCESS RESPONSE
-      // =========================
       res.status(200).json({
         success: true,
         message: "Student activated successfully",
@@ -205,25 +129,12 @@ export const StudentController = {
   },
 
   // ===============================
-  // DEACTIVATE STUDENT
+  // DEACTIVATE STUDENT LOGIC
   // ===============================
   async deactivateStudent(req: Request, res: Response, next: NextFunction) {
     try {
-      // =========================
-      // EXTRACT PARAMS
-      // =========================
-      const params = {
-        id: Number(req.params.id),
-      };
+      const student = await studentService.deactivateStudent(toIdParam(req));
 
-      // =========================
-      // DEACTIVATE STUDENT
-      // =========================
-      const student = await studentService.deactivateStudent(params);
-
-      // =========================
-      // SUCCESS RESPONSE
-      // =========================
       res.status(200).json({
         success: true,
         message: "Student deactivated successfully",
@@ -233,15 +144,13 @@ export const StudentController = {
       next(error);
     }
   },
+
   // ===============================
-  // GET STUDENTS BY CLASS
+  // GET STUDENTS BY CLASS LOGIC
   // ===============================
   async getStudentsByClass(req: Request, res: Response, next: NextFunction) {
     try {
-      // =========================
-      // EXTRACT PARAMS
-      // =========================
-      const { classId } = req.params as { classId: string };
+      const { classId } = toClassIdParam(req);
 
       const params = {
         page: req.query.page ? Number(req.query.page) : undefined,
@@ -253,14 +162,11 @@ export const StudentController = {
             : undefined,
       };
 
-      // =========================
-      // FETCH STUDENTS
-      // =========================
-      const result = await studentService.getStudentsByClass(classId, params);
+      const result = await studentService.getStudentsByClass(
+        classId,
+        params
+      );
 
-      // =========================
-      // SUCCESS RESPONSE
-      // =========================
       res.status(200).json({
         success: true,
         message: "Students fetched successfully",
@@ -272,14 +178,11 @@ export const StudentController = {
   },
 
   // ===============================
-  // COUNT ALL STUDENTS
+  // COUNT ALL STUDENTS LOGIC   
   // ===============================
   async countAllStudents(req: Request, res: Response, next: NextFunction) {
     try {
-      // =========================
-      // EXTRACT PARAMS
-      // =========================
-      const { schoolId } = req.params as { schoolId: string };
+      const { schoolId } = toSchoolIdParam(req);
 
       const params = {
         classId: req.query.classId as string,
@@ -289,14 +192,11 @@ export const StudentController = {
             : undefined,
       };
 
-      // =========================
-      // FETCH COUNT
-      // =========================
-      const result = await studentService.countAllStudents(schoolId, params);
+      const result = await studentService.countAllStudents(
+        schoolId,
+        params
+      );
 
-      // =========================
-      // SUCCESS RESPONSE
-      // =========================
       res.status(200).json({
         success: true,
         message: "Students count fetched successfully",
@@ -306,31 +206,19 @@ export const StudentController = {
       next(error);
     }
   },
+
   // ===============================
-  // TRANSFER STUDENT CLASS
+  // TRANSFER STUDENT CLASS LOGIC
   // ===============================
   async transferStudentClass(req: Request, res: Response, next: NextFunction) {
     try {
-      // =========================
-      // EXTRACT PARAMS
-      // =========================
-      const params = {
-        id: Number(req.params.id),
-      };
-
       const { newClassId } = req.body;
 
-      // =========================
-      // TRANSFER STUDENT
-      // =========================
       const student = await studentService.transferStudentClass(
-        params,
-        newClassId,
+        toIdParam(req),
+        newClassId
       );
 
-      // =========================
-      // SUCCESS RESPONSE
-      // =========================
       res.status(200).json({
         success: true,
         message: "Student transferred successfully",
@@ -340,24 +228,16 @@ export const StudentController = {
       next(error);
     }
   },
+
   // ===============================
-  // GET STUDENT STATISTICS
+  // GET STUDENT STATISTICS LOGIC
   // ===============================
   async getStudentStatistics(req: Request, res: Response, next: NextFunction) {
     try {
-      // =========================
-      // EXTRACT SCHOOL ID
-      // =========================
-      const { schoolId } = req.params as { schoolId: string };
+      const { schoolId } = toSchoolIdParam(req);
 
-      // =========================
-      // FETCH STATISTICS
-      // =========================
       const stats = await studentService.getStudentStatistics(schoolId);
 
-      // =========================
-      // SUCCESS RESPONSE
-      // =========================
       res.status(200).json({
         success: true,
         message: "Student statistics fetched successfully",
