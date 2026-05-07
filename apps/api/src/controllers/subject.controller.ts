@@ -1,141 +1,143 @@
 import { Request, Response, NextFunction } from "express";
 import { SubjectService } from "@services/index";
-import { toIdParam, toNameParam, toSchoolIdParam } from "@utils/index";
+
+import { toSubjectId, toSchoolId } from "mappers";
+import { SubjectIdParam, SchoolIdParam } from "schemas";
 
 const subjectService = new SubjectService();
 
 export class SubjectController {
-  // ===============================
+  // ===================================
   // GET ALL SUBJECTS
-  // ===============================
+  // ===================================
   async getAllSubjects(req: Request, res: Response, next: NextFunction) {
     try {
-      const { schoolId } = toSchoolIdParam(req);
+      const schoolId = toSchoolId({
+        id: req.params.schoolId,
+      } as SchoolIdParam);
 
-      const params = {
+      const result = await subjectService.getAllSubjects(schoolId, {
         page: req.query.page ? Number(req.query.page) : undefined,
         limit: req.query.limit ? Number(req.query.limit) : undefined,
         sortBy: req.query.sortBy as "name" | "created_at",
         sortOrder: req.query.sortOrder as "asc" | "desc",
-        search: req.query.search as string,
-      };
+        search: req.query.search ? String(req.query.search) : undefined,
+      });
 
-      const result = await subjectService.getAllSubjects(
-        schoolId,
-        params
-      );
-
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: "Subjects fetched successfully",
         ...result,
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 
-  // ===============================
+  // ===================================
   // GET SUBJECT BY NAME
-  // ===============================
+  // ===================================
   async getSubjectByName(req: Request, res: Response, next: NextFunction) {
     try {
-      const { schoolId } = toSchoolIdParam(req);
-      const { name } = toNameParam(req);
+      const schoolId = toSchoolId({
+        id: req.params.schoolId,
+      } as SchoolIdParam);
+
+      const name = req.params.name as string;
 
       const subject = await subjectService.getSubjectByName(
         schoolId,
         name
       );
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: "Subject fetched successfully",
         data: subject,
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 
-  // ===============================
-// CREATE SUBJECT
-// ===============================
-async createSubject(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const subject = await subjectService.createSubject(req.body);
+  // ===================================
+  // CREATE SUBJECT
+  // ===================================
+  async createSubject(req: Request, res: Response, next: NextFunction) {
+    try {
+      const subject = await subjectService.createSubject(req.body);
 
-    return res.status(201).json({
-      success: true,
-      message: "Subject created successfully",
-      data: subject,
-    });
-  } catch (error) {
-    return next(error);
+      return res.status(201).json({
+        success: true,
+        message: "Subject created successfully",
+        data: subject,
+      });
+    } catch (error) {
+      return next(error);
+    }
   }
-}
 
-  // ===============================
-  // UPDATE SUBJECT DETAILS
-  // ===============================
+  // ===================================
+  // UPDATE SUBJECT
+  // ===================================
   async updateSubject(req: Request, res: Response, next: NextFunction) {
     try {
       const input = {
         ...req.body,
-        id: toIdParam(req).id,
+        id: req.params.id,
       };
 
       const subject = await subjectService.updateSubjectDetails(input);
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: "Subject updated successfully",
         data: subject,
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 
-  // ===============================
+  // ===================================
   // DELETE SUBJECT
-  // ===============================
+  // ===================================
   async deleteSubject(req: Request, res: Response, next: NextFunction) {
     try {
-      const subject = await subjectService.deleteSubject(toIdParam(req));
+      const id = toSubjectId({
+        id: req.params.id,
+      } as SubjectIdParam);
 
-      res.status(200).json({
+      const subject = await subjectService.deleteSubject({ id });
+
+      return res.status(200).json({
         success: true,
         message: "Subject deleted successfully",
         data: subject,
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 
-  // ===============================
+  // ===================================
   // GET SUBJECT COUNT
-  // ===============================
+  // ===================================
   async getSubjectCount(req: Request, res: Response, next: NextFunction) {
     try {
-      const { schoolId } = toSchoolIdParam(req);
+      const schoolId = toSchoolId({
+        id: req.params.schoolId,
+      } as SchoolIdParam);
 
       const count = await subjectService.getSubjectCount(schoolId);
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: "Subject count fetched successfully",
-        data: {
-          count,
-        },
+        data: { count },
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 }
