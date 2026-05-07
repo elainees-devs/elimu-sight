@@ -59,6 +59,27 @@ export class SubjectController {
   }
 
   // ===============================
+// CREATE SUBJECT
+// ===============================
+async createSubject(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const subject = await subjectService.createSubject(req.body);
+
+    return res.status(201).json({
+      success: true,
+      message: "Subject created successfully",
+      data: subject,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+  // ===============================
   // UPDATE SUBJECT DETAILS
   // ===============================
   async updateSubject(req: Request, res: Response, next: NextFunction) {
