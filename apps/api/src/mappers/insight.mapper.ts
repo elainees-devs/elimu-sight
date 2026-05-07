@@ -1,5 +1,3 @@
-// src/modules/insight/insight.mapper.ts
-
 import {
   Insight,
   CreateInsightInput,
@@ -13,30 +11,30 @@ import {
 
 /**
  * =========================
- * DB TYPE (explicit)
+ * DB TYPE (matches Prisma exactly)
  * =========================
  */
 export type InsightDB = {
   id: string;
 
   school_id: string;
-  class_id: string | null;
-  student_id: string | null;
-  subject_id: string | null;
+  class_id: string;
+  student_id: string;
+  subject_id: string;
 
-  type: string;
-  title: string;
+  type: string | null;
+  title: string | null;
   summary: string | null;
 
-  data: Record<string, unknown> | null;
+  data: unknown | null;
 
   confidence_score: number | null;
 
-  generated_by: string;
+  generated_by: string | null;
   period: string | null;
 
   created_at: Date;
-  updated_at: Date | null;
+  updated_at: Date;
 };
 
 /**
@@ -49,23 +47,23 @@ export const toInsightResponse = (db: InsightDB): Insight => {
     id: db.id,
 
     schoolId: db.school_id,
-    classId: db.class_id ?? undefined,
-    studentId: db.student_id ?? undefined,
-    subjectId: db.subject_id ?? undefined,
+    classId: db.class_id,
+    studentId: db.student_id,
+    subjectId: db.subject_id,
 
-    type: db.type as Insight["type"],
-    title: db.title,
+    type: db.type ?? undefined,
+    title: db.title ?? undefined,
     summary: db.summary ?? undefined,
 
     data: db.data ?? undefined,
 
     confidenceScore: db.confidence_score ?? undefined,
 
-    generatedBy: db.generated_by as Insight["generatedBy"],
+    generatedBy: db.generated_by ?? undefined,
     period: db.period ?? undefined,
 
     createdAt: db.created_at,
-    updatedAt: db.updated_at ?? undefined,
+    updatedAt: db.updated_at,
   };
 
   const { error, value } = insightSchema.validate(mapped);
@@ -81,9 +79,7 @@ export const toInsightResponse = (db: InsightDB): Insight => {
  * DB[] → DOMAIN[]
  * =========================
  */
-export const toInsightListResponse = (
-  rows: InsightDB[]
-): Insight[] => {
+export const toInsightListResponse = (rows: InsightDB[]): Insight[] => {
   return rows.map(toInsightResponse);
 };
 
@@ -100,19 +96,19 @@ export const toCreateInsightDB = (input: CreateInsightInput) => {
 
   return {
     school_id: value.schoolId,
-    class_id: value.classId ?? null,
-    student_id: value.studentId ?? null,
-    subject_id: value.subjectId ?? null,
+    class_id: value.classId,
+    student_id: value.studentId,
+    subject_id: value.subjectId,
 
-    type: value.type,
-    title: value.title,
+    type: value.type ?? null,
+    title: value.title ?? null,
     summary: value.summary ?? null,
 
     data: value.data ?? null,
 
     confidence_score: value.confidenceScore ?? null,
 
-    generated_by: value.generatedBy,
+    generated_by: value.generatedBy ?? null,
     period: value.period ?? null,
   };
 };
@@ -130,11 +126,19 @@ export const toUpdateInsightDB = (input: UpdateInsightInput) => {
 
   const update: Record<string, unknown> = {};
 
+  if (value.type !== undefined) update.type = value.type;
   if (value.title !== undefined) update.title = value.title;
   if (value.summary !== undefined) update.summary = value.summary;
+
   if (value.data !== undefined) update.data = value.data;
-  if (value.confidenceScore !== undefined)
+
+  if (value.confidenceScore !== undefined) {
     update.confidence_score = value.confidenceScore;
+  }
+
+  if (value.generatedBy !== undefined) {
+    update.generated_by = value.generatedBy;
+  }
 
   if (value.period !== undefined) update.period = value.period;
 
