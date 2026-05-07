@@ -15,6 +15,13 @@ export const toSchoolIdParam = (req: Request) => ({
 });
 
 // ===============================
+// USER ID PARAM
+// ===============================
+export const toUserIdParam = (req: Request) => ({
+  id: Number(req.params.id),
+});
+
+// ===============================
 // CLASS ID PARAM
 // ===============================
 export const toClassIdParam = (req: Request) => ({
