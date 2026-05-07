@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { ClassService } from "@services/class.service";
-
+import { toIdParam, toSchoolIdParam } from "@utils/index";
 
 const classService = new ClassService();
 
@@ -11,200 +11,127 @@ const allowedSortBy = ["name", "created_at"] as const;
 type SortBy = (typeof allowedSortBy)[number];
 
 export class ClassController {
-// ===============================
-// GET ALL CLASSES LOGIC
-// ===============================
-async getAllClasses(req: Request, res: Response, next: NextFunction) {
-  try {
-    // =========================
-    // EXTRACT PARAMS + QUERY
-    // =========================
-    const { schoolId } = req.params as { schoolId: string };
+  // ===============================
+  // GET ALL CLASSES
+  // ===============================
+  async getAllClasses(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { schoolId } = toSchoolIdParam(req);
+      const { page, limit, sortBy: sortByRaw, sortOrder, search } = req.query;
 
-    const { page, limit, sortBy: sortByRaw, sortOrder, search } = req.query;
+      const sortBy: SortBy = allowedSortBy.includes(sortByRaw as SortBy)
+        ? (sortByRaw as SortBy)
+        : "created_at";
 
-    // =========================
-    // TYPE-SAFE SORT BY
-    // =========================
-    const sortBy: SortBy = allowedSortBy.includes(sortByRaw as SortBy)
-      ? (sortByRaw as SortBy)
-      : "created_at";
-
-    // =========================
-    // FETCH CLASSES
-    // =========================
-    const result = await classService.getAllClasses(
-      schoolId,
-      {
+      const result = await classService.getAllClasses(schoolId, {
         page: page ? Number(page) : 1,
         limit: limit ? Number(limit) : 10,
         sortBy,
         sortOrder: sortOrder === "asc" ? "asc" : "desc",
         search: search ? String(search) : undefined,
-      }
-    );
+      });
 
-    // =========================
-    // SUCCESS RESPONSE
-    // =========================
-    res.status(200).json({
-      success: true,
-      message: "Classes fetched successfully",
-      ...result,
-    });
-  } catch (error) {
-    next(error);
+      res.status(200).json({
+        success: true,
+        message: "Classes fetched successfully",
+        ...result,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
-// ===============================
-// GET CLASS BY ID LOGIC
-// ===============================
-async getClassById(req: Request, res: Response, next: NextFunction) {
-  try {
-    // =========================
-    // EXTRACT PARAMS
-    // =========================
-    const params = {
-      id: Number(req.params.id),
-    };
+  // ===============================
+  // GET CLASS BY ID
+  // ===============================
+  async getClassById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const classData = await classService.getClassById(toIdParam(req));
 
-    // =========================
-    // FETCH CLASS
-    // =========================
-    const classData = await classService.getClassById(params);
-
-    // =========================
-    // SUCCESS RESPONSE
-    // =========================
-    res.status(200).json({
-      success: true,
-      message: "Class fetched successfully",
-      data: classData,
-    });
-  } catch (error) {
-    next(error);
+      res.status(200).json({
+        success: true,
+        message: "Class fetched successfully",
+        data: classData,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
-// ===============================
-// CREATE NEW CLASS LOGIC
-// ===============================
-async createClass(req: Request, res: Response, next: NextFunction) {
-  try {
-    // =========================
-    // EXTRACT REQUEST BODY
-    // =========================
-    const input = req.body;
+  // ===============================
+  // CREATE CLASS
+  // ===============================
+  async createClass(req: Request, res: Response, next: NextFunction) {
+    try {
+      const classData = await classService.createClass(req.body);
 
-    // =========================
-    // CREATE CLASS
-    // =========================
-    const classData = await classService.createClass(input);
-
-    // =========================
-    // SUCCESS RESPONSE
-    // =========================
-    res.status(201).json({
-      success: true,
-      message: "Class created successfully",
-      data: classData,
-    });
-  } catch (error) {
-    next(error);
+      res.status(201).json({
+        success: true,
+        message: "Class created successfully",
+        data: classData,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
-// ===============================
-// UPDATE CLASS DETAILS
-// ===============================
-async updateClass(req: Request, res: Response, next: NextFunction) {
-  try {
-    // =========================
-    // EXTRACT PARAMS + BODY
-    // =========================
-    const id = Number(req.params.id);
+  // ===============================
+  // UPDATE CLASS
+  // ===============================
+  async updateClass(req: Request, res: Response, next: NextFunction) {
+    try {
+      const input = {
+        ...req.body,
+        id: Number(req.params.id),
+      };
 
-    const input = {
-      ...req.body,
-      id,
-    };
+      const updatedClass = await classService.updateClassDetails(input);
 
-    // =========================
-    // UPDATE CLASS
-    // =========================
-    const updatedClass = await classService.updateClassDetails(input);
-
-    // =========================
-    // SUCCESS RESPONSE
-    // =========================
-    res.status(200).json({
-      success: true,
-      message: "Class updated successfully",
-      data: updatedClass,
-    });
-  } catch (error) {
-    next(error);
+      res.status(200).json({
+        success: true,
+        message: "Class updated successfully",
+        data: updatedClass,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
-// ===============================
-// SOFT DELETE CLASS
-// ===============================
-async deleteClass(req: Request, res: Response, next: NextFunction) {
-  try {
-    // =========================
-    // EXTRACT PARAMS
-    // =========================
-    const params = {
-      id: Number(req.params.id),
-    };
+  // ===============================
+  // DELETE CLASS
+  // ===============================
+  async deleteClass(req: Request, res: Response, next: NextFunction) {
+    try {
+      const deletedClass = await classService.deleteClass(toIdParam(req));
 
-    // =========================
-    // DELETE CLASS
-    // =========================
-    const deletedClass = await classService.deleteClass(params);
-
-    // =========================
-    // SUCCESS RESPONSE
-    // =========================
-    res.status(200).json({
-      success: true,
-      message: "Class deleted successfully",
-      data: deletedClass,
-    });
-  } catch (error) {
-    next(error);
+      res.status(200).json({
+        success: true,
+        message: "Class deleted successfully",
+        data: deletedClass,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-}
-// ===============================
-// GET CLASS COUNT
-// ===============================
-async getClassCount(req: Request, res: Response, next: NextFunction) {
-  try {
-    // =========================
-    // EXTRACT SCHOOL ID
-    // =========================
-    const { schoolId } = req.params as { schoolId: string };
 
-    // =========================
-    // FETCH CLASS COUNT
-    // =========================
-    const count = await classService.getClassCount(schoolId);
+  // ===============================
+  // GET CLASS COUNT
+  // ===============================
+  async getClassCount(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { schoolId } = toSchoolIdParam(req);
 
-    // =========================
-    // SUCCESS RESPONSE
-    // =========================
-    res.status(200).json({
-      success: true,
-      message: "Class count fetched successfully",
-      data: {
-        count,
-      },
-    });
-  } catch (error) {
-    next(error);
+      const count = await classService.getClassCount(schoolId);
+
+      res.status(200).json({
+        success: true,
+        message: "Class count fetched successfully",
+        data: {
+          count,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-}
-
 }
