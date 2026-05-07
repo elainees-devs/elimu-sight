@@ -79,7 +79,7 @@ export const StudentController = {
     try {
       const input = {
         ...req.body,
-        id: Number(req.params.id),
+        id: toIdParam(req).id,
       };
 
       const student = await studentService.updateStudentDetails(input);
@@ -185,7 +185,7 @@ export const StudentController = {
       const { schoolId } = toSchoolIdParam(req);
 
       const params = {
-        classId: req.query.classId as string,
+        classId: toClassIdParam(req).classId,
         isActive:
           req.query.isActive !== undefined
             ? req.query.isActive === "true"
