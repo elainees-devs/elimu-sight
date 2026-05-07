@@ -1,5 +1,3 @@
-// src/modules/school/school.mapper.ts
-
 import {
   CreateSchoolInput,
   createSchoolSchema,
@@ -13,7 +11,7 @@ import {
 
 /**
  * =========================
- * DB TYPE (explicit, no any)
+ * DB TYPE (matches Prisma exactly)
  * =========================
  */
 export type SchoolDB = {
@@ -25,13 +23,13 @@ export type SchoolDB = {
   subscription_plan: string;
   is_active: boolean;
   created_at: Date;
-  updated_at: Date | null;
-  deleted_at?: Date | null;
+  updated_at: Date;
+  deleted_at: Date | null;
 };
 
 /**
  * =========================
- * DB → API (matches schoolSchema)
+ * DB → API
  * =========================
  */
 export const toSchoolResponse = (db: SchoolDB): School => {
@@ -40,11 +38,13 @@ export const toSchoolResponse = (db: SchoolDB): School => {
     name: db.name,
     email: db.email,
     phone: db.phone,
-    address: db.address,
+    address: db.address ?? undefined,
+
     subscriptionPlan: db.subscription_plan,
     isActive: db.is_active,
+
     createdAt: db.created_at,
-    updatedAt: db.updated_at ?? undefined,
+    updatedAt: db.updated_at,
     deletedAt: db.deleted_at ?? undefined,
   };
 
@@ -72,8 +72,12 @@ export const toSchoolListResponse = (rows: SchoolDB[]): School[] => {
  */
 export const toCreateSchoolDB = (
   input: CreateSchoolInput,
-): Omit<SchoolDB, "id" | "created_at" | "updated_at" | "deleted_at"> => {
+): Omit<
+  SchoolDB,
+  "id" | "created_at" | "updated_at" | "deleted_at"
+> => {
   const { error, value } = createSchoolSchema.validate(input);
+
   if (error) {
     throw new Error(`Invalid create payload: ${error.message}`);
   }
@@ -82,7 +86,7 @@ export const toCreateSchoolDB = (
     name: value.name,
     email: value.email,
     phone: value.phone,
-    address: value.address,
+    address: value.address ?? null,
     subscription_plan: value.subscriptionPlan,
     is_active: true,
   };
@@ -95,21 +99,23 @@ export const toCreateSchoolDB = (
  */
 export const toUpdateSchoolDB = (
   input: UpdateSchoolInput,
-): Partial<Omit<SchoolDB, "id" | "created_at" | "deleted_at">> & {
-  updated_at: Date;
-} => {
+): Partial<
+  Omit<SchoolDB, "id" | "created_at" | "deleted_at">
+> => {
   const { error, value } = updateSchoolSchema.validate(input);
+
   if (error) {
     throw new Error(`Invalid update payload: ${error.message}`);
   }
 
-  const update: Partial<Omit<SchoolDB, "id" | "created_at" | "deleted_at">> =
-    {};
+  const update: Partial<
+    Omit<SchoolDB, "id" | "created_at" | "deleted_at">
+  > = {};
 
   if (value.name !== undefined) update.name = value.name;
   if (value.email !== undefined) update.email = value.email;
   if (value.phone !== undefined) update.phone = value.phone;
-  if (value.address !== undefined) update.address = value.address;
+  if (value.address !== undefined) update.address = value.address ?? null;
 
   if (value.subscriptionPlan !== undefined) {
     update.subscription_plan = value.subscriptionPlan;
@@ -119,10 +125,7 @@ export const toUpdateSchoolDB = (
     update.is_active = value.isActive;
   }
 
-  return {
-    ...update,
-    updated_at: new Date(),
-  };
+  return update;
 };
 
 /**
