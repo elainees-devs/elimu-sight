@@ -1,6 +1,17 @@
 import { ApiError, prisma } from "@utils/index";
-import { toClassSubjectListResponse, ClassSubjectDB , toClassSubjectId, toClassSubjectResponse, toCreateClassSubjectDB, toUpdateClassSubjectDB} from "mappers";
-import { ClassSubjectIdParam, CreateClassSubjectInput, UpdateClassSubjectInput } from "schemas";
+import {
+  toClassSubjectListResponse,
+  ClassSubjectDB,
+  toClassSubjectId,
+  toClassSubjectResponse,
+  toCreateClassSubjectDB,
+  toUpdateClassSubjectDB,
+} from "mappers";
+import {
+  ClassSubjectIdParam,
+  CreateClassSubjectInput,
+  UpdateClassSubjectInput,
+} from "schemas";
 import { Prisma } from "@prisma/client";
 
 type GetClassSubjectParams = {
@@ -10,36 +21,22 @@ type GetClassSubjectParams = {
 
 export class ClassSubjectService {
   // ===================================
-  // GET ALL SUBJECTS FOR A CLASS LOGIC
+  // GET SUBJECTS BY CLASS
   // ===================================
-  async getSubjectsByClass(
-    classId: string,
-    params: GetClassSubjectParams
-  ) {
+  async getSubjectsByClass(classId: string, params: GetClassSubjectParams) {
     try {
       const { page = 1, limit = 10 } = params;
-
       const skip = (page - 1) * limit;
 
-      // =========================
-      // QUERY
-      // =========================
       const [classSubjects, total] = await Promise.all([
-        prisma.classSubjects.findMany({
-          where: {
-            class_id: classId,
-          },
+        prisma.class_subjects.findMany({
+          where: { class_id: classId },
           skip,
           take: limit,
-          orderBy: {
-            created_at: "desc",
-          },
+          orderBy: { created_at: "desc" },
         }),
-
-        prisma.classSubjects.count({
-          where: {
-            class_id: classId,
-          },
+        prisma.class_subjects.count({
+          where: { class_id: classId },
         }),
       ]);
 
@@ -52,87 +49,50 @@ export class ClassSubjectService {
           totalPages: Math.ceil(total / limit),
         },
       };
-    } catch (error) {
-      throw new ApiError(
-        500,
-        "Failed to fetch class subjects"
-      );
+    } catch {
+      throw new ApiError(500, "Failed to fetch class subjects");
     }
   }
 
-
   // ===================================
-  // GET CLASS SUBJECT BY ID LOGIC
+  // GET BY ID
   // ===================================
   async getClassSubjectById(params: ClassSubjectIdParam) {
     try {
-      // =========================
-      // VALIDATE ID
-      // =========================
       const id = toClassSubjectId(params);
 
-      // =========================
-      // QUERY
-      // =========================
-      const classSubject =
-        await prisma.classSubjects.findUnique({
-          where: { id },
-        });
+      const classSubject = await prisma.class_subjects.findUnique({
+        where: { id },
+      });
 
       if (!classSubject) {
-        throw new ApiError(
-          404,
-          "Class subject not found"
-        );
+        throw new ApiError(404, "Class subject not found");
       }
 
-      // =========================
-      // MAP RESPONSE
-      // =========================
-      return toClassSubjectResponse(
-        classSubject as ClassSubjectDB
-      );
+      return toClassSubjectResponse(classSubject as ClassSubjectDB);
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
-      throw new ApiError(
-        500,
-        "Failed to fetch class subject"
-      );
+      if (error instanceof ApiError) throw error;
+      throw new ApiError(500, "Failed to fetch class subject");
     }
   }
-// ===================================
-  // GET CLASSES BY SUBJECT LOGIC
+
   // ===================================
-  async getClassesBySubject(
-    subjectId: string,
-    params: GetClassSubjectParams
-  ) {
+  // GET BY SUBJECT
+  // ===================================
+  async getClassesBySubject(subjectId: string, params: GetClassSubjectParams) {
     try {
       const { page = 1, limit = 10 } = params;
-
       const skip = (page - 1) * limit;
 
-      // =========================
-      // QUERY
-      // =========================
       const [classSubjects, total] = await Promise.all([
-        prisma.classSubjects.findMany({
-          where: {
-            subject_id: subjectId,
-          },
+        prisma.class_subjects.findMany({
+          where: { subject_id: subjectId },
           skip,
           take: limit,
-          orderBy: {
-            created_at: "desc",
-          },
+          orderBy: { created_at: "desc" },
         }),
-
-        prisma.classSubjects.count({
-          where: {
-            subject_id: subjectId,
-          },
+        prisma.class_subjects.count({
+          where: { subject_id: subjectId },
         }),
       ]);
 
@@ -145,43 +105,32 @@ export class ClassSubjectService {
           totalPages: Math.ceil(total / limit),
         },
       };
-    } catch (error) {
-      throw new ApiError(
-        500,
-        "Failed to fetch classes by subject"
-      );
+    } catch {
+      throw new ApiError(500, "Failed to fetch classes by subject");
     }
   }
-  // =====================================
-  // COUNT ALL SUBJECTS FOR A CLASS LOGIC
-  // =====================================
+
+  // ===================================
+  // COUNT
+  // ===================================
   async getClassSubjectCount(classId: string) {
     try {
-      const count = await prisma.classSubjects.count({
-        where: {
-          class_id: classId,
-        },
+      return prisma.class_subjects.count({
+        where: { class_id: classId },
       });
-
-      return count;
-    } catch (error) {
-      throw new ApiError(
-        500,
-        "Failed to get class subject count"
-      );
+    } catch {
+      throw new ApiError(500, "Failed to get class subject count");
     }
   }
+
   // ===================================
-  // CREATE CLASS SUBJECT LOGIC
+  // CREATE
   // ===================================
   async createClassSubject(input: CreateClassSubjectInput) {
     try {
       const { classId, subjectId } = input;
 
-      // =========================
-      // CHECK DUPLICATE ASSIGNMENT
-      // =========================
-      const existing = await prisma.classSubjects.findFirst({
+      const existing = await prisma.class_subjects.findFirst({
         where: {
           class_id: classId,
           subject_id: subjectId,
@@ -189,468 +138,216 @@ export class ClassSubjectService {
       });
 
       if (existing) {
-        throw new ApiError(
-          400,
-          "Subject already assigned to this class"
-        );
+        throw new ApiError(400, "Subject already assigned to this class");
       }
 
-      // =========================
-      // MAP INPUT → DB
-      // =========================
       const dbData = toCreateClassSubjectDB(input);
 
-      // =========================
-      // CREATE RECORD
-      // =========================
-      const classSubject = await prisma.classSubjects.create({
+      const created = await prisma.class_subjects.create({
         data: dbData,
       });
 
-      // =========================
-      // MAP RESPONSE
-      // =========================
-      return toClassSubjectResponse(
-        classSubject as ClassSubjectDB
-      );
+      return toClassSubjectResponse(created as ClassSubjectDB);
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
-      throw new ApiError(
-        500,
-        "Failed to create class subject"
-      );
+      if (error instanceof ApiError) throw error;
+      throw new ApiError(500, "Failed to create class subject");
     }
   }
-// ===================================
-  // UPDATE CLASS SUBJECT LOGIC
+
+  // ===================================
+  // UPDATE
   // ===================================
   async updateClassSubject(input: UpdateClassSubjectInput) {
     try {
       const { id, ...updateData } = input;
 
-      // =========================
-      // CHECK IF RECORD EXISTS
-      // =========================
-      const existing = await prisma.classSubjects.findUnique({
+      const existing = await prisma.class_subjects.findUnique({
         where: { id },
       });
 
       if (!existing) {
-        throw new ApiError(
-          404,
-          "Class subject not found"
-        );
+        throw new ApiError(404, "Class subject not found");
       }
 
-      // =========================
-      // OPTIONAL: AVOID DUPLICATE TEACHER ASSIGNMENT
-      // =========================
-      if (updateData.teacherId) {
-        const duplicate = await prisma.classSubjects.findFirst({
-          where: {
-            class_id: existing.class_id,
-            subject_id: existing.subject_id,
-            teacher_id: updateData.teacherId,
-            NOT: { id },
-          },
-        });
-
-        if (duplicate) {
-          throw new ApiError(
-            400,
-            "Teacher already assigned to this class subject"
-          );
-        }
-      }
-
-      // =========================
-      // MAP INPUT → DB
-      // =========================
       const dbData = toUpdateClassSubjectDB(updateData);
 
-      // =========================
-      // UPDATE RECORD
-      // =========================
-      const updated = await prisma.classSubjects.update({
+      const updated = await prisma.class_subjects.update({
         where: { id },
         data: dbData,
       });
 
-      // =========================
-      // MAP RESPONSE
-      // =========================
-      return toClassSubjectResponse(
-        updated as ClassSubjectDB
-      );
+      return toClassSubjectResponse(updated as ClassSubjectDB);
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
-      throw new ApiError(
-        500,
-        "Failed to update class subject"
-      );
+      if (error instanceof ApiError) throw error;
+      throw new ApiError(500, "Failed to update class subject");
     }
   }
-// ===================================
-  // SOFT DELETE CLASS SUBJECT LOGIC
+
+  // ===================================
+  // DELETE (FIXED: no fake updated_at)
   // ===================================
   async deleteClassSubject(params: ClassSubjectIdParam) {
     try {
-      // =========================
-      // VALIDATE ID
-      // =========================
       const id = toClassSubjectId(params);
 
-      // =========================
-      // SOFT DELETE
-      // =========================
-      const updated = await prisma.classSubjects.updateMany({
-        where: {
-          id,
-        },
+      const existing = await prisma.class_subjects.findUnique({
+        where: { id },
+      });
+
+      if (!existing) {
+        throw new ApiError(404, "Class subject not found");
+      }
+
+      const deleted = await prisma.class_subjects.delete({
+        where: { id },
+      });
+
+      return toClassSubjectResponse(deleted as ClassSubjectDB);
+    } catch (error) {
+      if (error instanceof ApiError) throw error;
+      throw new ApiError(500, "Failed to delete class subject");
+    }
+  }
+
+  // ===================================
+  // ASSIGN TEACHER
+  // ===================================
+  async assignTeacherToClassSubject(classSubjectId: string, teacherId: string) {
+    try {
+      const existing = await prisma.class_subjects.findUnique({
+        where: { id: classSubjectId },
+      });
+
+      if (!existing) {
+        throw new ApiError(404, "Class subject not found");
+      }
+
+      const updated = await prisma.class_subjects.update({
+        where: { id: classSubjectId },
         data: {
-          updated_at: new Date(),
-          deleted_at: new Date(),
+          teacher_id: teacherId,
         },
       });
 
-      // =========================
-      // NOT FOUND CHECK
-      // =========================
-      if (updated.count === 0) {
-        throw new ApiError(
-          404,
-          "Class subject not found"
-        );
-      }
-
-      // =========================
-      // FETCH UPDATED RECORD
-      // =========================
-      const classSubject =
-        await prisma.classSubjects.findUnique({
-          where: { id },
-        });
-
-      if (!classSubject) {
-        throw new ApiError(
-          404,
-          "Class subject not found after deletion"
-        );
-      }
-
-      // =========================
-      // MAP RESPONSE
-      // =========================
-      return toClassSubjectResponse(
-        classSubject as ClassSubjectDB
-      );
+      return toClassSubjectResponse(updated as ClassSubjectDB);
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
-      throw new ApiError(
-        500,
-        "Failed to delete class subject"
-      );
+      if (error instanceof ApiError) throw error;
+      throw new ApiError(500, "Failed to assign teacher");
     }
   }
-  // =====================================
-  // ASSIGN TEACHER TO CLASS SUBJECT LOGIC
-  // =====================================
-  async assignTeacherToClassSubject(
-    classSubjectId: string,
-    teacherId: string
-  ) {
-    try {
-      // =========================
-      // CHECK IF RECORD EXISTS
-      // =========================
-      const existing =
-        await prisma.classSubjects.findUnique({
-          where: { id: classSubjectId },
-        });
 
-      if (!existing) {
-        throw new ApiError(
-          404,
-          "Class subject not found"
-        );
-      }
+  // ===================================
+  // REMOVE TEACHER
+  // ===================================
+  async removeTeacherFromClassSubject(
+  classSubjectId: string,
+  newTeacherId: string
+) {
+  try {
+    // =========================
+    // CHECK IF RECORD EXISTS
+    // =========================
+    const existing = await prisma.class_subjects.findUnique({
+      where: { id: classSubjectId },
+    });
 
-      // =========================
-      // OPTIONAL: PREVENT DUPLICATE ASSIGNMENT
-      // =========================
-      const duplicate =
-        await prisma.classSubjects.findFirst({
-          where: {
-            class_id: existing.class_id,
-            subject_id: existing.subject_id,
-            teacher_id: teacherId,
-            NOT: { id: classSubjectId },
-          },
-        });
-
-      if (duplicate) {
-        throw new ApiError(
-          400,
-          "Teacher already assigned to this class subject"
-        );
-      }
-
-      // =========================
-      // UPDATE ASSIGNMENT
-      // =========================
-      const updated =
-        await prisma.classSubjects.update({
-          where: { id: classSubjectId },
-          data: {
-            teacher_id: teacherId,
-            updated_at: new Date(),
-          },
-        });
-
-      // =========================
-      // MAP RESPONSE
-      // =========================
-      return toClassSubjectResponse(
-        updated as ClassSubjectDB
-      );
-    } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
-      throw new ApiError(
-        500,
-        "Failed to assign teacher"
-      );
+    if (!existing) {
+      throw new ApiError(404, "Class subject not found");
     }
+
+    // =========================
+    // UPDATE TEACHER (REQUIRED FIELD)
+    // =========================
+    const updated = await prisma.class_subjects.update({
+      where: { id: classSubjectId },
+      data: {
+        teacher_id: newTeacherId,
+      },
+    });
+
+    return toClassSubjectResponse(updated as ClassSubjectDB);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError(500, "Failed to update teacher assignment");
   }
-// ========================================
-  // REMOVE TEACHER FROM CLASS SUBJECT LOGIC
-  // ========================================
-  async removeTeacherFromClassSubject(classSubjectId: string) {
-    try {
-      // =========================
-      // CHECK IF RECORD EXISTS
-      // =========================
-      const existing =
-        await prisma.classSubjects.findUnique({
-          where: { id: classSubjectId },
-        });
-
-      if (!existing) {
-        throw new ApiError(
-          404,
-          "Class subject not found"
-        );
-      }
-
-      // =========================
-      // REMOVE TEACHER ASSIGNMENT
-      // =========================
-      const updated =
-        await prisma.classSubjects.update({
-          where: { id: classSubjectId },
-          data: {
-            teacher_id: null,
-            updated_at: new Date(),
-          },
-        });
-
-      // =========================
-      // MAP RESPONSE
-      // =========================
-      return toClassSubjectResponse(
-        updated as ClassSubjectDB
-      );
-    } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
-      throw new ApiError(
-        500,
-        "Failed to remove teacher from class subject"
-      );
-    }
-  }
-  // REPLACE ALL SUBJECTS FOR A CLASS LOGIC
+}
+  // ===================================
+  // REPLACE SUBJECTS (TRANSACTION FIXED)
   // ===================================
   async replaceSubjectsForClass(
     classId: string,
     subjects: CreateClassSubjectInput[]
   ) {
     try {
-      // =========================
-      // TRANSACTION: SAFE REPLACEMENT
-      // =========================
-      const result = await prisma.$transaction(
-  async (tx: Prisma.TransactionClient) => {
-    // 1. DELETE EXISTING SUBJECTS
-    await tx.classSubjects.deleteMany({
-      where: {
-        class_id: classId,
-      },
-    });
+      const result = await prisma.$transaction(async (tx) => {
+        await tx.class_subjects.deleteMany({
+          where: { class_id: classId },
+        });
 
-    // 2. PREPARE NEW RECORDS
-    const newRecords = subjects.map((subject) => ({
-      ...toCreateClassSubjectDB(subject),
-      class_id: classId,
-    }));
+        const newRecords = subjects.map((subject) => ({
+          ...toCreateClassSubjectDB(subject),
+          class_id: classId,
+        }));
 
-    // 3. BULK INSERT
-    await tx.classSubjects.createMany({
-      data: newRecords,
-    });
+        await tx.class_subjects.createMany({
+          data: newRecords,
+        });
 
-    // 4. RETURN UPDATED DATA
-    return tx.classSubjects.findMany({
-      where: {
-        class_id: classId,
-      },
-      orderBy: {
-        created_at: "desc",
-      },
-    });
-  }
-);
+        return tx.class_subjects.findMany({
+          where: { class_id: classId },
+          orderBy: { created_at: "desc" },
+        });
+      });
 
-      // =========================
-      // MAP RESPONSE
-      // =========================
       return toClassSubjectListResponse(result);
-    } catch (error) {
-      throw new ApiError(
-        500,
-        "Failed to replace class subjects"
-      );
+    } catch {
+      throw new ApiError(500, "Failed to replace class subjects");
     }
   }
+
   // ===================================
-  // SYNC SUBJECTS FOR A CLASS LOGIC
+  // SYNC SUBJECTS 
   // ===================================
-  async syncSubjectsForClass(
-    classId: string,
-    subjects: CreateClassSubjectInput[]
-  ) {
+  async syncSubjectsForClass(classId: string, subjects: CreateClassSubjectInput[]) {
     try {
-      const result = await prisma.$transaction(
-        async (tx: Prisma.TransactionClient) => {
-          // =========================
-          // GET EXISTING SUBJECTS
-          // =========================
-          const existing = await tx.classSubjects.findMany({
-            where: { class_id: classId },
+      const result = await prisma.$transaction(async (tx) => {
+        const existing = await tx.class_subjects.findMany({
+          where: { class_id: classId },
+        });
+
+        const existingIds = new Set(existing.map((s) => s.subject_id));
+        const incomingIds = new Set(subjects.map((s) => s.subjectId));
+
+        const toDelete = existing.filter((s) => !incomingIds.has(s.subject_id));
+
+        if (toDelete.length > 0) {
+          await tx.class_subjects.deleteMany({
+            where: {
+              id: { in: toDelete.map((s) => s.id) },
+            },
           });
+        }
 
-          const existingSubjectIds = new Set(
-            existing.map((s: ClassSubjectDB) => s.subject_id)
-          );
+        const toAdd = subjects.filter((s) => !existingIds.has(s.subjectId));
 
-          const incomingSubjectIds = new Set(
-            subjects.map((s: CreateClassSubjectInput) => s.subjectId)
-          );
-
-          // =========================
-          // DELETE REMOVED SUBJECTS
-          // =========================
-          const toDelete = existing.filter(
-            (s: ClassSubjectDB) => !incomingSubjectIds.has(s.subject_id)
-          );
-
-          if (toDelete.length > 0) {
-            await tx.classSubjects.deleteMany({
-              where: {
-                id: {
-                  in: toDelete.map((s: ClassSubjectDB) => s.id),
-                },
-              },
-            });
-          }
-
-          // =========================
-          // ADD NEW SUBJECTS
-          // =========================
-          const toAdd = subjects.filter((s: CreateClassSubjectInput) =>
-            (s:CreateClassSubjectInput) => !existingSubjectIds.has(s.subjectId)
-          );
-
-          if (toAdd.length > 0) {
-            const newRecords = toAdd.map((subject) => ({
+        if (toAdd.length > 0) {
+          await tx.class_subjects.createMany({
+            data: toAdd.map((subject) => ({
               ...toCreateClassSubjectDB(subject),
               class_id: classId,
-            }));
-
-            await tx.classSubjects.createMany({
-              data: newRecords,
-            });
-          }
-
-          // =========================
-          // RETURN FINAL STATE
-          // =========================
-          return tx.classSubjects.findMany({
-            where: { class_id: classId },
-            orderBy: { created_at: "desc" },
+            })),
           });
         }
-      );
+
+        return tx.class_subjects.findMany({
+          where: { class_id: classId },
+          orderBy: { created_at: "desc" },
+        });
+      });
 
       return toClassSubjectListResponse(result);
-    } catch (error) {
-      throw new ApiError(
-        500,
-        "Failed to sync class subjects"
-      );
-    }
-  }
-  // ===================================
-  // ARCHIVE ALL SUBJECTS FOR A CLASS LOGIC
-  // ===================================
-  async archiveAllSubjectsForClass(classId: string) {
-    try {
-      const result = await prisma.$transaction(
-        async (tx: Prisma.TransactionClient) => {
-          // =========================
-          // ARCHIVE ALL SUBJECTS
-          // =========================
-          await tx.classSubjects.updateMany({
-            where: {
-              class_id: classId,
-            },
-            data: {
-              updated_at: new Date(),
-              deleted_at: new Date(),
-            },
-          });
-
-          // =========================
-          // RETURN ARCHIVED STATE
-          // =========================
-          return tx.classSubjects.findMany({
-            where: {
-              class_id: classId,
-            },
-            orderBy: {
-              created_at: "desc",
-            },
-          });
-        }
-      );
-
-      return toClassSubjectListResponse(result);
-    } catch (error) {
-      throw new ApiError(
-        500,
-        "Failed to archive class subjects"
-      );
+    } catch {
+      throw new ApiError(500, "Failed to sync class subjects");
     }
   }
 }
- 
-
-
