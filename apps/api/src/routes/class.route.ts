@@ -55,7 +55,7 @@ router.delete(
   "/:id",
   authenticateMiddleware,
   validate(classIdParamSchema, "params"),
-  validateSchoolAccess(),
+  validateSchoolAccess,
   (req, res, next) => classController.deleteClass(req, res, next)
 );
 
