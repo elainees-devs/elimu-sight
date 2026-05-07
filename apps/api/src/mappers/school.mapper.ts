@@ -21,12 +21,12 @@ export type SchoolDB = {
   name: string;
   email: string;
   phone: string;
-  address: string;
+  address: string | null;
   subscription_plan: string;
   is_active: boolean;
   created_at: Date;
   updated_at: Date | null;
-  deleted_at: Date | null;
+  deleted_at?: Date | null;
 };
 
 /**
