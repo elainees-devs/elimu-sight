@@ -1,6 +1,7 @@
 import {Request, Response, NextFunction} from "express";
 import {toIdParam, toSchoolIdParam} from "utils/index";
 import {AssessmentService} from "@services/index";
+import { UpdateAssessmentInput } from "schemas/assessment.schema";
 
 const assessmentService = new AssessmentService();
 
@@ -77,4 +78,28 @@ async getAssessmentByName(
     return next(error);
   }
 }
+// ===============================
+// UPDATE ASSESSMENT DETAILS
+// ===============================
+async updateAssessmentDetails(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const input = req.body as UpdateAssessmentInput;
+
+    const updatedAssessment =
+      await assessmentService.updateAssessmentDetails(input);
+
+    return res.status(200).json({
+      success: true,
+      message: "Assessment updated successfully",
+      data: updatedAssessment,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 }
