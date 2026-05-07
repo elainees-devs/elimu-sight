@@ -65,7 +65,7 @@ export const updateUserSchema = Joi.object({
  * (LOGIN)
  * =========================
  */
-export const authenticateUserSchema = Joi.object({
+export const loginSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(8).max(255).required(),
 });
@@ -85,5 +85,5 @@ export type InferSchema<T> = T extends Joi.ObjectSchema<infer U> ? U : never;
 export type User = InferSchema<typeof userSchema>;
 export type CreateUserInput = InferSchema<typeof createUserSchema>;
 export type UpdateUserInput = InferSchema<typeof updateUserSchema>;
-export type AuthenticateUserInput = InferSchema<typeof authenticateUserSchema>;
+export type AuthenticateUserInput = InferSchema<typeof loginSchema>;
 export type UserIdParam = InferSchema<typeof userIdParamSchema>;
