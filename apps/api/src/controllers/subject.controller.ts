@@ -75,4 +75,37 @@ async getSubjectByName(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+// ===============================
+// UPDATE SUBJECT DETAILS
+// ===============================
+async updateSubject(req: Request, res: Response, next: NextFunction) {
+  try {
+    // =========================
+    // EXTRACT PARAMS + BODY
+    // =========================
+    const id = Number(req.params.id);
+
+    const input = {
+      ...req.body,
+      id,
+    };
+
+    // =========================
+    // UPDATE SUBJECT
+    // =========================
+    const subject = await subjectService.updateSubjectDetails(input);
+
+    // =========================
+    // SUCCESS RESPONSE
+    // =========================
+    res.status(200).json({
+      success: true,
+      message: "Subject updated successfully",
+      data: subject,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 }
