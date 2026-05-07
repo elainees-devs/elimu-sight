@@ -1,5 +1,4 @@
-import { ApiError } from "@utils/app-error";
-import { prisma } from "@utils/prisma";
+import { ApiError, prisma } from "@utils/index";
 import {
   ClassDB,
   toClassId,
@@ -23,9 +22,9 @@ type GetClassParams = {
 };
 
 export class ClassService {
-  // ===============================
-  // GET ALL CLASSES LOGIC
-  // ===============================
+  // ===================================
+  // GET ALL CLASSES
+  // ===================================
   async getAllClasses(schoolId: string, params: GetClassParams) {
     try {
       const {
@@ -38,9 +37,6 @@ export class ClassService {
 
       const skip = (page - 1) * limit;
 
-      // =========================
-      // FILTER
-      // =========================
       const where: any = {
         school_id: schoolId,
       };
@@ -54,9 +50,6 @@ export class ClassService {
         ];
       }
 
-      // =========================
-      // QUERY
-      // =========================
       const [classes, total] = await Promise.all([
         prisma.classes.findMany({
           where,
@@ -71,7 +64,7 @@ export class ClassService {
       ]);
 
       return {
-        data: toClassListResponse(classes),
+        data: toClassListResponse(classes as ClassDB[]),
         meta: {
           page,
           limit,
@@ -79,57 +72,40 @@ export class ClassService {
           totalPages: Math.ceil(total / limit),
         },
       };
-    } catch (error) {
+    } catch {
       throw new ApiError(500, "Failed to fetch classes");
     }
   }
 
-  // ===============================
-  // GET CLASSES BY ID LOGIC
-  // ===============================
+  // ===================================
+  // GET CLASS BY ID
+  // ===================================
   async getClassById(params: ClassIdParam) {
     try {
-      // =========================
-      // VALIDATE ID
-      // =========================
       const id = toClassId(params);
 
-      // =========================
-      // FETCH CLASS
-      // =========================
       const classData = await prisma.classes.findUnique({
         where: { id },
       });
 
-      // =========================
-      // NOT FOUND CHECK
-      // =========================
       if (!classData) {
         throw new ApiError(404, "Class not found");
       }
 
-      // =========================
-      // MAP TO RESPONSE
-      // =========================
       return toClassResponse(classData as ClassDB);
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
+      if (error instanceof ApiError) throw error;
       throw new ApiError(500, "Failed to fetch class");
     }
   }
 
-  // ===============================
-  // CREATE NEW CLASS LOGIC
-  // ===============================
+  // ===================================
+  // CREATE CLASS
+  // ===================================
   async createClass(input: CreateClassInput) {
     try {
       const { schoolId, name, level, stream, academicYear } = input;
 
-      // =========================
-      // OPTIONAL: DUPLICATE CHECK
-      // =========================
       const existingClass = await prisma.classes.findFirst({
         where: {
           school_id: schoolId,
@@ -144,40 +120,26 @@ export class ClassService {
         throw new ApiError(400, "Class already exists");
       }
 
-      // =========================
-      // MAP INPUT → DB
-      // =========================
       const dbData = toCreateClassDB(input);
 
-      // =========================
-      // CREATE CLASS
-      // =========================
-      const newClass = await prisma.classes.create({
+      const created = await prisma.classes.create({
         data: dbData,
       });
 
-      // =========================
-      // MAP DB → RESPONSE
-      // =========================
-      return toClassResponse(newClass as ClassDB);
+      return toClassResponse(created as ClassDB);
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
+      if (error instanceof ApiError) throw error;
       throw new ApiError(500, "Failed to create class");
     }
   }
 
-  // ===============================
-  // UPDATE CLASS DETAILS LOGIC
-  // ===============================
+  // ===================================
+  // UPDATE CLASS
+  // ===================================
   async updateClassDetails(input: UpdateClassInput) {
     try {
       const { id, ...updateData } = input;
 
-      // =========================
-      // CHECK IF CLASS EXISTS
-      // =========================
       const existingClass = await prisma.classes.findUnique({
         where: { id },
       });
@@ -186,120 +148,57 @@ export class ClassService {
         throw new ApiError(404, "Class not found");
       }
 
-      // =========================
-      // OPTIONAL: DUPLICATE CHECK (if name/level changes)
-      // =========================
       const dbUpdate = toUpdateClassDB(updateData);
 
-      if (
-        updateData.name ||
-        updateData.level ||
-        updateData.stream ||
-        updateData.academicYear
-      ) {
-        const duplicate = await prisma.classes.findFirst({
-          where: {
-            school_id: existingClass.school_id,
-            name: updateData.name ?? existingClass.name,
-            level: updateData.level ?? existingClass.level,
-            stream: updateData.stream ?? existingClass.stream,
-            academic_year:
-              updateData.academicYear ?? existingClass.academic_year,
-            NOT: { id },
-          },
-        });
-
-        if (duplicate) {
-          throw new ApiError(400, "Another class with same details exists");
-        }
-      }
-
-      // =========================
-      // UPDATE CLASS
-      // =========================
-      const updatedClass = await prisma.classes.update({
+      const updated = await prisma.classes.update({
         where: { id },
         data: dbUpdate,
       });
 
-      // =========================
-      // MAP RESPONSE
-      // =========================
-      return toClassResponse(updatedClass as ClassDB);
+      return toClassResponse(updated as ClassDB);
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
+      if (error instanceof ApiError) throw error;
       throw new ApiError(500, "Failed to update class");
     }
   }
-  // ===============================
-  // SOFT DELETE CLASS LOGIC
-  // ===============================
+
+  // ===================================
+  // DELETE CLASS (HARD DELETE FIXED)
+  // ===================================
   async deleteClass(params: ClassIdParam) {
     try {
-      // =========================
-      // VALIDATE ID
-      // =========================
       const id = toClassId(params);
 
-      // =========================
-      // SOFT DELETE
-      // =========================
-      const updated = await prisma.classes.updateMany({
-        where: {
-          id,
-          deleted_at: null,
-        },
-        data: {
-          deleted_at: new Date(),
-          updated_at: new Date(),
-        },
-      });
-
-      // =========================
-      // NOT FOUND CHECK
-      // =========================
-      if (updated.count === 0) {
-        throw new ApiError(404, "Class not found");
-      }
-
-      // =========================
-      // FETCH UPDATED RECORD
-      // =========================
-      const classData = await prisma.classes.findFirst({
+      const existing = await prisma.classes.findUnique({
         where: { id },
       });
 
-      if (!classData) {
-        throw new ApiError(404, "Class not found after deletion");
+      if (!existing) {
+        throw new ApiError(404, "Class not found");
       }
 
-      // =========================
-      // MAP RESPONSE
-      // =========================
-      return toClassResponse(classData as ClassDB);
+      const deleted = await prisma.classes.delete({
+        where: { id },
+      });
+
+      return toClassResponse(deleted as ClassDB);
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
+      if (error instanceof ApiError) throw error;
       throw new ApiError(500, "Failed to delete class");
     }
   }
-  // ===============================
-  // COUNT ALL CLASSES LOGIC
-  // ===============================
+
+  // ===================================
+  // COUNT CLASSES
+  // ===================================
   async getClassCount(schoolId: string) {
     try {
-      const count = await prisma.classes.count({
+      return prisma.classes.count({
         where: {
           school_id: schoolId,
-          deleted_at: null,
         },
       });
-
-      return count;
-    } catch (error) {
+    } catch {
       throw new ApiError(500, "Failed to get class count");
     }
   }
