@@ -1,7 +1,17 @@
-import { ApiError, prisma, toSubjectIdParam } from "@utils/index";
-import { toSubjectListResponse, toSubjectResponse , SubjectDB, toUpdateSubjectDB, toCreateSubjectDB} from "mappers";
-import { CreateSubjectInput, SubjectIdParam, UpdateSubjectInput } from "schemas";
-
+import { ApiError, prisma } from "@utils/index";
+import {
+  SubjectDB,
+  toSubjectListResponse,
+  toSubjectResponse,
+  toCreateSubjectDB,
+  toUpdateSubjectDB,
+  toSubjectId,
+} from "mappers/subject.mapper";
+import {
+  CreateSubjectInput,
+  SubjectIdParam,
+  UpdateSubjectInput,
+} from "schemas/subject.schema";
 
 type GetSubjectParams = {
   page?: number;
@@ -12,9 +22,9 @@ type GetSubjectParams = {
 };
 
 export class SubjectService {
-  // ===============================
-  // GET ALL SUBJECTS LOGIC
-  // ===============================
+  // ===================================
+  // GET ALL SUBJECTS
+  // ===================================
   async getAllSubjects(schoolId: string, params: GetSubjectParams) {
     try {
       const {
@@ -27,9 +37,6 @@ export class SubjectService {
 
       const skip = (page - 1) * limit;
 
-      // =========================
-      // FILTER
-      // =========================
       const where: any = {
         school_id: schoolId,
       };
@@ -42,9 +49,6 @@ export class SubjectService {
         ];
       }
 
-      // =========================
-      // QUERY
-      // =========================
       const [subjects, total] = await Promise.all([
         prisma.subjects.findMany({
           where,
@@ -59,7 +63,7 @@ export class SubjectService {
       ]);
 
       return {
-        data: toSubjectListResponse(subjects),
+        data: toSubjectListResponse(subjects as SubjectDB[]),
         meta: {
           page,
           limit,
@@ -67,13 +71,36 @@ export class SubjectService {
           totalPages: Math.ceil(total / limit),
         },
       };
-    } catch (error) {
+    } catch {
       throw new ApiError(500, "Failed to fetch subjects");
     }
   }
-// ===============================
-  // GET SUBJECT BY NAME LOGIC
-  // ===============================
+
+  // ===================================
+  // GET SUBJECT BY ID
+  // ===================================
+  async getSubjectById(params: SubjectIdParam) {
+    try {
+      const id = toSubjectId(params);
+
+      const subject = await prisma.subjects.findUnique({
+        where: { id },
+      });
+
+      if (!subject) {
+        throw new ApiError(404, "Subject not found");
+      }
+
+      return toSubjectResponse(subject as SubjectDB);
+    } catch (error) {
+      if (error instanceof ApiError) throw error;
+      throw new ApiError(500, "Failed to fetch subject");
+    }
+  }
+
+  // ===================================
+  // GET SUBJECT BY NAME
+  // ===================================
   async getSubjectByName(schoolId: string, name: string) {
     try {
       const subject = await prisma.subjects.findFirst({
@@ -92,88 +119,61 @@ export class SubjectService {
 
       return toSubjectResponse(subject as SubjectDB);
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
+      if (error instanceof ApiError) throw error;
       throw new ApiError(500, "Failed to fetch subject by name");
     }
   }
 
-  // ===============================
-// CREATE SUBJECT LOGIC
-// ===============================
-async createSubject(input: CreateSubjectInput) {
-  try {
-    const { schoolId, name } = input;
+  // ===================================
+  // CREATE SUBJECT
+  // ===================================
+  async createSubject(input: CreateSubjectInput) {
+    try {
+      const { schoolId, name } = input;
 
-    // =========================
-    // CHECK DUPLICATE SUBJECT NAME
-    // =========================
-    const existing = await prisma.subjects.findFirst({
-      where: {
-        school_id: schoolId,
-        name: {
-          equals: name,
-          mode: "insensitive",
+      const existing = await prisma.subjects.findFirst({
+        where: {
+          school_id: schoolId,
+          name: { equals: name, mode: "insensitive" },
         },
-      },
-    });
+      });
 
-    if (existing) {
-      throw new ApiError(400, "Subject already exists");
+      if (existing) {
+        throw new ApiError(400, "Subject already exists");
+      }
+
+      const dbData = toCreateSubjectDB(input);
+
+      const created = await prisma.subjects.create({
+        data: dbData,
+      });
+
+      return toSubjectResponse(created as SubjectDB);
+    } catch (error) {
+      if (error instanceof ApiError) throw error;
+      throw new ApiError(500, "Failed to create subject");
     }
-
-    // =========================
-    // MAP INPUT → DB
-    // =========================
-    const dbData = toCreateSubjectDB(input);
-
-    // =========================
-    // CREATE SUBJECT
-    // =========================
-    const subject = await prisma.subjects.create({
-      data: dbData,
-    });
-
-    // =========================
-    // MAP RESPONSE
-    // =========================
-    return toSubjectResponse(subject as SubjectDB);
-  } catch (error) {
-    if (error instanceof ApiError) {
-      throw error;
-    }
-
-    throw new ApiError(500, "Failed to create subject");
   }
-}
 
-
-  // ===============================
-  // UPDATE SUBJECT DETAILS LOGIC
-  // ===============================
+  // ===================================
+  // UPDATE SUBJECT
+  // ===================================
   async updateSubjectDetails(input: UpdateSubjectInput) {
     try {
       const { id, ...updateData } = input;
 
-      // =========================
-      // CHECK IF SUBJECT EXISTS
-      // =========================
-      const existingSubject = await prisma.subjects.findUnique({
+      const existing = await prisma.subjects.findUnique({
         where: { id },
       });
 
-      if (!existingSubject) {
+      if (!existing) {
         throw new ApiError(404, "Subject not found");
       }
 
-      // =========================
-      // OPTIONAL: DUPLICATE NAME CHECK
-      // =========================
       if (updateData.name) {
         const duplicate = await prisma.subjects.findFirst({
           where: {
-            school_id: existingSubject.school_id,
+            school_id: existing.school_id,
             name: updateData.name,
             NOT: { id },
           },
@@ -184,101 +184,58 @@ async createSubject(input: CreateSubjectInput) {
         }
       }
 
-      // =========================
-      // MAP INPUT → DB
-      // =========================
-      const dbData = toUpdateSubjectDB(updateData);
+      const dbUpdate = toUpdateSubjectDB(updateData);
 
-      // =========================
-      // UPDATE SUBJECT
-      // =========================
-      const updatedSubject = await prisma.subjects.update({
+      const updated = await prisma.subjects.update({
         where: { id },
-        data: dbData,
+        data: dbUpdate,
       });
 
-      // =========================
-      // MAP RESPONSE
-      // =========================
-      return toSubjectResponse(updatedSubject as SubjectDB);
+      return toSubjectResponse(updated as SubjectDB);
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
+      if (error instanceof ApiError) throw error;
       throw new ApiError(500, "Failed to update subject");
     }
   }
- // ===============================
-  // SOFT DELETE SUBJECT LOGIC
-  // ===============================
+
+  // ===================================
+  // DELETE SUBJECT (HARD DELETE)
+  // ===================================
   async deleteSubject(params: SubjectIdParam) {
     try {
-      // =========================
-      // VALIDATE ID
-      // =========================
-      const id = toSubjectIdParam(params);
+      const id = toSubjectId(params);
 
-      // =========================
-      // SOFT DELETE
-      // =========================
-      const updated = await prisma.subjects.updateMany({
-        where: {
-          id,
-        },
-        data: {
-          updated_at: new Date(),
-          deleted_at: new Date(),
-        },
-      });
-
-      // =========================
-      // NOT FOUND CHECK
-      // =========================
-      if (updated.count === 0) {
-        throw new ApiError(404, "Subject not found");
-      }
-
-      // =========================
-      // FETCH UPDATED RECORD
-      // =========================
-      const subject = await prisma.subjects.findUnique({
+      const existing = await prisma.subjects.findUnique({
         where: { id },
       });
 
-      if (!subject) {
-        throw new ApiError(404, "Subject not found after deletion");
+      if (!existing) {
+        throw new ApiError(404, "Subject not found");
       }
 
-      // =========================
-      // MAP RESPONSE
-      // =========================
-      return toSubjectResponse(subject as SubjectDB);
+      const deleted = await prisma.subjects.delete({
+        where: { id },
+      });
+
+      return toSubjectResponse(deleted as SubjectDB);
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
+      if (error instanceof ApiError) throw error;
       throw new ApiError(500, "Failed to delete subject");
     }
   }
- // ===============================
-  // COUNT ALL SUBJECTS LOGIC
-  // ===============================
+
+  // ===================================
+  // COUNT SUBJECTS
+  // ===================================
   async getSubjectCount(schoolId: string) {
     try {
-      const count = await prisma.subjects.count({
+      return prisma.subjects.count({
         where: {
           school_id: schoolId,
-          deleted_at: null,
         },
       });
-
-      return count;
-    } catch (error) {
+    } catch {
       throw new ApiError(500, "Failed to get subject count");
     }
   }
 }
-
-
-
-
