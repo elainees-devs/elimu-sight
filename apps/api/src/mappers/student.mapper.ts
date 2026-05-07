@@ -13,11 +13,12 @@ import {
 
 /**
  * =========================
- * DB TYPE (explicit)
+ * DB TYPE (explicit Prisma-aligned)
  * =========================
  */
 export type StudentDB = {
   id: string;
+
   school_id: string;
   class_id: string;
 
@@ -32,7 +33,13 @@ export type StudentDB = {
   is_active: boolean;
 
   created_at: Date;
-  updated_at: Date | null;
+  updated_at: Date;
+
+  // relations (optional if ever selected)
+  assessments?: unknown[];
+  insights?: unknown[];
+  classes?: unknown;
+  schools?: unknown;
 };
 
 /**
@@ -57,7 +64,7 @@ export const toStudentResponse = (db: StudentDB): Student => {
     isActive: db.is_active,
 
     createdAt: db.created_at,
-    updatedAt: db.updated_at ?? undefined,
+    updatedAt: db.updated_at,
   };
 
   const { error, value } = studentSchema.validate(mapped);
@@ -100,7 +107,7 @@ export const toCreateStudentDB = (input: CreateStudentInput) => {
     guardian_name: value.guardianName ?? null,
     guardian_phone: value.guardianPhone ?? null,
 
-    is_active: true,
+    is_active: value.isActive ?? true,
   };
 };
 
@@ -115,13 +122,15 @@ export const toUpdateStudentDB = (input: UpdateStudentInput) => {
     throw new Error(`Invalid update student payload: ${error.message}`);
   }
 
-  const update: Record<string, any> = {};
+  const update: Partial<StudentDB> = {};
 
   if (value.classId !== undefined) update.class_id = value.classId;
   if (value.admissionNumber !== undefined)
     update.admission_number = value.admissionNumber;
+
   if (value.fullName !== undefined) update.full_name = value.fullName;
   if (value.gender !== undefined) update.gender = value.gender;
+
   if (value.dateOfBirth !== undefined)
     update.date_of_birth = value.dateOfBirth;
 
@@ -133,6 +142,7 @@ export const toUpdateStudentDB = (input: UpdateStudentInput) => {
 
   if (value.isActive !== undefined) update.is_active = value.isActive;
 
+  // Prisma @updatedAt handles this, but safe if using raw queries
   update.updated_at = new Date();
 
   return update;
