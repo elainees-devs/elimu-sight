@@ -143,7 +143,43 @@ export const ClassSubjectController = {
     } catch (error) {
       next(error);
     }
+  },
+ 
+  // ===================================
+  // SOFT DELETE CLASS SUBJECT LOGIC
+  // ===================================
+  async deleteClassSubject(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      // =========================
+      // EXTRACT PARAMS
+      // =========================
+      const params = req.params;
+
+      // =========================
+      // CALL SERVICE LAYER
+      // =========================
+      const result =
+        await classSubjectService.deleteClassSubject(
+          params
+        );
+
+      // =========================
+      // SUCCESS RESPONSE
+      // =========================
+      return res.status(200).json({
+        success: true,
+        message: "Class subject deleted successfully",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
+
 
 
 };
