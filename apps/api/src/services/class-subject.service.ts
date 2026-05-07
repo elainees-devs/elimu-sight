@@ -608,7 +608,7 @@ export class ClassSubjectService {
       );
     }
   }
-// ===================================
+  // ===================================
   // ARCHIVE ALL SUBJECTS FOR A CLASS LOGIC
   // ===================================
   async archiveAllSubjectsForClass(classId: string) {
@@ -650,8 +650,6 @@ export class ClassSubjectService {
       );
     }
   }
-
-
 }
  
 
