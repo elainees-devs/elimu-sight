@@ -5,6 +5,7 @@ import {
   validate,
   validateSchoolAccess,
 } from "@middlewares/index";
+
 import {
   createStudentSchema,
   updateStudentSchema,
@@ -13,18 +14,15 @@ import {
 } from "../schemas";
 
 const router = Router();
-const studentController = StudentController;
+const studentController = new StudentController();
 
 // ===============================
 // STUDENT ROUTES
 // ===============================
 
 // GET ALL STUDENTS BY SCHOOL
-router.get(
-  "/",
-  authenticateMiddleware,
-  (req, res, next) =>
-    studentController.getAllStudentsBySchool(req, res, next)
+router.get("/", authenticateMiddleware, (req, res, next) =>
+  studentController.getAllStudentsBySchool(req, res, next),
 );
 
 // GET STUDENTS BY CLASS
@@ -33,7 +31,7 @@ router.get(
   authenticateMiddleware,
   validate(classIdParamSchema, "params"),
   (req, res, next) =>
-    studentController.getStudentsByClass(req, res, next)
+    studentController.getStudentsByClass(req, res, next),
 );
 
 // GET STUDENT BY ID
@@ -42,7 +40,7 @@ router.get(
   authenticateMiddleware,
   validate(studentIdParamSchema, "params"),
   (req, res, next) =>
-    studentController.getStudentById(req, res, next)
+    studentController.getStudentById(req, res, next),
 );
 
 // CREATE STUDENT
@@ -52,7 +50,7 @@ router.post(
   validateSchoolAccess,
   validate(createStudentSchema, "body"),
   (req, res, next) =>
-    studentController.createStudent(req, res, next)
+    studentController.createStudent(req, res, next),
 );
 
 // UPDATE STUDENT
@@ -62,7 +60,7 @@ router.patch(
   validate(studentIdParamSchema, "params"),
   validate(updateStudentSchema, "body"),
   (req, res, next) =>
-    studentController.updateStudent(req, res, next)
+    studentController.updateStudent(req, res, next),
 );
 
 // DELETE STUDENT
@@ -72,7 +70,7 @@ router.delete(
   validate(studentIdParamSchema, "params"),
   validateSchoolAccess,
   (req, res, next) =>
-    studentController.deleteStudent(req, res, next)
+    studentController.deleteStudent(req, res, next),
 );
 
 // ACTIVATE STUDENT
@@ -81,7 +79,7 @@ router.patch(
   authenticateMiddleware,
   validate(studentIdParamSchema, "params"),
   (req, res, next) =>
-    studentController.activateStudent(req, res, next)
+    studentController.activateStudent(req, res, next),
 );
 
 // DEACTIVATE STUDENT
@@ -90,7 +88,7 @@ router.patch(
   authenticateMiddleware,
   validate(studentIdParamSchema, "params"),
   (req, res, next) =>
-    studentController.deactivateStudent(req, res, next)
+    studentController.deactivateStudent(req, res, next),
 );
 
 // TRANSFER STUDENT CLASS
@@ -99,23 +97,17 @@ router.patch(
   authenticateMiddleware,
   validate(studentIdParamSchema, "params"),
   (req, res, next) =>
-    studentController.transferStudentClass(req, res, next)
+    studentController.transferStudentClass(req, res, next),
 );
 
 // COUNT STUDENTS
-router.get(
-  "/count",
-  authenticateMiddleware,
-  (req, res, next) =>
-    studentController.countAllStudents(req, res, next)
+router.get("/count", authenticateMiddleware, (req, res, next) =>
+  studentController.countAllStudents(req, res, next),
 );
 
 // STUDENT STATISTICS
-router.get(
-  "/statistics",
-  authenticateMiddleware,
-  (req, res, next) =>
-    studentController.getStudentStatistics(req, res, next)
+router.get("/statistics", authenticateMiddleware, (req, res, next) =>
+  studentController.getStudentStatistics(req, res, next),
 );
 
 export default router;
