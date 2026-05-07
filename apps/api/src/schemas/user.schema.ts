@@ -1,4 +1,4 @@
-import { roles } from "@utils/constants";
+import { Roles } from "@utils/constants";
 import Joi from "joi";
 
 /**
@@ -9,7 +9,7 @@ import Joi from "joi";
 const userBase = {
   fullName: Joi.string().min(3).max(255),
   email: Joi.string().email(),
-  role: Joi.string().valid(...roles),
+  role: Joi.string().valid(...Roles),
   schoolId: Joi.string().uuid(),
   isActive: Joi.boolean(),
 };
