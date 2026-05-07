@@ -234,4 +234,33 @@ async removeTeacherFromClassSubject(
     return next(error);
   }
 }
+// ===================================
+// REPLACE ALL SUBJECTS FOR A CLASS
+// ===================================
+async replaceSubjectsForClass(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id } = toIdParam(req);
+
+    const subjects = req.body;
+
+    const classSubjects =
+      await classSubjectService.replaceSubjectsForClass(
+        String(id),
+        subjects
+      );
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Class subjects replaced successfully",
+      data: classSubjects,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
 }
