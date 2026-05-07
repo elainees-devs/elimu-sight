@@ -13,40 +13,37 @@ import {
 
 /**
  * =========================
- * DB TYPE (explicit)
+ * DB TYPE (matches Prisma exactly)
  * =========================
  */
 export type SubjectDB = {
   id: string;
   school_id: string;
-
   name: string;
   code: string | null;
   description: string | null;
-
   created_at: Date;
-  updated_at: Date | null;
+  updated_at: Date;
 };
 
 /**
  * =========================
- * DB → DOMAIN (API RESPONSE)
+ * DB → API RESPONSE
  * =========================
  */
 export const toSubjectResponse = (db: SubjectDB): Subject => {
   const mapped: Subject = {
     id: db.id,
     schoolId: db.school_id,
-
     name: db.name,
     code: db.code ?? undefined,
     description: db.description ?? undefined,
-
     createdAt: db.created_at,
-    updatedAt: db.updated_at ?? undefined,
+    updatedAt: db.updated_at,
   };
 
   const { error, value } = subjectSchema.validate(mapped);
+
   if (error) {
     throw new Error(`Subject mapping failed: ${error.message}`);
   }
@@ -56,7 +53,7 @@ export const toSubjectResponse = (db: SubjectDB): Subject => {
 
 /**
  * =========================
- * DB[] → DOMAIN[]
+ * DB[] → API[]
  * =========================
  */
 export const toSubjectListResponse = (rows: SubjectDB[]): Subject[] => {
@@ -70,6 +67,7 @@ export const toSubjectListResponse = (rows: SubjectDB[]): Subject[] => {
  */
 export const toCreateSubjectDB = (input: CreateSubjectInput) => {
   const { error, value } = createSubjectSchema.validate(input);
+
   if (error) {
     throw new Error(`Invalid create subject payload: ${error.message}`);
   }
@@ -89,6 +87,7 @@ export const toCreateSubjectDB = (input: CreateSubjectInput) => {
  */
 export const toUpdateSubjectDB = (input: UpdateSubjectInput) => {
   const { error, value } = updateSubjectSchema.validate(input);
+
   if (error) {
     throw new Error(`Invalid update subject payload: ${error.message}`);
   }
@@ -97,9 +96,10 @@ export const toUpdateSubjectDB = (input: UpdateSubjectInput) => {
 
   if (value.name !== undefined) update.name = value.name;
   if (value.code !== undefined) update.code = value.code;
-  if (value.description !== undefined)
-    update.description = value.description;
+  if (value.description !== undefined) update.description = value.description;
 
+  // Prisma @updatedAt will handle this automatically,
+  // but keeping it explicit for consistency across mappers
   update.updated_at = new Date();
 
   return update;
