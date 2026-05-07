@@ -23,11 +23,11 @@ export type AssessmentDB = {
   subject_id: string;
   created_by: string;
 
-  term: string;
-  exam_type: string;
+  term: string | null;
+  exam_type: string | null;
 
-  score: number;
-  total_marks: number;
+  score: number | string; // Prisma Decimal → string | number
+  total_marks: number | string; // Prisma Decimal → string | number
 
   grade: string | null;
   remarks: string | null;
@@ -50,11 +50,12 @@ export const toAssessmentResponse = (db: AssessmentDB): Assessment => {
     subjectId: db.subject_id,
     createdBy: db.created_by,
 
-    term: db.term,
-    examType: db.exam_type,
+    term: db.term ?? undefined,
+    examType: db.exam_type ?? undefined,
 
-    score: db.score,
-    totalMarks: db.total_marks,
+    // Prisma Decimal safe conversion
+    score: Number(db.score),
+    totalMarks: Number(db.total_marks),
 
     grade: db.grade ?? undefined,
     remarks: db.remarks ?? undefined,
@@ -86,9 +87,7 @@ export const toAssessmentListResponse = (
  * INPUT → DB (CREATE)
  * =========================
  */
-export const toCreateAssessmentDB = (
-  input: CreateAssessmentInput
-) => {
+export const toCreateAssessmentDB = (input: CreateAssessmentInput) => {
   const { error, value } = createAssessmentSchema.validate(input);
   if (error) {
     throw new Error(`Invalid create assessment payload: ${error.message}`);
@@ -101,8 +100,8 @@ export const toCreateAssessmentDB = (
     subject_id: value.subjectId,
     created_by: value.createdBy,
 
-    term: value.term,
-    exam_type: value.examType,
+    term: value.term ?? null,
+    exam_type: value.examType ?? null,
 
     score: value.score,
     total_marks: value.totalMarks,
@@ -117,9 +116,7 @@ export const toCreateAssessmentDB = (
  * INPUT → DB (UPDATE)
  * =========================
  */
-export const toUpdateAssessmentDB = (
-  input: UpdateAssessmentInput
-) => {
+export const toUpdateAssessmentDB = (input: UpdateAssessmentInput) => {
   const { error, value } = updateAssessmentSchema.validate(input);
   if (error) {
     throw new Error(`Invalid update assessment payload: ${error.message}`);
@@ -144,9 +141,7 @@ export const toUpdateAssessmentDB = (
  * PARAM → SAFE ID
  * =========================
  */
-export const toAssessmentId = (
-  params: AssessmentIdParam
-): string => {
+export const toAssessmentId = (params: AssessmentIdParam): string => {
   const { error, value } = assessmentIdParamSchema.validate(params);
 
   if (error) {
