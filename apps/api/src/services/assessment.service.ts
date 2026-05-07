@@ -21,6 +21,11 @@ type GetAssessmentParams = {
   search?: string;
 };
 
+type AssessmentWhere = {
+  school_id: string;
+  OR?: Array<Record<string, unknown>>;
+};
+
 export class AssessmentService {
   // ===============================
   // GET ALL ASSESSMENTS
@@ -37,7 +42,7 @@ export class AssessmentService {
 
       const skip = (page - 1) * limit;
 
-      const where: any = {
+      const where: AssessmentWhere = {
         school_id: schoolId,
       };
 
@@ -49,10 +54,21 @@ export class AssessmentService {
         ];
       }
 
+      const orderBy =
+        sortBy === "score"
+          ? { score: sortOrder }
+          : sortBy === "term"
+          ? { term: sortOrder }
+          : sortBy === "exam_type"
+          ? { exam_type: sortOrder }
+          : sortBy === "grade"
+          ? { grade: sortOrder }
+          : { created_at: sortOrder };
+
       const [assessments, total] = await Promise.all([
         prisma.assessments.findMany({
           where,
-          orderBy: { [sortBy]: sortOrder },
+          orderBy,
           skip,
           take: limit,
         }),
@@ -60,7 +76,7 @@ export class AssessmentService {
       ]);
 
       return {
-        data: toAssessmentListResponse(assessments),
+        data: toAssessmentListResponse(assessments as AssessmentDB[]),
         meta: {
           page,
           limit,
@@ -167,7 +183,7 @@ export class AssessmentService {
   }
 
   // ===============================
-  // DELETE (HARD DELETE FIXED)
+  // DELETE
   // ===============================
   async deleteAssessment(params: AssessmentIdParam) {
     try {
