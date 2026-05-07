@@ -4,7 +4,6 @@ import { toCreateInsightDB, toUpdateInsightDB } from "mappers";
 import {
   CreateInsightInput,
   UpdateInsightInput,
-  InsightIdParam,
 } from "schemas";
 
 export class InsightCrudService {
@@ -15,12 +14,12 @@ export class InsightCrudService {
     try {
       const data = toCreateInsightDB(input);
 
-      const insight = await prisma.insight.create({
+      const insight = await prisma.insights.create({
         data,
       });
 
       return insight;
-    } catch (error) {
+    } catch {
       throw new ApiError(500, "Failed to create insight");
     }
   }
@@ -30,7 +29,7 @@ export class InsightCrudService {
   // ===============================
   async getAllInsightsBySchool(schoolId: string) {
     try {
-      const insights = await prisma.insight.findMany({
+      const insights = await prisma.insights.findMany({
         where: {
           school_id: schoolId,
         },
@@ -40,7 +39,7 @@ export class InsightCrudService {
       });
 
       return insights;
-    } catch (error) {
+    } catch {
       throw new ApiError(500, "Failed to fetch insights");
     }
   }
@@ -50,10 +49,8 @@ export class InsightCrudService {
   // ===============================
   async getInsightById(id: string) {
     try {
-      const insight = await prisma.insight.findFirst({
-        where: {
-          id,
-        },
+      const insight = await prisma.insights.findFirst({
+        where: { id },
       });
 
       if (!insight) {
@@ -62,6 +59,7 @@ export class InsightCrudService {
 
       return insight;
     } catch (error) {
+      if (error instanceof ApiError) throw error;
       throw new ApiError(500, "Failed to fetch insight");
     }
   }
@@ -73,7 +71,7 @@ export class InsightCrudService {
     try {
       const data = toUpdateInsightDB(input);
 
-      const existing = await prisma.insight.findFirst({
+      const existing = await prisma.insights.findFirst({
         where: { id },
       });
 
@@ -81,13 +79,14 @@ export class InsightCrudService {
         throw new ApiError(404, "Insight not found");
       }
 
-      const updated = await prisma.insight.update({
+      const updated = await prisma.insights.update({
         where: { id },
         data,
       });
 
       return updated;
     } catch (error) {
+      if (error instanceof ApiError) throw error;
       throw new ApiError(500, "Failed to update insight");
     }
   }
@@ -97,7 +96,7 @@ export class InsightCrudService {
   // ===============================
   async deleteInsight(id: string) {
     try {
-      const existing = await prisma.insight.findFirst({
+      const existing = await prisma.insights.findFirst({
         where: { id },
       });
 
@@ -105,16 +104,17 @@ export class InsightCrudService {
         throw new ApiError(404, "Insight not found");
       }
 
-      const deleted = await prisma.insight.update({
+      const deleted = await prisma.insights.update({
         where: { id },
         data: {
           updated_at: new Date(),
-          deleted_at: new Date() || null,
+          deleted_at: new Date(),
         },
       });
 
       return deleted;
     } catch (error) {
+      if (error instanceof ApiError) throw error;
       throw new ApiError(500, "Failed to delete insight");
     }
   }
