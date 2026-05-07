@@ -1,6 +1,27 @@
-import { prisma, ApiError } from "@utils/index";
+import { prisma } from "@utils/index";
+import { ApiError } from "@utils/index";
 
 export class InsightQueryService {
+  // ===============================
+  // GET ALL INSIGHTS BY SCHOOL LOGIC
+  // ===============================
+
+  async getAllInsightsBySchool(schoolId: string) {
+    try {
+      const insights = await prisma.insight.findMany({
+        where: {
+          school_id: schoolId,
+        },
+        orderBy: {
+          created_at: "desc",
+        },
+      });
+
+      return insights;
+    } catch (error) {
+      throw new ApiError(500, "Failed to fetch insights");
+    }
+  }
 
   // ===============================
   // ARCHIVE INSIGHTS LOGIC
