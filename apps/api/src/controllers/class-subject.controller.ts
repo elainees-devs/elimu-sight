@@ -86,7 +86,7 @@ export const ClassSubjectController = {
   },
 
   // =====================================
-  // GET CLASS SUBJECT COUNT
+  // GET CLASS SUBJECT COUNT LOGIC
   // =====================================
   async getClassSubjectCount(
     req: Request,
@@ -111,5 +111,39 @@ export const ClassSubjectController = {
       next(error);
     }
   },
+
+  // ===================================
+  // CREATE CLASS SUBJECT LOGIC
+  // ===================================
+  async createClassSubject(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      // =========================
+      // EXTRACT REQUEST BODY
+      // =========================
+      const input = req.body;
+
+      // =========================
+      // CALL SERVICE LAYER
+      // =========================
+      const result =
+        await classSubjectService.createClassSubject(input);
+
+      // =========================
+      // RETURN SUCCESS RESPONSE
+      // =========================
+      return res.status(201).json({
+        success: true,
+        message: "Class subject created successfully",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
 
 };
