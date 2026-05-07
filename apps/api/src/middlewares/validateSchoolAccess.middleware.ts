@@ -1,34 +1,36 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../types/express";
-import { AuthService } from "@services/index";
+import { prisma, ApiError } from "@utils/index";
 
-const authService = new AuthService();
+export async function validateSchoolAccess(
+  req: AuthRequest,
+  _res: Response,
+  next: NextFunction
+) {
+  try {
+    const userId = req.user?.id || (req as any).user?.id;
+    const schoolId = req.params.schoolId || req.body.schoolId;
 
-export const validateSchoolAccess = (schoolIdParam: string = "schoolId") =>
-  async (req: AuthRequest, res: Response, next: NextFunction) => {
-    try {
-      const userId = req.user?.id || (req as any).user?.id;
-      const schoolId = req.params[schoolIdParam] || req.query[schoolIdParam] || req.body[schoolIdParam];
+    const user = await prisma.users.findUnique({
+      where: { id: userId },
+    });
 
-      if (!userId) {
-        return res.status(401).json({
-          message: "Unauthorized",
-        });
-      }
-
-      const hasAccess = await authService.validateSchoolAccess(
-        userId,
-        schoolId
-      );
-
-      if (!hasAccess) {
-        return res.status(403).json({
-          message: "You do not have access to this school",
-        });
-      }
-
-      next();
-    } catch (error) {
-      next(error);
+    if (!user) {
+      throw new ApiError(404, "User not found");
     }
-  };
+
+    const hasAccess =
+      user.role === "ADMIN" || user.school_id === schoolId;
+
+    if (!hasAccess) {
+      throw new ApiError(
+        403,
+        "You do not have access to this school"
+      );
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
