@@ -1,4 +1,4 @@
-// src/modules/student/student.mapper.ts
+import { Prisma } from "@prisma/client";
 
 import {
   Student,
@@ -35,7 +35,6 @@ export type StudentDB = {
   created_at: Date;
   updated_at: Date;
 
-  // relations (optional if ever selected)
   assessments?: unknown[];
   insights?: unknown[];
   classes?: unknown;
@@ -44,7 +43,7 @@ export type StudentDB = {
 
 /**
  * =========================
- * DB → DOMAIN (API RESPONSE)
+ * DB → DOMAIN
  * =========================
  */
 export const toStudentResponse = (db: StudentDB): Student => {
@@ -68,6 +67,7 @@ export const toStudentResponse = (db: StudentDB): Student => {
   };
 
   const { error, value } = studentSchema.validate(mapped);
+
   if (error) {
     throw new Error(`Student mapping failed: ${error.message}`);
   }
@@ -91,6 +91,7 @@ export const toStudentListResponse = (rows: StudentDB[]): Student[] => {
  */
 export const toCreateStudentDB = (input: CreateStudentInput) => {
   const { error, value } = createStudentSchema.validate(input);
+
   if (error) {
     throw new Error(`Invalid create student payload: ${error.message}`);
   }
@@ -113,37 +114,51 @@ export const toCreateStudentDB = (input: CreateStudentInput) => {
 
 /**
  * =========================
- * INPUT → DB (UPDATE)
+ * INPUT → PRISMA UPDATE INPUT
  * =========================
  */
-export const toUpdateStudentDB = (input: UpdateStudentInput) => {
+export const toUpdateStudentDB = (
+  input: UpdateStudentInput
+): Prisma.studentsUncheckedUpdateInput => {
   const { error, value } = updateStudentSchema.validate(input);
+
   if (error) {
     throw new Error(`Invalid update student payload: ${error.message}`);
   }
 
-  const update: Partial<StudentDB> = {};
+  const update: Prisma.studentsUncheckedUpdateInput = {};
 
-  if (value.classId !== undefined) update.class_id = value.classId;
-  if (value.admissionNumber !== undefined)
+  if (value.classId !== undefined) {
+    update.class_id = value.classId;
+  }
+
+  if (value.admissionNumber !== undefined) {
     update.admission_number = value.admissionNumber;
+  }
 
-  if (value.fullName !== undefined) update.full_name = value.fullName;
-  if (value.gender !== undefined) update.gender = value.gender;
+  if (value.fullName !== undefined) {
+    update.full_name = value.fullName;
+  }
 
-  if (value.dateOfBirth !== undefined)
+  if (value.gender !== undefined) {
+    update.gender = value.gender;
+  }
+
+  if (value.dateOfBirth !== undefined) {
     update.date_of_birth = value.dateOfBirth;
+  }
 
-  if (value.guardianName !== undefined)
+  if (value.guardianName !== undefined) {
     update.guardian_name = value.guardianName;
+  }
 
-  if (value.guardianPhone !== undefined)
+  if (value.guardianPhone !== undefined) {
     update.guardian_phone = value.guardianPhone;
+  }
 
-  if (value.isActive !== undefined) update.is_active = value.isActive;
-
-  // Prisma @updatedAt handles this, but safe if using raw queries
-  update.updated_at = new Date();
+  if (value.isActive !== undefined) {
+    update.is_active = value.isActive;
+  }
 
   return update;
 };
