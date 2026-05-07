@@ -7,7 +7,7 @@ import { Roles } from "./constants";
 export interface JwtPayload {
   id: string;
   email?: string;
-  roles: typeof Roles[];
+  roles: (typeof Roles)[number];
 }
 
 const JWT_SECRET = process.env.JWT_SECRET;
