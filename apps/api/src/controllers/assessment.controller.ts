@@ -125,4 +125,30 @@ async deleteAssessment(
   }
 }
 
+// ===============================
+// GET ASSESSMENT COUNT
+// ===============================
+async getAssessmentCount(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { schoolId } = toSchoolIdParam(req);
+
+    const count =
+      await assessmentService.getAssessmentCount(
+        String(schoolId)
+      );
+
+    return res.status(200).json({
+      success: true,
+      message: "Assessment count fetched successfully",
+      data: count,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 }
