@@ -21,14 +21,3 @@ export { ApiError } from "./app-error";
 // hash
 export { hashPassword, comparePassword } from "./hash";
 
-// params
-export {
-  toIdParam,
-  toSchoolIdParam,
-  toClassIdParam,
-  toSubjectIdParam,
-  toStudentIdParam,
-  toEmailParam,
-  toNameParam,
-  toAssessmentIdParam,
-} from "./params";
