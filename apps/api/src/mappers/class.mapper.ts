@@ -9,6 +9,8 @@ import {
   classIdParamSchema,
 } from "schemas";
 
+import { Prisma } from "@prisma/client";
+
 /**
  * =========================
  * DB TYPE (matches Prisma exactly)
@@ -16,12 +18,15 @@ import {
  */
 export type ClassDB = {
   id: string;
+
   name: string;
   level: string;
   stream: string;
   academic_year: string;
+
   school_id: string;
   class_teacher_id: string | null;
+
   created_at: Date;
   updated_at: Date;
 };
@@ -48,6 +53,7 @@ export const toClassResponse = (db: ClassDB): Class => {
   };
 
   const { error, value } = classSchema.validate(mapped);
+
   if (error) {
     throw new Error(`Class mapping failed: ${error.message}`);
   }
@@ -71,6 +77,7 @@ export const toClassListResponse = (rows: ClassDB[]): Class[] => {
  */
 export const toCreateClassDB = (input: CreateClassInput) => {
   const { error, value } = createClassSchema.validate(input);
+
   if (error) {
     throw new Error(`Invalid create class payload: ${error.message}`);
   }
@@ -91,28 +98,26 @@ export const toCreateClassDB = (input: CreateClassInput) => {
  * INPUT → DB (UPDATE)
  * =========================
  */
-export const toUpdateClassDB = (input: UpdateClassInput) => {
+export const toUpdateClassDB = (input: UpdateClassInput): Prisma.classesUpdateInput => {
   const { error, value } = updateClassSchema.validate(input);
+
   if (error) {
     throw new Error(`Invalid update class payload: ${error.message}`);
   }
 
-  const update: Record<string, unknown> = {};
+  return {
+    ...(value.name !== undefined && { name: value.name }),
+    ...(value.level !== undefined && { level: value.level }),
+    ...(value.stream !== undefined && { stream: value.stream }),
 
-  if (value.name !== undefined) update.name = value.name;
-  if (value.level !== undefined) update.level = value.level;
-  if (value.stream !== undefined) update.stream = value.stream;
-  if (value.academicYear !== undefined) {
-    update.academic_year = value.academicYear;
-  }
+    ...(value.academicYear !== undefined && {
+      academic_year: value.academicYear,
+    }),
 
-  if (value.classTeacherId !== undefined) {
-    update.class_teacher_id = value.classTeacherId;
-  }
-
-  update.updated_at = new Date();
-
-  return update;
+    ...(value.classTeacherId !== undefined && {
+      class_teacher_id: value.classTeacherId,
+    }),
+  };
 };
 
 /**
