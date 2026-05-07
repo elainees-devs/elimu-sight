@@ -1,4 +1,4 @@
-import { Roles } from "@utils/constants";
+import { RoleValues } from "@utils/constants";
 import Joi from "joi";
 
 /**
@@ -9,7 +9,7 @@ import Joi from "joi";
 const userBase = {
   fullName: Joi.string().min(3).max(255),
   email: Joi.string().email(),
-  role: Joi.string().valid(...Roles),
+  role: Joi.string().valid(...RoleValues),
   schoolId: Joi.string().uuid(),
   isActive: Joi.boolean(),
 };
@@ -57,7 +57,6 @@ export const updateUserSchema = Joi.object({
   isActive: userBase.isActive.optional(),
   updatedAt: Joi.date().optional(),
 }).min(1);
-
 
 /**
  * =========================
