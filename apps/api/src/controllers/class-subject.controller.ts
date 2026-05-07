@@ -84,4 +84,32 @@ export const ClassSubjectController = {
       next(error);
     }
   },
+
+  // =====================================
+  // GET CLASS SUBJECT COUNT
+  // =====================================
+  async getClassSubjectCount(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { classId } = toClassIdParam(req);
+
+      const count = await classSubjectService.getClassSubjectCount(
+        classId
+      );
+
+      res.status(200).json({
+        success: true,
+        message: "Class subject count fetched successfully",
+        data: {
+          count,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
 };
