@@ -49,6 +49,7 @@ router.get(
 router.post(
   "/",
   authenticateMiddleware,
+  validateSchoolAccess(),
   validate(createStudentSchema, "body"),
   (req, res, next) =>
     studentController.createStudent(req, res, next)
