@@ -140,8 +140,8 @@ export class SchoolController {
     }
   }
 
-  // =========================
-// SOFT DELETE SCHOOL
+// =========================
+// SOFT DELETE SCHOOL LOGIC
 // =========================
 async deleteSchool(req: Request, res: Response, next: NextFunction) {
   try {
@@ -164,6 +164,31 @@ async deleteSchool(req: Request, res: Response, next: NextFunction) {
       success: true,
       message: "School deleted successfully",
       data: school,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// =========================
+// GET SCHOOL COUNT LOGIC
+// =========================
+async getSchoolCount(req: Request, res: Response, next: NextFunction) {
+  try {
+    // =========================
+    // FETCH SCHOOL COUNT
+    // =========================
+    const count = await schoolService.getSchoolCount();
+
+    // =========================
+    // SUCCESS RESPONSE
+    // =========================
+    res.status(200).json({
+      success: true,
+      message: "School count fetched successfully",
+      data: {
+        count,
+      },
     });
   } catch (error) {
     next(error);
