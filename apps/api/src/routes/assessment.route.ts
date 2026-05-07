@@ -33,7 +33,7 @@ router.get(
     assessmentController.getAssessmentCount(req, res, next)
 );
 
-// GET ASSESSMENT BY NAME (examType is just a param string, not schema-typed)
+// GET ASSESSMENT BY EXAM TYPE
 router.get(
   "/school/:schoolId/assessments/:examType",
   authenticateMiddleware,
@@ -43,7 +43,6 @@ router.get(
 );
 
 // CREATE ASSESSMENT
-// ===============================
 router.post(
   "/assessments",
   authenticateMiddleware,
@@ -62,7 +61,7 @@ router.patch(
     assessmentController.updateAssessmentDetails(req, res, next)
 );
 
-// DELETE (SOFT DELETE)
+// DELETE ASSESSMENT
 router.delete(
   "/assessments/:id",
   authenticateMiddleware,
