@@ -5,32 +5,29 @@ import { authenticateMiddleware } from "@middlewares/index";
 const router = Router();
 const controller = new InsightController();
 
-// GET ALL BY SCHOOL
-router.get(
-  "/schools/:schoolId/insights",
-  authenticateMiddleware,
-  (req, res, next) => controller.getAllInsightsBySchool(req, res, next)
-);
+// =========================================
+// BULK + ANALYTICS
+// =========================================
 
-// ARCHIVE
 router.post(
-  "/insights/archive",
+  "/bulk-generate",
   authenticateMiddleware,
-  (req, res, next) => controller.archiveInsights(req, res, next)
+  (req, res, next) =>
+    controller.bulkGenerateInsights(req, res, next),
 );
 
-// BULK GENERATE
 router.post(
-  "/insights/bulk-generate",
+  "/archive",
   authenticateMiddleware,
-  (req, res, next) => controller.bulkGenerateInsights(req, res, next)
+  (req, res, next) =>
+    controller.archiveInsights(req, res, next),
 );
 
-// TREND ANALYSIS
 router.get(
-  "/schools/:schoolId/insights/trends",
+  "/schools/:schoolId/trends",
   authenticateMiddleware,
-  (req, res, next) => controller.generateTrendAnalysis(req, res, next)
+  (req, res, next) =>
+    controller.generateTrendAnalysis(req, res, next),
 );
 
 export default router;
