@@ -1,7 +1,7 @@
 import {Request, Response, NextFunction} from "express";
-import {toAssessmentIdParam, toIdParam, toSchoolIdParam} from "utils/index";
+import {toAssessmentIdParam, toSchoolIdParam} from "utils/index";
 import {AssessmentService} from "@services/index";
-import { UpdateAssessmentInput } from "schemas/assessment.schema";
+import { CreateAssessmentInput, UpdateAssessmentInput } from "schemas/index";
 
 const assessmentService = new AssessmentService();
 
@@ -78,6 +78,32 @@ async getAssessmentByName(
     return next(error);
   }
 }
+
+// ===============================
+// CREATE ASSESSMENT
+// ===============================
+
+  async createAssessment(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const input = req.body as CreateAssessmentInput;
+
+      const assessment =
+        await assessmentService.createAssessment(input);
+
+      return res.status(201).json({
+        success: true,
+        message: "Assessment created successfully",
+        data: assessment,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
 // ===============================
 // UPDATE ASSESSMENT DETAILS
 // ===============================
