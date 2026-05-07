@@ -4,6 +4,7 @@ import {
   hashPassword,
   prisma,
   generateToken,
+  Roles,
 } from "@utils/index";
 
 import { CreateUserInput } from "schemas";
@@ -50,33 +51,40 @@ export class AuthService {
   // LOGIN USER
   // =========================
   async loginUser(email: string, password: string) {
-    const user = await prisma.users.findUnique({
-      where: { email },
-    });
+  const user = await prisma.users.findUnique({
+    where: { email },
+  });
 
-    if (!user) {
-      throw new ApiError(401, "Invalid email or password");
-    }
-
-    const isPasswordValid = await comparePassword(password, user.password_hash);
-
-    if (!isPasswordValid) {
-      throw new ApiError(401, "Invalid password");
-    }
-
-   
-
-    const token = generateToken({
-      id: user.id,
-      email: user.email,
-      roles: user.role,
-    });
-
-    return {
-      token,
-      user: toUserResponse(user as UserDB),
-    };
+  if (!user) {
+    throw new ApiError(401, "Invalid email or password");
   }
+
+  const isPasswordValid = await comparePassword(
+    password,
+    user.password_hash
+  );
+
+  if (!isPasswordValid) {
+    throw new ApiError(401, "Invalid password");
+  }
+
+  const role = user.role;
+
+  if (!role || !Roles.includes(role as any)) {
+    throw new ApiError(500, "Invalid user role");
+  }
+
+  const token = generateToken({
+    id: user.id,
+    email: user.email,
+    roles: role as (typeof Roles)[number],
+  });
+
+  return {
+    token,
+    user: toUserResponse(user as UserDB),
+  };
+}
 
   // =========================
   // GET CURRENT USER
