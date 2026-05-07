@@ -9,7 +9,8 @@ import {
   createClassSchema,
   updateClassSchema,
   classIdParamSchema,
-} from "../schemas";
+  schoolIdParamSchema,
+} from "schemas";
 
 const router = Router();
 const classController = new ClassController();
@@ -20,8 +21,9 @@ const classController = new ClassController();
 
 // GET ALL CLASSES
 router.get(
-  "/",
+  "/school/:schoolId",
   authenticateMiddleware,
+  validate(schoolIdParamSchema, "params"),
   (req, res, next) => classController.getAllClasses(req, res, next)
 );
 
@@ -50,7 +52,7 @@ router.patch(
   (req, res, next) => classController.updateClass(req, res, next)
 );
 
-// DELETE CLASS
+// DELETE CLASS (soft delete handled in service)
 router.delete(
   "/:id",
   authenticateMiddleware,
@@ -61,8 +63,9 @@ router.delete(
 
 // GET CLASS COUNT
 router.get(
-  "/count",
+  "/school/:schoolId/count",
   authenticateMiddleware,
+  validate(schoolIdParamSchema, "params"),
   (req, res, next) => classController.getClassCount(req, res, next)
 );
 
