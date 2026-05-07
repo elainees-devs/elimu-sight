@@ -148,4 +148,34 @@ async updateClass(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+// ===============================
+// SOFT DELETE CLASS
+// ===============================
+async deleteClass(req: Request, res: Response, next: NextFunction) {
+  try {
+    // =========================
+    // EXTRACT PARAMS
+    // =========================
+    const params = {
+      id: Number(req.params.id),
+    };
+
+    // =========================
+    // DELETE CLASS
+    // =========================
+    const deletedClass = await classService.deleteClass(params);
+
+    // =========================
+    // SUCCESS RESPONSE
+    // =========================
+    res.status(200).json({
+      success: true,
+      message: "Class deleted successfully",
+      data: deletedClass,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 }
