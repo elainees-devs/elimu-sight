@@ -49,4 +49,32 @@ export class AssessmentController {
       next(error);
     }
   }
+
+  // ===============================
+// GET ASSESSMENT BY NAME
+// ===============================
+async getAssessmentByName(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { schoolId } = toSchoolIdParam(req);
+    const { examType } = req.params;
+
+    const assessment =
+      await assessmentService.getAssessmentByName(
+        String(schoolId),
+        String(examType)
+      );
+
+    return res.status(200).json({
+      success: true,
+      message: "Assessment fetched successfully",
+      data: assessment,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
 }
