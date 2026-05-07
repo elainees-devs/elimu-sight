@@ -52,4 +52,36 @@ export const StudentController = {
       next(error);
     }
   },
+
+  // ===============================
+// CREATE STUDENT
+// ===============================
+async createStudent(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    // =========================
+    // EXTRACT REQUEST BODY
+    // =========================
+    const input = req.body;
+
+    // =========================
+    // CREATE STUDENT
+    // =========================
+    const student = await studentService.createStudent(input);
+
+    // =========================
+    // SUCCESS RESPONSE
+    // =========================
+    res.status(201).json({
+      success: true,
+      message: "Student created successfully",
+      data: student,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 };
