@@ -178,7 +178,44 @@ export const ClassSubjectController = {
     } catch (error) {
       next(error);
     }
+  },
+
+   // =====================================
+  // ASSIGN TEACHER LOGIC
+  // =====================================
+  async assignTeacherToClassSubject(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      // =========================
+      // EXTRACT PARAMS & BODY
+      // =========================
+      const { classSubjectId, teacherId } = req.body;
+
+      // =========================
+      // CALL SERVICE LAYER
+      // =========================
+      const result =
+        await classSubjectService.assignTeacherToClassSubject(
+          classSubjectId,
+          teacherId
+        );
+
+      // =========================
+      // SUCCESS RESPONSE
+      // =========================
+      return res.status(200).json({
+        success: true,
+        message: "Teacher assigned successfully",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
+
 
 
 
