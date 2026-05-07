@@ -11,8 +11,8 @@ const allowedSortBy = ["name", "created_at"] as const;
 type SortBy = (typeof allowedSortBy)[number];
 
 export class ClassController {
-    // ===============================
-// GET ALL CLASSES
+// ===============================
+// GET ALL CLASSES LOGIC
 // ===============================
 async getAllClasses(req: Request, res: Response, next: NextFunction) {
   try {
@@ -51,6 +51,36 @@ async getAllClasses(req: Request, res: Response, next: NextFunction) {
       success: true,
       message: "Classes fetched successfully",
       ...result,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// ===============================
+// GET CLASS BY ID LOGIC
+// ===============================
+async getClassById(req: Request, res: Response, next: NextFunction) {
+  try {
+    // =========================
+    // EXTRACT PARAMS
+    // =========================
+    const params = {
+      id: Number(req.params.id),
+    };
+
+    // =========================
+    // FETCH CLASS
+    // =========================
+    const classData = await classService.getClassById(params);
+
+    // =========================
+    // SUCCESS RESPONSE
+    // =========================
+    res.status(200).json({
+      success: true,
+      message: "Class fetched successfully",
+      data: classData,
     });
   } catch (error) {
     next(error);
