@@ -10,7 +10,7 @@ import { AssessmentIdParam, UpdateAssessmentInput } from "schemas";
 type GetAssessmentParams = {
   page?: number;
   limit?: number;
-  sortBy?: "created_at" | "score";
+  sortBy?: "created_at" | "score" | "term" | "exam_type" | "grade";
   sortOrder?: "asc" | "desc";
   search?: string;
 };
