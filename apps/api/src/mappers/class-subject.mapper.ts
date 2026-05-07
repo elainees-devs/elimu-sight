@@ -71,7 +71,7 @@ export const toCreateClassSubjectDB = (input: CreateClassSubjectInput) => {
   return {
     class_id: value.classId,
     subject_id: value.subjectId,
-    teacher_id: value.teacherId, // ✅ required
+    teacher_id: value.teacherId, 
   };
 };
 
