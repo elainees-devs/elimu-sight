@@ -3,9 +3,14 @@ import {
   toAssessmentListResponse,
   toUpdateAssessmentDB,
   toAssessmentId,
+  toCreateAssessmentDB,
 } from "mappers";
 import { AssessmentDB, toAssessmentResponse } from "mappers/index";
-import { AssessmentIdParam, UpdateAssessmentInput } from "schemas";
+import {
+  AssessmentIdParam,
+  CreateAssessmentInput,
+  UpdateAssessmentInput,
+} from "schemas";
 
 type GetAssessmentParams = {
   page?: number;
@@ -104,6 +109,58 @@ export class AssessmentService {
     }
   }
 
+  // =========================
+  // CREATE NEW ASSESSMENT LOGIC
+  // =========================
+  async createAssessment(input: CreateAssessmentInput) {
+    try {
+      const { schoolId, classId, studentId, subjectId, examType, term } = input;
+
+      // =========================
+      // CHECK DUPLICATE ASSESSMENT
+      // =========================
+      const existingAssessment = await prisma.assessments.findFirst({
+        where: {
+          school_id: schoolId,
+          class_id: classId,
+          student_id: studentId,
+          subject_id: subjectId,
+          exam_type: examType,
+          term,
+          deleted_at: null,
+        },
+      });
+
+      if (existingAssessment) {
+        throw new ApiError(
+          400,
+          "Assessment already exists for this student, subject, term and exam type",
+        );
+      }
+
+      // =========================
+      // MAP INPUT → DB
+      // =========================
+      const dbData = toCreateAssessmentDB(input);
+
+      // =========================
+      // CREATE ASSESSMENT
+      // =========================
+      const newAssessment = await prisma.assessments.create({
+        data: dbData,
+      });
+
+      // =========================
+      // DB → RESPONSE
+      // =========================
+      return toAssessmentResponse(newAssessment);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(500, "Failed to create assessment");
+    }
+  }
   // ===============================
   // UPDATE ASSESSMENT DETAILS LOGIC
   // ===============================
@@ -216,6 +273,4 @@ export class AssessmentService {
       throw new ApiError(500, "Failed to get assessment count");
     }
   }
-
-  
 }
