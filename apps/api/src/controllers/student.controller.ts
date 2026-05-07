@@ -312,5 +312,43 @@ async countAllStudents(
   } catch (error) {
     next(error);
   }
+},
+// ===============================
+// TRANSFER STUDENT CLASS
+// ===============================
+async transferStudentClass(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    // =========================
+    // EXTRACT PARAMS
+    // =========================
+    const params = {
+      id: Number(req.params.id),
+    };
+
+    const { newClassId } = req.body;
+
+    // =========================
+    // TRANSFER STUDENT
+    // =========================
+    const student = await studentService.transferStudentClass(
+      params,
+      newClassId
+    );
+
+    // =========================
+    // SUCCESS RESPONSE
+    // =========================
+    res.status(200).json({
+      success: true,
+      message: "Student transferred successfully",
+      data: student,
+    });
+  } catch (error) {
+    next(error);
+  }
 }
 };
