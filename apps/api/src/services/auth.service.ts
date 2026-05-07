@@ -58,14 +58,13 @@ export class AuthService {
       throw new ApiError(401, "Invalid email or password");
     }
 
-    const isPasswordValid = await comparePassword(
-      password,
-      user.password_hash
-    );
+    const isPasswordValid = await comparePassword(password, user.password_hash);
 
     if (!isPasswordValid) {
       throw new ApiError(401, "Invalid password");
     }
+
+   
 
     const token = generateToken({
       id: user.id,
@@ -77,24 +76,6 @@ export class AuthService {
       token,
       user: toUserResponse(user as UserDB),
     };
-  }
-
-  // =========================
-  // VALIDATE SCHOOL ACCESS
-  // =========================
-  async validateSchoolAccess(
-    userId: string,
-    schoolId: string
-  ): Promise<boolean> {
-    const user = await prisma.users.findUnique({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      throw new ApiError(404, "User not found");
-    }
-
-    return user.role === "ADMIN" || user.school_id === schoolId;
   }
 
   // =========================
