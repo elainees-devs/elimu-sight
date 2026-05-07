@@ -1,9 +1,13 @@
+import dotenv from "dotenv";
+
+dotenv.config();
 import jwt, { SignOptions } from "jsonwebtoken";
+import { Roles } from "./constants";
 
 export interface JwtPayload {
-  id: number;
+  id: string;
   email?: string;
-  roles?: string[];
+  roles: typeof Roles[];
 }
 
 const JWT_SECRET = process.env.JWT_SECRET;
