@@ -177,5 +177,34 @@ async deleteClass(req: Request, res: Response, next: NextFunction) {
     next(error);
   }
 }
+// ===============================
+// GET CLASS COUNT
+// ===============================
+async getClassCount(req: Request, res: Response, next: NextFunction) {
+  try {
+    // =========================
+    // EXTRACT SCHOOL ID
+    // =========================
+    const { schoolId } = req.params as { schoolId: string };
+
+    // =========================
+    // FETCH CLASS COUNT
+    // =========================
+    const count = await classService.getClassCount(schoolId);
+
+    // =========================
+    // SUCCESS RESPONSE
+    // =========================
+    res.status(200).json({
+      success: true,
+      message: "Class count fetched successfully",
+      data: {
+        count,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 
 }
