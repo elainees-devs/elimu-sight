@@ -1,8 +1,6 @@
 from fastapi import FastAPI
+from app.api.routes import router
 
 app = FastAPI(title="ElimuSight AI Service")
 
-
-@app.get("/")
-def health():
-    return {"status": "AI service running"}
+app.include_router(router, prefix="/ai")
