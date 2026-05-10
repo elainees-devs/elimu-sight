@@ -3,6 +3,7 @@ import { InsightController } from "@controllers/index";
 import {
   authenticateMiddleware,
   validate,
+  validateSchoolAccess,
 } from "@middlewares/index";
 import { createInsightSchema, insightIdParamSchema, updateInsightSchema } from "schemas";
 
@@ -10,8 +11,13 @@ import { createInsightSchema, insightIdParamSchema, updateInsightSchema } from "
 const router = Router();
 const controller = new InsightController();
 
-router.post("/", authenticateMiddleware, (req, res, next) =>
-  controller.createInsight(req, res, next),
+router.post(
+  "/",
+  authenticateMiddleware,
+  validate(createInsightSchema, "body"),
+  validateSchoolAccess,
+  (req, res, next) =>
+    controller.createInsight(req, res, next),
 );
 
 router.get("/:id", authenticateMiddleware, (req, res, next) =>

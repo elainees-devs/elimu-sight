@@ -150,7 +150,11 @@ export class ClassSubjectController {
   async removeTeacherFromClassSubject(req: Request, res: Response, next: NextFunction) {
     try {
       const classSubjectId = toClassSubjectId({ id: req.params.id } as ClassSubjectIdParam);
-      const newTeacherId = toClassSubjectId({ id: req.body.newTeacherId } as ClassSubjectIdParam);
+      const { newTeacherId } = req.body;
+
+      if (!newTeacherId) {
+        throw new Error("newTeacherId is required");
+      }
 
       const classSubject =
         await classSubjectService.removeTeacherFromClassSubject(classSubjectId, newTeacherId);

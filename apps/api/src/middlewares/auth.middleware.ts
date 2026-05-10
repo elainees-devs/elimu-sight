@@ -37,6 +37,7 @@ export const authenticateMiddleware = async (
         full_name: true,
         email: true,
         role: true,
+        school_id: true,
       },
     });
 
@@ -51,6 +52,7 @@ export const authenticateMiddleware = async (
       name: user.full_name,
       email: user.email,
       role: user.role ?? "user",
+      schoolId: user.school_id,
     };
 
     return next();

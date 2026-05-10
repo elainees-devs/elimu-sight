@@ -35,13 +35,17 @@ export class UserController {
   }
 
   // ===================================
-  // GET USER BY EMAIL
+  // GET USER BY EMAIL (scoped to authenticated user's school)
   // ===================================
   async getUserByEmail(req: Request, res: Response, next: NextFunction) {
     try {
       const email = req.params.email as string;
+      const authUser = (req as any).user;
 
-      const user = await userService.getUserByEmail(email);
+      const user = await userService.getUserByEmail(
+        email,
+        authUser?.role === "ADMIN" ? undefined : authUser?.schoolId
+      );
 
       return res.status(200).json({
         success: true,

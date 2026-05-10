@@ -98,16 +98,20 @@ export class UserService {
   }
 
   // ===================================
-  // GET USER BY EMAIL
+  // GET USER BY EMAIL (scoped to school)
   // ===================================
-  async getUserByEmail(email: string) {
+  async getUserByEmail(email: string, schoolId?: string) {
     try {
-      const user = await prisma.users.findFirst({
-        where: {
-          email,
-          is_active: true,
-        },
-      });
+      const where: any = {
+        email,
+        is_active: true,
+      };
+
+      if (schoolId) {
+        where.school_id = schoolId;
+      }
+
+      const user = await prisma.users.findFirst({ where });
 
       if (!user) {
         throw new ApiError(404, "User not found");
