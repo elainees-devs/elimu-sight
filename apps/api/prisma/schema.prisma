@@ -138,6 +138,7 @@ model class_subjects {
   subjects subjects @relation(fields: [subject_id], references: [id], onDelete: Cascade)
   users    users?   @relation(fields: [teacher_id], references: [id])
 
+  @@unique([class_id, subject_id])
   @@index([class_id])
   @@index([subject_id])
 }
@@ -251,16 +252,20 @@ model insights {
   generated_by     String?  @db.VarChar(20)
   period           String?  @db.VarChar(50)
 
-  created_at DateTime @default(now()) @db.Timestamp(6)
-  updated_at DateTime @updatedAt @db.Timestamp(6)
+  created_at DateTime  @default(now()) @db.Timestamp(6)
+  updated_at DateTime  @updatedAt @db.Timestamp(6)
+  deleted_at DateTime?
 
-  classes  classes  @relation(fields: [class_id], references: [id])
+  classes  classes  @relation(fields: [class_id], references: [id], onDelete: Cascade)
   schools  schools  @relation(fields: [school_id], references: [id], onDelete: Cascade)
-  students students @relation(fields: [student_id], references: [id])
-  subjects subjects @relation(fields: [subject_id], references: [id])
+  students students @relation(fields: [student_id], references: [id], onDelete: Cascade)
+  subjects subjects @relation(fields: [subject_id], references: [id], onDelete: Cascade)
 
   @@index([school_id])
   @@index([class_id])
   @@index([student_id])
   @@index([subject_id])
+  @@index([school_id, class_id])
+  @@index([school_id, student_id])
+  @@index([school_id, subject_id])
 }

@@ -1,3 +1,5 @@
+import { Decimal } from "@prisma/client/runtime/library";
+
 import {
   Insight,
   CreateInsightInput,
@@ -28,7 +30,7 @@ export type InsightDB = {
 
   data: unknown | null;
 
-  confidence_score: number | null;
+  confidence_score: Decimal | null;
 
   generated_by: string | null;
   period: string | null;
@@ -57,7 +59,7 @@ export const toInsightResponse = (db: InsightDB): Insight => {
 
     data: db.data ?? undefined,
 
-    confidenceScore: db.confidence_score ?? undefined,
+    confidenceScore: db.confidence_score ? Number(db.confidence_score) : undefined,
 
     generatedBy: db.generated_by ?? undefined,
     period: db.period ?? undefined,
