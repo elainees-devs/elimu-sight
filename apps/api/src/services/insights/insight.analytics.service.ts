@@ -1,25 +1,53 @@
 import { prisma, ApiError } from "@utils/index";
 
+type PaginationParams = {
+  page?: number;
+  limit?: number;
+};
+
 // For dashboard analytics and reporting related to insights
 export class InsightAnalyticsService {
+  private async paginatedQuery(
+    where: Record<string, unknown>,
+    params?: PaginationParams
+  ) {
+    const page = params?.page ?? 1;
+    const limit = params?.limit ?? 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      prisma.insights.findMany({
+        where,
+        orderBy: { created_at: "desc" },
+        skip,
+        take: limit,
+      }),
+      prisma.insights.count({ where }),
+    ]);
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
   // ===============================
   // GET INSIGHTS BY CLASS LOGIC
   // ===============================
-  async getInsightsByClass(classId: string) {
+  async getInsightsByClass(classId: string, params?: PaginationParams) {
     try {
-      const insights = await prisma.insights.findMany({
-        where: {
-          class_id: classId,
-        },
-        orderBy: {
-          created_at: "desc",
-        },
-      });
+      const result = await this.paginatedQuery(
+        { class_id: classId },
+        params
+      );
 
       return {
         classId,
-        total: insights.length,
-        insights,
+        ...result,
+        insights: result.data,
       };
     } catch {
       throw new ApiError(500, "Failed to fetch insights by class");
@@ -29,21 +57,17 @@ export class InsightAnalyticsService {
   // ===============================
   // GET INSIGHTS BY STUDENT LOGIC
   // ===============================
-  async getInsightsByStudent(studentId: string) {
+  async getInsightsByStudent(studentId: string, params?: PaginationParams) {
     try {
-      const insights = await prisma.insights.findMany({
-        where: {
-          student_id: studentId,
-        },
-        orderBy: {
-          created_at: "desc",
-        },
-      });
+      const result = await this.paginatedQuery(
+        { student_id: studentId },
+        params
+      );
 
       return {
         studentId,
-        total: insights.length,
-        insights,
+        ...result,
+        insights: result.data,
       };
     } catch {
       throw new ApiError(500, "Failed to fetch insights by student");
@@ -53,21 +77,17 @@ export class InsightAnalyticsService {
   // ===============================
   // GET INSIGHTS BY SUBJECT LOGIC
   // ===============================
-  async getInsightsBySubject(subjectId: string) {
+  async getInsightsBySubject(subjectId: string, params?: PaginationParams) {
     try {
-      const insights = await prisma.insights.findMany({
-        where: {
-          subject_id: subjectId,
-        },
-        orderBy: {
-          created_at: "desc",
-        },
-      });
+      const result = await this.paginatedQuery(
+        { subject_id: subjectId },
+        params
+      );
 
       return {
         subjectId,
-        total: insights.length,
-        insights,
+        ...result,
+        insights: result.data,
       };
     } catch {
       throw new ApiError(500, "Failed to fetch insights by subject");
@@ -77,21 +97,17 @@ export class InsightAnalyticsService {
   // ===============================
   // GET INSIGHTS BY TYPE LOGIC
   // ===============================
-  async getInsightsByType(type: string) {
+  async getInsightsByType(type: string, params?: PaginationParams) {
     try {
-      const insights = await prisma.insights.findMany({
-        where: {
-          type,
-        },
-        orderBy: {
-          created_at: "desc",
-        },
-      });
+      const result = await this.paginatedQuery(
+        { type },
+        params
+      );
 
       return {
         type,
-        total: insights.length,
-        insights,
+        ...result,
+        insights: result.data,
       };
     } catch {
       throw new ApiError(500, "Failed to fetch insights by type");
@@ -101,21 +117,17 @@ export class InsightAnalyticsService {
   // ===============================
   // GET INSIGHTS BY PERIOD LOGIC
   // ===============================
-  async getInsightsByPeriod(period: string) {
+  async getInsightsByPeriod(period: string, params?: PaginationParams) {
     try {
-      const insights = await prisma.insights.findMany({
-        where: {
-          period,
-        },
-        orderBy: {
-          created_at: "desc",
-        },
-      });
+      const result = await this.paginatedQuery(
+        { period },
+        params
+      );
 
       return {
         period,
-        total: insights.length,
-        insights,
+        ...result,
+        insights: result.data,
       };
     } catch {
       throw new ApiError(500, "Failed to fetch insights by period");

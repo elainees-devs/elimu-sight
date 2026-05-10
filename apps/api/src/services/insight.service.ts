@@ -35,8 +35,8 @@ export class InsightService {
   // QUERY OPERATIONS
   // =========================================
 
-  getAllInsightsBySchool(schoolId: string) {
-    return this.query.getAllInsightsBySchool(schoolId);
+  getAllInsightsBySchool(schoolId: string, params?: { page?: number; limit?: number }) {
+    return this.query.getAllInsightsBySchool(schoolId, params);
   }
 
   archiveInsights(insightIds: string[]) {
@@ -60,24 +60,24 @@ export class InsightService {
   // ANALYTICS OPERATIONS
   // =========================================
 
-  getInsightsByClass(classId: string) {
-    return this.analytics.getInsightsByClass(classId);
+  getInsightsByClass(classId: string, params?: { page?: number; limit?: number }) {
+    return this.analytics.getInsightsByClass(classId, params);
   }
 
-  getInsightsByStudent(studentId: string) {
-    return this.analytics.getInsightsByStudent(studentId);
+  getInsightsByStudent(studentId: string, params?: { page?: number; limit?: number }) {
+    return this.analytics.getInsightsByStudent(studentId, params);
   }
 
-  getInsightsBySubject(subjectId: string) {
-    return this.analytics.getInsightsBySubject(subjectId);
+  getInsightsBySubject(subjectId: string, params?: { page?: number; limit?: number }) {
+    return this.analytics.getInsightsBySubject(subjectId, params);
   }
 
-  getInsightsByType(type: string) {
-    return this.analytics.getInsightsByType(type);
+  getInsightsByType(type: string, params?: { page?: number; limit?: number }) {
+    return this.analytics.getInsightsByType(type, params);
   }
 
-  getInsightsByPeriod(period: string) {
-    return this.analytics.getInsightsByPeriod(period);
+  getInsightsByPeriod(period: string, params?: { page?: number; limit?: number }) {
+    return this.analytics.getInsightsByPeriod(period, params);
   }
 
 

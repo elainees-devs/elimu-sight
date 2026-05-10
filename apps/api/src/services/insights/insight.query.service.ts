@@ -1,19 +1,36 @@
 import { prisma, ApiError } from "@utils/index";
 
+type PaginationParams = {
+  page?: number;
+  limit?: number;
+};
+
 export class InsightQueryService {
   // ===============================
   // GET ALL INSIGHTS BY SCHOOL
   // ===============================
-  async getAllInsightsBySchool(schoolId: string) {
+  async getAllInsightsBySchool(schoolId: string, params?: PaginationParams) {
     try {
-      const insights = await prisma.insights.findMany({
-        where: { school_id: schoolId },
-        orderBy: { created_at: "desc" },
-      });
+      const page = params?.page ?? 1;
+      const limit = params?.limit ?? 20;
+      const skip = (page - 1) * limit;
+
+      const [insights, total] = await Promise.all([
+        prisma.insights.findMany({
+          where: { school_id: schoolId },
+          orderBy: { created_at: "desc" },
+          skip,
+          take: limit,
+        }),
+        prisma.insights.count({ where: { school_id: schoolId } }),
+      ]);
 
       return {
         schoolId,
-        total: insights.length,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
         insights,
       };
     } catch {

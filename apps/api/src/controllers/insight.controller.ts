@@ -98,7 +98,11 @@ export class InsightController {
       } as SchoolIdParam);
 
       const result = await this.insightService.getAllInsightsBySchool(
-        schoolId
+        schoolId,
+        {
+          page: req.query.page ? Number(req.query.page) : undefined,
+          limit: req.query.limit ? Number(req.query.limit) : undefined,
+        }
       );
 
       return res.status(200).json({
@@ -172,7 +176,10 @@ export class InsightController {
         id: req.params.classId,
       } as ClassIdParam);
 
-      const result = await this.insightService.getInsightsByClass(classId);
+      const result = await this.insightService.getInsightsByClass(classId, {
+        page: req.query.page ? Number(req.query.page) : undefined,
+        limit: req.query.limit ? Number(req.query.limit) : undefined,
+      });
 
       return res.status(200).json({
         success: true,
@@ -190,7 +197,11 @@ export class InsightController {
       } as StudentIdParam);
 
       const result = await this.insightService.getInsightsByStudent(
-        studentId
+        studentId,
+        {
+          page: req.query.page ? Number(req.query.page) : undefined,
+          limit: req.query.limit ? Number(req.query.limit) : undefined,
+        }
       );
 
       return res.status(200).json({
@@ -209,7 +220,11 @@ export class InsightController {
       } as SubjectIdParam);
 
       const result = await this.insightService.getInsightsBySubject(
-        subjectId
+        subjectId,
+        {
+          page: req.query.page ? Number(req.query.page) : undefined,
+          limit: req.query.limit ? Number(req.query.limit) : undefined,
+        }
       );
 
       return res.status(200).json({
@@ -225,7 +240,10 @@ export class InsightController {
     try {
       const { type } = req.params as { type: string };
 
-      const result = await this.insightService.getInsightsByType(type);
+      const result = await this.insightService.getInsightsByType(type, {
+        page: req.query.page ? Number(req.query.page) : undefined,
+        limit: req.query.limit ? Number(req.query.limit) : undefined,
+      });
 
       return res.status(200).json({
         success: true,
@@ -240,7 +258,10 @@ export class InsightController {
     try {
       const { period } = req.params as { period: string };
 
-      const result = await this.insightService.getInsightsByPeriod(period);
+      const result = await this.insightService.getInsightsByPeriod(period, {
+        page: req.query.page ? Number(req.query.page) : undefined,
+        limit: req.query.limit ? Number(req.query.limit) : undefined,
+      });
 
       return res.status(200).json({
         success: true,

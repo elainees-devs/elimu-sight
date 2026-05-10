@@ -12,14 +12,27 @@ export class InsightAIService {
   async generateClassInsight(classId: string, schoolId: string) {
     const classData = await prisma.classes.findUnique({
       where: { id: classId },
-      include: { students: true, subjects: true },
+      select: {
+        id: true,
+        name: true,
+        level: true,
+        stream: true,
+        _count: { select: { students: true, subjects: true } },
+      },
     });
 
     this.validateAIInput(classData, "Class not found");
 
     const aiResponse = await this.aiService.generateClassInsight({
       type: "CLASS",
-      context: classData,
+      context: {
+        id: classData!.id,
+        name: classData!.name,
+        level: classData!.level,
+        stream: classData!.stream,
+        studentCount: classData!._count.students,
+        subjectCount: classData!._count.subjects,
+      },
     });
 
     return this.persistGeneratedInsights({
@@ -108,7 +121,7 @@ export class InsightAIService {
   }
 
   // =========================================
-  // BULK GENERATION
+  // BULK GENERATION (parallel)
   // =========================================
   async generateBulkInsights(input: {
     schoolId: string;
@@ -116,28 +129,38 @@ export class InsightAIService {
     classIds?: string[];
     subjectIds?: string[];
   }) {
-    const results = [];
+    const promises: Promise<unknown>[] = [];
 
     if (input.studentIds?.length) {
       for (const id of input.studentIds) {
-        results.push(await this.generateStudentInsight(id, input.schoolId));
+        promises.push(this.generateStudentInsight(id, input.schoolId));
       }
     }
 
     if (input.classIds?.length) {
       for (const id of input.classIds) {
-        results.push(await this.generateClassInsight(id, input.schoolId));
+        promises.push(this.generateClassInsight(id, input.schoolId));
       }
     }
 
     if (input.subjectIds?.length) {
       for (const id of input.subjectIds) {
-        results.push(await this.generateSubjectInsight(id, input.schoolId));
+        promises.push(this.generateSubjectInsight(id, input.schoolId));
       }
     }
 
+    const settled = await Promise.allSettled(promises);
+
+    const results = settled.map((r) =>
+      r.status === "fulfilled" ? r.value : { error: r.reason }
+    );
+    const succeeded = settled.filter((r) => r.status === "fulfilled").length;
+    const failed = settled.filter((r) => r.status === "rejected").length;
+
     return {
-      generated: results.length,
+      generated: succeeded,
+      failed,
+      total: promises.length,
       results,
     };
   }
