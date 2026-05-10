@@ -3,6 +3,7 @@ import {
   InsightCrudService,
   InsightQueryService,
 } from "./insights";
+import { CreateInsightInput, UpdateInsightInput } from "schemas";
 
 export class InsightService {
   constructor(
@@ -15,7 +16,7 @@ export class InsightService {
   // CRUD OPERATIONS
   // =========================================
 
-  createInsight(data: any) {
+  createInsight(data: CreateInsightInput) {
     return this.crud.createInsight(data);
   }
 
@@ -23,7 +24,7 @@ export class InsightService {
     return this.crud.getInsightById(id);
   }
 
-  updateInsight(id: string, data: any) {
+  updateInsight(id: string, data: UpdateInsightInput) {
     return this.crud.updateInsight(id, data);
   }
 

@@ -73,7 +73,7 @@ export class AuthService {
 
     const role = user.role;
 
-    if (!role || !Roles.includes(role as any)) {
+    if (!role || !Roles.includes(role as (typeof Roles)[number])) {
       throw new ApiError(500, "Invalid user role");
     }
 
