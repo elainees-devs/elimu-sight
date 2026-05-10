@@ -10,7 +10,7 @@ import {
   requestIdMiddleware,
 } from "@middlewares/index";
 import { env } from "@config/env";
-import { logger } from "@utils/index";
+import { logger, prisma } from "@utils/index";
 
 // Routes
 import {
@@ -22,6 +22,7 @@ import {
   userRouter,
   classSubjectRouter,
   assessmentRouter,
+  aiRouter,
 } from "@routes/index";
 
 import {
@@ -77,23 +78,37 @@ app.use(
 app.use(globalRateLimiter);
 
 // HTTP request logging
-app.use(morgan("dev"));
-// Stream morgan to winston in production
 if (env.isProduction) {
   app.use(
     morgan("combined", {
       stream: { write: (message: string) => logger.info(message.trim()) },
     })
   );
+} else {
+  app.use(morgan("dev"));
 }
 
 // =========================================
 // HEALTH CHECK
 // =========================================
-app.get("/health", (_req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "Server is running",
+app.get("/health", async (_req, res) => {
+  const checks: Record<string, string> = {};
+  let healthy = true;
+
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    checks.database = "connected";
+  } catch {
+    checks.database = "disconnected";
+    healthy = false;
+  }
+
+  checks.server = "running";
+
+  res.status(healthy ? 200 : 503).json({
+    success: healthy,
+    message: healthy ? "All systems operational" : "Some services degraded",
+    checks,
     timestamp: new Date(),
   });
 });
@@ -110,6 +125,9 @@ app.use("/api/v1/subjects", subjectRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/class-subjects", classSubjectRouter);
 app.use("/api/v1/assessments", assessmentRouter);
+
+// AI-powered insights generation
+app.use("/api/v1/ai", aiRouter);
 
 // Insights module (big feature domain)
 app.use("/api/v1/insights/crud", insightCrudRoute);
