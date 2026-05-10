@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { AuthController } from "@controllers/index";
-import { authenticateMiddleware, validate } from "middlewares";
+import { authenticateMiddleware, validate, authRateLimiter } from "@middlewares/index";
 import { createUserSchema, loginSchema } from "schemas/index";
 
 
@@ -14,6 +14,7 @@ const authController = new AuthController();
 // REGISTER
 router.post(
   "/register",
+  authRateLimiter,
   validate(createUserSchema, "body"),
   (req, res, next) => authController.register(req, res, next)
 );
@@ -21,6 +22,7 @@ router.post(
 // LOGIN
 router.post(
   "/login",
+  authRateLimiter,
   validate(loginSchema, "body"),
   (req, res, next) => authController.login(req, res, next)
 );
