@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from "express";
+import { logger, env } from "@utils/index";
+import { sendError } from "@utils/response";
 
 export const errorHandler = (
   err: any,
@@ -7,37 +9,40 @@ export const errorHandler = (
   next: NextFunction
 ) => {
   const statusCode = err.statusCode || 500;
-  const timestamp = new Date().toISOString();
-
-  const isTest = process.env.NODE_ENV === "test";
+  const requestId = (req as any).requestId;
 
   // ======================
   // LOGGING STRATEGY
   // ======================
 
-  // No logs during tests (clean Jest output)
-  if (!isTest) {
-    if (statusCode >= 500) {
-      console.error(
-        `[${timestamp}] [ERROR] ${req.method} ${req.path}: ${err.message}`
-      );
-    } else {
-      console.warn(
-        `[${timestamp}] [WARN] ${req.method} ${req.path}: ${err.message}`
-      );
-    }
+  if (!env.isTest) {
+    const logMeta = {
+      requestId,
+      method: req.method,
+      path: req.path,
+      statusCode,
+      ...(err.details ? { details: err.details } : {}),
+    };
 
-    if (process.env.NODE_ENV === "development" && statusCode === 500) {
-      console.error(err.stack);
+    if (statusCode >= 500) {
+      logger.error(`[${req.method}] ${req.path}: ${err.message}`, {
+        ...logMeta,
+        stack: env.isDevelopment ? err.stack : undefined,
+      });
+    } else if (statusCode >= 400) {
+      logger.warn(`[${req.method}] ${req.path}: ${err.message}`, logMeta);
+    } else {
+      logger.info(`[${req.method}] ${req.path}: ${err.message}`, logMeta);
     }
   }
 
   // ======================
   // RESPONSE
   // ======================
-  res.status(statusCode).json({
-    success: false,
-    message: err.message || "Internal Server Error",
-    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
-  });
+  sendError(
+    res,
+    err.message || "Internal Server Error",
+    statusCode,
+    err.details
+  );
 };
