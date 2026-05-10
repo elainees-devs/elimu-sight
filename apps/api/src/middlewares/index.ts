@@ -4,3 +4,4 @@ export { authenticateMiddleware } from "./auth.middleware";
 export { validateSchoolAccess } from "./validateSchoolAccess.middleware";
 export { globalRateLimiter, authRateLimiter, aiRateLimiter } from "./rateLimiter.middleware";
 export { requestIdMiddleware } from "./requestId.middleware";
+export { authorize } from "./role.middleware";

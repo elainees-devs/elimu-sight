@@ -50,6 +50,50 @@ export class AuthController {
   }
 
   // ===============================
+  // REFRESH TOKEN
+  // ===============================
+  async refresh(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { refreshToken } = req.body;
+
+      if (!refreshToken) {
+        return res.status(400).json({
+          success: false,
+          message: "Refresh token required",
+        });
+      }
+
+      const result = await this.authService.refreshAccessToken(refreshToken);
+
+      return res.status(200).json({
+        success: true,
+        message: "Token refreshed successfully",
+        data: result,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  // ===============================
+  // LOGOUT
+  // ===============================
+  async logout(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = (req as any).user.id;
+
+      await this.authService.logoutUser(userId);
+
+      return res.status(200).json({
+        success: true,
+        message: "Logged out successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  // ===============================
   // GET CURRENT USER
   // ===============================
   async me(req: Request, res: Response, next: NextFunction) {

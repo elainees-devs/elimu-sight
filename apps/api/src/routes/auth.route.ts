@@ -27,6 +27,19 @@ router.post(
   (req, res, next) => authController.login(req, res, next)
 );
 
+// REFRESH TOKEN
+router.post(
+  "/refresh",
+  (req, res, next) => authController.refresh(req, res, next)
+);
+
+// LOGOUT
+router.post(
+  "/logout",
+  authenticateMiddleware,
+  (req, res, next) => authController.logout(req, res, next)
+);
+
 // GET CURRENT USER
 router.get(
   "/me",

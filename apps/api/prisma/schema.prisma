@@ -8,6 +8,23 @@ datasource db {
 }
 
 /// =========================
+/// REFRESH TOKENS
+/// =========================
+model refresh_tokens {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id    String   @db.Uuid
+  token      String   @unique @db.VarChar(500)
+  expires_at DateTime @db.Timestamp(6)
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  revoked_at DateTime?
+
+  users users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([token])
+}
+
+/// =========================
 /// AI LOGS
 /// =========================
 model ai_logs {
@@ -78,6 +95,7 @@ model users {
   assessments    assessments[]
   class_subjects class_subjects[]
   classes        classes[]
+  refresh_tokens refresh_tokens[]
 
   schools schools @relation(fields: [school_id], references: [id], onDelete: Cascade)
 
