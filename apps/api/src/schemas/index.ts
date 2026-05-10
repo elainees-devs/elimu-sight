@@ -52,6 +52,7 @@ export {
   createAssessmentSchema,
   updateAssessmentSchema,
   assessmentIdParamSchema,
+  assessmentSchoolAndIdParamSchema,
   Assessment,
   CreateAssessmentInput,
   UpdateAssessmentInput,

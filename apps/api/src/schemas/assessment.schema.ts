@@ -86,7 +86,7 @@ export const updateAssessmentSchema = Joi.object({
 
 /**
  * =========================
- * PARAM SCHEMA
+ * PARAM SCHEMAS
  * =========================
  */
 export const assessmentIdParamSchema = Joi.object({
@@ -94,6 +94,11 @@ export const assessmentIdParamSchema = Joi.object({
 }).options({
   stripUnknown: true,
 });
+
+export const assessmentSchoolAndIdParamSchema = Joi.object({
+  schoolId: Joi.string().uuid().required(),
+  id: Joi.string().uuid().required(),
+}).options({ stripUnknown: true });
 
 /**
  * =========================

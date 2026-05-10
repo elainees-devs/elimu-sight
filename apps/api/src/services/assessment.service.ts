@@ -156,19 +156,17 @@ export class AssessmentService {
   // ===============================
   // UPDATE
   // ===============================
-  async updateAssessmentDetails(input: UpdateAssessmentInput) {
+  async updateAssessmentDetails(id: string, input: UpdateAssessmentInput) {
     try {
-      const { id, ...updateData } = input;
-
       const existing = await prisma.assessments.findUnique({
         where: { id },
-      });
+});
 
       if (!existing) {
         throw new ApiError(404, "Assessment not found");
       }
 
-      const dbData = toUpdateAssessmentDB(updateData);
+      const dbData = toUpdateAssessmentDB(input);
 
       const updated = await prisma.assessments.update({
         where: { id },

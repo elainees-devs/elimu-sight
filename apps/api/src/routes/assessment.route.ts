@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { AssessmentController } from "@controllers/index";
-import { authenticateMiddleware, validate } from "@middlewares/index";
+import { authenticateMiddleware, validate, validateSchoolAccess } from "@middlewares/index";
 import {
   schoolIdParamSchema,
-  assessmentIdParamSchema,
+  assessmentSchoolAndIdParamSchema,
   updateAssessmentSchema,
   createAssessmentSchema,
 } from "../schemas";
@@ -15,10 +15,11 @@ const assessmentController = new AssessmentController();
 // ASSESSMENT ROUTES
 // ===============================
 
-// GET ALL ASSESSMENTS
+// GET ALL ASSESSMENTS BY SCHOOL
 router.get(
-  "/school/:schoolId/assessments",
+  "/school/:schoolId",
   authenticateMiddleware,
+  validateSchoolAccess,
   validate(schoolIdParamSchema, "params"),
   (req, res, next) =>
     assessmentController.getAllAssessments(req, res, next)
@@ -26,8 +27,9 @@ router.get(
 
 // GET ASSESSMENT COUNT
 router.get(
-  "/school/:schoolId/assessments/count",
+  "/school/:schoolId/count",
   authenticateMiddleware,
+  validateSchoolAccess,
   validate(schoolIdParamSchema, "params"),
   (req, res, next) =>
     assessmentController.getAssessmentCount(req, res, next)
@@ -35,8 +37,9 @@ router.get(
 
 // GET ASSESSMENT BY EXAM TYPE
 router.get(
-  "/school/:schoolId/assessments/:examType",
+  "/school/:schoolId/exam-type/:examType",
   authenticateMiddleware,
+  validateSchoolAccess,
   validate(schoolIdParamSchema, "params"),
   (req, res, next) =>
     assessmentController.getAssessmentByName(req, res, next)
@@ -44,8 +47,9 @@ router.get(
 
 // CREATE ASSESSMENT
 router.post(
-  "/assessments",
+  "/",
   authenticateMiddleware,
+  validateSchoolAccess,
   validate(createAssessmentSchema, "body"),
   (req, res, next) =>
     assessmentController.createAssessment(req, res, next)
@@ -53,9 +57,10 @@ router.post(
 
 // UPDATE ASSESSMENT
 router.patch(
-  "/assessments/:id",
+  "/school/:schoolId/:id",
   authenticateMiddleware,
-  validate(assessmentIdParamSchema, "params"),
+  validateSchoolAccess,
+  validate(assessmentSchoolAndIdParamSchema, "params"),
   validate(updateAssessmentSchema, "body"),
   (req, res, next) =>
     assessmentController.updateAssessmentDetails(req, res, next)
@@ -63,9 +68,10 @@ router.patch(
 
 // DELETE ASSESSMENT
 router.delete(
-  "/assessments/:id",
+  "/school/:schoolId/:id",
   authenticateMiddleware,
-  validate(assessmentIdParamSchema, "params"),
+  validateSchoolAccess,
+  validate(assessmentSchoolAndIdParamSchema, "params"),
   (req, res, next) =>
     assessmentController.deleteAssessment(req, res, next)
 );

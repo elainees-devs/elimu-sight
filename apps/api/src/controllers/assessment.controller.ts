@@ -83,7 +83,7 @@ export class AssessmentController {
   // ===================================
   async updateAssessmentDetails(req: Request, res: Response, next: NextFunction) {
     try {
-      const assessment = await assessmentService.updateAssessmentDetails(req.body);
+      const assessment = await assessmentService.updateAssessmentDetails(String(req.params.id), req.body);
 
       return res.status(200).json({
         success: true,
