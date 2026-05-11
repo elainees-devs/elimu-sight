@@ -1,5 +1,5 @@
-from pyandtic import BaseModel
-from typing import List,Optional
+from pydantic import BaseModel
+from typing import List, Optional
 
 class Assessment(BaseModel):
     exam_type: str
@@ -10,6 +10,7 @@ class Assessment(BaseModel):
 class StudentRequest(BaseModel):
     id: str
     school_id: str
+    class_id: Optional[str] = None
     full_name: str
     gender: Optional[str] = None
     guardian_name: Optional[str] = None
