@@ -2,6 +2,7 @@ from app.utils.helper import calculate_confidence_score
 from app.core.config import settings
 from app.core.logging import logger
 from app.services.llm_service import llm_service
+from app.services.ml_service import ml_service
 from app.services.prompts import (
     STUDENT_INSIGHT_SYSTEM_PROMPT,
     CLASS_INSIGHT_SYSTEM_PROMPT,
@@ -41,6 +42,8 @@ def analyze_student(student):
     confidence_score = calculate_confidence_score(scores)
     trend = _calculate_trend(scores)
 
+    ml_analysis = ml_service.project_risk(scores) if settings.enable_ml else {}
+
     insight = _try_llm_insight(
         service_fn=lambda: llm_service.generate_insight(
             system_prompt=STUDENT_INSIGHT_SYSTEM_PROMPT,
@@ -65,6 +68,7 @@ def analyze_student(student):
             "flags": flags,
             "insight": insight,
             "trend_direction": trend,
+            "ml_analysis": ml_analysis,
         },
         confidence_score=confidence_score,
     )
