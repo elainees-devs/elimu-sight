@@ -18,9 +18,13 @@ class TestAssessmentSchema:
         assert a.score == 85.0
         assert a.total_marks == 100.0
 
-    def test_assessment_accepts_negative_score(self):
-        a = Assessment(exam_type="midterm", term="1", score=-10, total_marks=100)
-        assert a.score == -10
+    def test_assessment_rejects_negative_score(self):
+        with pytest.raises(Exception):
+            Assessment(exam_type="midterm", term="1", score=-10, total_marks=100)
+
+    def test_assessment_rejects_score_exceeding_total(self):
+        with pytest.raises(Exception):
+            Assessment(exam_type="midterm", term="1", score=150, total_marks=100)
 
 
 class TestStudentContextSchema:
