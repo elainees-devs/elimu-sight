@@ -1,5 +1,4 @@
-import logging
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from app.schemas.student import StudentRequest
 from app.schemas.ai import (
     StudentInsightRequest,
@@ -18,11 +17,38 @@ router = APIRouter()
 
 @router.get("/health")
 async def health():
+    from app.services.llm_service import llm_service
+    from app.services.ml_service import ml_service
+
+    llm_available = llm_service.available
+    ml_available = ml_service.available
+    llm_enabled = settings.llm_enabled
+
+    deps = {
+        "llm": {
+            "available": llm_available,
+            "enabled": llm_enabled,
+            "model": llm_service.model_name if llm_available else None,
+            "circuit_breaker": llm_service.circuit_breaker_state,
+        },
+        "ml": {
+            "available": ml_available,
+            "enabled": settings.enable_ml,
+        },
+    }
+
+    all_healthy = all(
+        dep["available"] or not dep["enabled"]
+        for dep in deps.values()
+    )
+
     return {
-        "status": "ok",
+        "status": "ok" if all_healthy else "degraded",
         "service": "ai_engine",
         "version": settings.app_version,
-        "llm_enabled": settings.llm_enabled,
+        "dependencies": deps,
+        "llm_enabled": llm_enabled,
+        "llm_available": llm_available,
         "ml_enabled": settings.enable_ml,
     }
 

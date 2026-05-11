@@ -4,6 +4,7 @@ from typing import Optional
 from openai import OpenAI, APIError, APITimeoutError, RateLimitError
 from app.core.config import settings
 from app.core.logging import logger
+from app.utils.http import CircuitBreaker, CircuitBreakerOpenError
 
 
 class LLMService:
@@ -15,6 +16,11 @@ class LLMService:
             "gpt-4o-mini": {"input": 0.00015, "output": 0.0006},
             "gpt-4o": {"input": 0.0025, "output": 0.01},
         }
+        self._circuit_breaker = CircuitBreaker(
+            name="openai",
+            failure_threshold=5,
+            recovery_timeout=30.0,
+        )
 
         if settings.openai_api_key:
             self.client = OpenAI(
@@ -37,6 +43,10 @@ class LLMService:
     def model_name(self) -> str:
         return settings.openai_model
 
+    @property
+    def circuit_breaker_state(self) -> str:
+        return self._circuit_breaker.get_state()
+
     def generate_insight(
         self,
         system_prompt: str,
@@ -48,6 +58,21 @@ class LLMService:
             logger.warning("LLM service unavailable — skipping generation")
             return None
 
+        try:
+            return self._circuit_breaker.call(lambda: self._execute_generation(
+                system_prompt, user_prompt, max_tokens, temperature
+            ))
+        except CircuitBreakerOpenError:
+            logger.warning("OpenAI circuit breaker is open — using fallback")
+            return None
+
+    def _execute_generation(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        max_tokens: Optional[int] = None,
+        temperature: Optional[float] = None,
+    ) -> Optional[dict]:
         temperature = temperature if temperature is not None else settings.openai_temperature
         max_tokens = max_tokens if max_tokens is not None else settings.openai_max_tokens
         model = settings.openai_model
