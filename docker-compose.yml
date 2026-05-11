@@ -17,7 +17,27 @@ services:
       - CLIENT_URL=${CLIENT_URL:-http://localhost:5173}
       - AI_SERVICE_URL=http://ai-service:8000
     depends_on:
+  ai-service:
+    build:
+      context: ./apps/ai-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_MODEL=gpt-4o-mini
+      - ENABLE_LLM=true
+      - ENABLE_ML=true
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:5173
+      - LOG_LEVEL=INFO
+      - LOG_JSON=true
+      - REDIS_URL=
+    depends_on:
       db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
         condition: service_healthy
     restart: unless-stopped
 
