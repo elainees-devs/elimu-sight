@@ -7,6 +7,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from app.api.routes import router
 from app.core.config import settings
 from app.core.logging import logger
+from app.core.security import RateLimitMiddleware, SecurityHeadersMiddleware
 
 app = FastAPI(
     title=settings.app_name,
@@ -73,6 +74,8 @@ app.add_middleware(
 )
 
 app.add_middleware(RequestLoggingMiddleware)
+app.add_middleware(RateLimitMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
 
 
 @app.on_event("startup")
