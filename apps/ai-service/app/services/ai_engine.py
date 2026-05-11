@@ -3,6 +3,7 @@ from app.core.config import settings
 from app.core.logging import logger
 from app.services.llm_service import llm_service
 from app.services.ml_service import ml_service
+from app.services.cache import analysis_cache
 from app.services.prompts import (
     STUDENT_INSIGHT_SYSTEM_PROMPT,
     CLASS_INSIGHT_SYSTEM_PROMPT,
@@ -14,6 +15,11 @@ from app.services.prompts import (
 
 
 def analyze_student(student):
+    cache_key = analysis_cache.make_key("analyze_student", student.id, len(student.assessments))
+    cached = analysis_cache.get(cache_key)
+    if cached is not None:
+        return cached
+
     scores = [
         (a.score / a.total_marks) * 100
         for a in student.assessments
@@ -72,6 +78,9 @@ def analyze_student(student):
         },
         confidence_score=confidence_score,
     )
+
+    analysis_cache.set(cache_key, result)
+    return result
 
 
 def analyze_class(class_context):
