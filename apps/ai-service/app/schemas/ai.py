@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from typing import Any, Optional
 from app.schemas.student import Assessment
 
@@ -55,3 +55,9 @@ class BulkInsightRequest(BaseModel):
     studentIds: Optional[list[str]] = None
     classIds: Optional[list[str]] = None
     subjectIds: Optional[list[str]] = None
+
+    @model_validator(mode="after")
+    def validate_at_least_one_id_list(self):
+        if not self.studentIds and not self.classIds and not self.subjectIds:
+            raise ValueError("At least one of studentIds, classIds, or subjectIds must be provided")
+        return self
