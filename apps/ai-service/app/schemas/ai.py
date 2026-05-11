@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field, model_validator
 from typing import Any, Optional
 from app.schemas.student import Assessment
+from app.utils.types import SanitizedString
 
 
 class InsightResponse(BaseModel):
@@ -11,13 +12,13 @@ class InsightResponse(BaseModel):
 
 
 class StudentContext(BaseModel):
-    id: str
-    school_id: str
-    class_id: Optional[str] = None
-    full_name: str
-    gender: Optional[str] = None
-    guardian_name: Optional[str] = None
-    guardian_phone: Optional[str] = None
+    id: SanitizedString
+    school_id: SanitizedString
+    class_id: Optional[SanitizedString] = None
+    full_name: SanitizedString
+    gender: Optional[SanitizedString] = None
+    guardian_name: Optional[SanitizedString] = None
+    guardian_phone: Optional[SanitizedString] = None
     assessments: list[Assessment]
 
 
@@ -27,10 +28,10 @@ class StudentInsightRequest(BaseModel):
 
 
 class ClassContext(BaseModel):
-    id: str
-    name: str
-    level: str
-    stream: Optional[str] = None
+    id: SanitizedString
+    name: SanitizedString
+    level: SanitizedString
+    stream: Optional[SanitizedString] = None
     studentCount: int = 0
     subjectCount: int = 0
 
@@ -51,7 +52,7 @@ class RefreshInsightRequest(BaseModel):
 
 
 class BulkInsightRequest(BaseModel):
-    schoolId: str
+    schoolId: SanitizedString
     studentIds: Optional[list[str]] = None
     classIds: Optional[list[str]] = None
     subjectIds: Optional[list[str]] = None

@@ -1,6 +1,7 @@
 from enum import Enum
 from pydantic import BaseModel, Field, field_validator, model_validator
 from typing import List, Optional
+from app.utils.types import SanitizedString
 
 
 class ExamType(str, Enum):
@@ -13,8 +14,8 @@ class ExamType(str, Enum):
 
 
 class Assessment(BaseModel):
-    exam_type: str
-    term: str
+    exam_type: SanitizedString
+    term: SanitizedString
     score: float = Field(ge=0)
     total_marks: float = Field(gt=0)
 
@@ -26,11 +27,11 @@ class Assessment(BaseModel):
 
 
 class StudentRequest(BaseModel):
-    id: str
-    school_id: str
-    class_id: Optional[str] = None
-    full_name: str = Field(min_length=1, max_length=255)
-    gender: Optional[str] = None
-    guardian_name: Optional[str] = None
-    guardian_phone: Optional[str] = None
+    id: SanitizedString
+    school_id: SanitizedString
+    class_id: Optional[SanitizedString] = None
+    full_name: SanitizedString = Field(min_length=1, max_length=255)
+    gender: Optional[SanitizedString] = None
+    guardian_name: Optional[SanitizedString] = None
+    guardian_phone: Optional[SanitizedString] = None
     assessments: list[Assessment] = Field(min_length=0)

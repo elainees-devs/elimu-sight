@@ -41,7 +41,7 @@ def setup_logger(name: str = "elimu_sight") -> logging.Logger:
     logger.setLevel(logging.INFO)
     logger.addFilter(CorrelationIDFilter())
 
-    formatter = JSONFormatter("%Y-%m-%dT%H:%M:%S")
+    formatter = JSONFormatter(datefmt="%Y-%m-%dT%H:%M:%S")
 
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(formatter)
