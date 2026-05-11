@@ -301,93 +301,74 @@ All tables use UUIDs.
 
 ---
 
-## ⚙️ Installation
-### Prerequisites
-Node.js v18+, PostgreSQL 15, Prisma v5.x
+## 🚀 Quick Start
 
-### 1. Clone Repository
+### Option 1 — Docker (easiest)
 
 ```bash
-git clone <repository-url>
+# 1. Copy environment config
+cp .env.example .env
+# Edit .env with your database credentials
+
+# 2. Start all services
+docker compose up
 ```
 
-### 2. Navigate to API
+The API starts at `http://localhost:3000`.
+
+Docker Compose runs the API, PostgreSQL (with health check), and wires the AI service URL automatically.
+
+---
+
+### Option 2 — Local Development
+
+**Prerequisites:** Node.js v18+, PostgreSQL 15+
 
 ```bash
-cd elimu/sight/apps/api
-```
+# 1. Navigate to API
+cd apps/api
 
-### 3. Install Dependencies
-
-```bash
+# 2. Install dependencies
 npm install
-```
 
----
+# 3. Copy and configure environment
+cp .env.example .env
+# Edit .env with your PostgreSQL credentials and other settings
 
-## 🔐 Environment Variables
-
-Create a `.env` file:
-
-```env
-NODE_ENV=development
-PORT=5000
-
-DATABASE_URL=postgresql://postgres:password@localhost:5432/elimusight
-
-JWT_SECRET=supersecretkey
-JWT_EXPIRES_IN=7d
-
-OPENAI_API_KEY=your_openai_api_key
-LLM_MODEL=gpt-4o-mini
-
-CLIENT_URL=http://localhost:3000
-```
-
----
-
-## 🗄️ Database Setup
-
-### Generate Prisma Client
-
-```bash
+# 4. Generate Prisma client and run migrations
 npx prisma generate
-```
-
-### Run Migrations
-
-```bash
 npx prisma migrate dev
-```
 
----
-
-## ▶️ Running the Server
-
-### Development
-
-```bash
+# 5. Start in development mode (auto-reloads on changes)
 npm run dev
 ```
 
-The API runs on:
+The API runs on `http://localhost:5000`.
 
-```txt
-http://localhost:5000
+---
+
+### Running the AI Service (optional)
+
+The AI insight generation requires the Python FastAPI service:
+
+```bash
+cd apps/ai-service
+source venv/bin/activate
+uvicorn app.main:app --reload --port 8000
 ```
 
 ---
 
 ## 📦 Available Scripts
 
-```json
-{
-  "scripts": {
-    "dev": "nodemon --watch src --ext ts --exec ts-node -r tsconfig-paths/register src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  }
-}
-```
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start dev server with hot reload |
+| `npm run build` | Compile TypeScript to JavaScript |
+| `npm start` | Run compiled production build |
+| `npm test` | Run tests |
+| `npm run test:coverage` | Run tests with coverage report |
+| `npm run test:watch` | Run tests in watch mode |
 
 ---
 
@@ -441,16 +422,16 @@ PostgreSQL
 
 Handles:
 
-- User registration
-- Login
-- JWT authentication
+- User login
+- JWT + refresh token rotation
+- Role-based access control
 
 #### Endpoints
 
 ```http
-POST /api/auth/register
-POST /api/auth/login
-GET  /api/auth/me
+POST /api/v1/auth/login
+POST /api/v1/auth/refresh
+POST /api/v1/auth/logout
 ```
 
 ---
@@ -466,9 +447,11 @@ Handles:
 #### Endpoints
 
 ```http
-POST /api/students
-GET  /api/students
-GET  /api/students/:id
+GET    /api/v1/students
+GET    /api/v1/students/:id
+POST   /api/v1/students
+PATCH  /api/v1/students/:id
+DELETE /api/v1/students/:id
 ```
 
 ---
@@ -484,8 +467,12 @@ Handles:
 #### Endpoints
 
 ```http
-POST /api/assessments
-GET  /api/assessments
+GET    /api/v1/assessments/school/:schoolId
+GET    /api/v1/assessments/school/:schoolId/count
+GET    /api/v1/assessments/school/:schoolId/exam-type/:examType
+POST   /api/v1/assessments
+PATCH  /api/v1/assessments/school/:schoolId/:id
+DELETE /api/v1/assessments/school/:schoolId/:id
 ```
 
 ---
@@ -494,15 +481,19 @@ GET  /api/assessments
 
 Handles:
 
-- Learning insights
-- Risk analysis
-- Recommendations
+- Class, student, and subject insight generation
+- Bulk insight generation
+- AI service health checks
 
 #### Endpoints
 
 ```http
-POST /api/ai/analyze-student
-POST /api/ai/explain
+POST /api/v1/ai/generate/class
+POST /api/v1/ai/generate/student
+POST /api/v1/ai/generate/subject
+POST /api/v1/ai/refresh
+POST /api/v1/ai/bulk
+GET  /api/v1/ai/health
 ```
 
 ---
@@ -518,7 +509,18 @@ Handles:
 #### Endpoints
 
 ```http
-GET /api/insights/:studentId
+GET    /api/v1/insights/crud/:id
+POST   /api/v1/insights/crud
+PATCH  /api/v1/insights/crud/:id
+DELETE /api/v1/insights/crud/:id
+GET    /api/v1/insights/query/school/:schoolId
+POST   /api/v1/insights/query/archive
+POST   /api/v1/insights/query/bulk-generate
+GET    /api/v1/insights/analytics/class/:classId
+GET    /api/v1/insights/analytics/student/:studentId
+GET    /api/v1/insights/analytics/subject/:subjectId
+GET    /api/v1/insights/analytics/type/:type
+GET    /api/v1/insights/analytics/period/:period
 ```
 
 ---
@@ -601,11 +603,68 @@ src/schemas/
 
 ## 🧪 Testing
 
-Run tests:
-
 ```bash
 npm test
+npm run test:coverage  # with coverage report
 ```
+
+---
+
+## 🔌 Testing API Endpoints (Postman / curl)
+
+### Authentication
+
+1. Login to get a JWT token:
+
+```bash
+curl -X POST http://localhost:5000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "admin@school.com", "password": "yourpassword"}'
+```
+
+2. Use the returned token in subsequent requests:
+
+```bash
+curl -H "Authorization: Bearer <token>" http://localhost:5000/api/v1/schools
+```
+
+### Key Endpoints
+
+| Method | Endpoint | Auth Required | Roles |
+|--------|----------|---------------|-------|
+| POST | `/api/v1/auth/login` | No | — |
+| GET | `/api/v1/schools` | Yes | All |
+| GET | `/api/v1/students` | Yes | All |
+| GET | `/api/v1/assessments/school/:schoolId` | Yes | All |
+| POST | `/api/v1/assessments` | Yes | ADMIN, HEADTEACHER, TEACHER |
+| PATCH | `/api/v1/assessments/school/:schoolId/:id` | Yes | ADMIN, HEADTEACHER |
+| DELETE | `/api/v1/assessments/school/:schoolId/:id` | Yes | ADMIN, HEADTEACHER |
+| POST | `/api/v1/ai/generate/class` | Yes | ADMIN, HEADTEACHER, TEACHER |
+| POST | `/api/v1/ai/generate/student` | Yes | ADMIN, HEADTEACHER, TEACHER |
+| POST | `/api/v1/ai/generate/subject` | Yes | ADMIN, HEADTEACHER, TEACHER |
+| POST | `/api/v1/ai/bulk` | Yes | ADMIN, HEADTEACHER |
+| GET | `/api/v1/ai/health` | Yes | ADMIN |
+| GET | `/api/v1/insights/crud/:id` | Yes | All |
+| GET | `/api/v1/insights/query/school/:schoolId` | Yes | All |
+| GET | `/api/v1/insights/analytics/class/:classId` | Yes | All |
+| GET | `/health` | No | — |
+
+### AI Endpoints — Example
+
+```bash
+curl -X POST http://localhost:5000/api/v1/ai/generate/class \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <token>" \
+  -d '{"classId": "uuid-here", "schoolId": "uuid-here"}'
+```
+
+### Rate Limiting
+
+| Tier | Limit |
+|------|-------|
+| Global | 100 requests / 15 min |
+| Auth | 10 requests / 15 min |
+| AI | 20 requests / 15 min |
 
 ---
 
