@@ -1,5 +1,6 @@
 import os
-os.environ["OPENAI_API_KEY"] = ""
+# Ensure valid placeholder for tests to avoid configuration warnings
+os.environ["OPENAI_API_KEY"] = "sk-test-placeholder-key-for-unit-tests"
 os.environ["ENABLE_LLM"] = "false"
 os.environ["ENABLE_ML"] = "true"
 os.environ["LOG_JSON"] = "false"
