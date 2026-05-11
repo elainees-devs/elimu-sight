@@ -1,4 +1,15 @@
 from app.utils.helper import calculate_confidence_score
+from app.core.config import settings
+from app.core.logging import logger
+from app.services.llm_service import llm_service
+from app.services.prompts import (
+    STUDENT_INSIGHT_SYSTEM_PROMPT,
+    CLASS_INSIGHT_SYSTEM_PROMPT,
+    SUBJECT_INSIGHT_SYSTEM_PROMPT,
+    build_student_prompt,
+    build_class_prompt,
+    FEEDBACK_INSTRUCTION,
+)
 
 
 def analyze_student(student):
@@ -28,8 +39,18 @@ def analyze_student(student):
     flags = _evaluate_flags(average, scores, student)
     risk_score = _calculate_risk_score(average)
     confidence_score = calculate_confidence_score(scores)
+    trend = _calculate_trend(scores)
 
-    insight = _generate_insight(student.full_name, average, risk_score, flags)
+    insight = _try_llm_insight(
+        service_fn=lambda: llm_service.generate_insight(
+            system_prompt=STUDENT_INSIGHT_SYSTEM_PROMPT,
+            user_prompt=build_student_prompt(student.full_name, average, risk_score, flags)
+            + "\n\n"
+            + FEEDBACK_INSTRUCTION,
+        ),
+        fallback=_generate_insight(student.full_name, average, risk_score, flags),
+        context=f"student:{student.id}",
+    )
 
     return _build_insight_response(
         title="Student Performance Analysis",
@@ -43,7 +64,7 @@ def analyze_student(student):
             "risk_score": risk_score,
             "flags": flags,
             "insight": insight,
-            "trend_direction": _calculate_trend(scores),
+            "trend_direction": trend,
         },
         confidence_score=confidence_score,
     )
@@ -51,8 +72,25 @@ def analyze_student(student):
 
 def analyze_class(class_context):
     name = class_context.get("name", "Unknown Class")
+    level = class_context.get("level", "")
+    stream = class_context.get("stream")
     student_count = class_context.get("studentCount", 0)
     subject_count = class_context.get("subjectCount", 0)
+
+    insight = _try_llm_insight(
+        service_fn=lambda: llm_service.generate_insight(
+            system_prompt=CLASS_INSIGHT_SYSTEM_PROMPT,
+            user_prompt=build_class_prompt(name, level, stream, student_count, subject_count)
+            + "\n\n"
+            + FEEDBACK_INSTRUCTION,
+        ),
+        fallback={
+            "teacher": f"Class {name} has {student_count} students across {subject_count} subjects. Ongoing assessment and support recommended.",
+            "parent": f"Your child's class ({name}) is being monitored for academic performance.",
+            "student": "Stay focused and keep up with your studies!",
+        },
+        context=f"class:{class_context.get('id')}",
+    )
 
     return _build_insight_response(
         title="Class Performance Overview",
@@ -60,10 +98,11 @@ def analyze_class(class_context):
         data={
             "class_id": class_context.get("id"),
             "name": name,
-            "level": class_context.get("level"),
-            "stream": class_context.get("stream"),
+            "level": level,
+            "stream": stream,
             "studentCount": student_count,
             "subjectCount": subject_count,
+            "insight": insight,
         },
         confidence_score=70.0,
     )
@@ -80,6 +119,7 @@ def analyze_subject(subject_context):
 
     average = sum(scores) / len(scores) if scores else 0
     risk_score = _calculate_risk_score(average) if scores else 1.0
+    conf_score = calculate_confidence_score(scores) if scores else 0.0
 
     return _build_insight_response(
         title="Subject Performance Analysis",
@@ -92,8 +132,23 @@ def analyze_subject(subject_context):
             "risk_score": risk_score,
             "assessment_count": len(scores),
         },
-        confidence_score=calculate_confidence_score(scores) if scores else 0.0,
+        confidence_score=conf_score,
     )
+
+
+def _try_llm_insight(service_fn, fallback: dict, context: str) -> dict:
+    if not settings.enable_llm or not llm_service.available:
+        return fallback
+
+    try:
+        result = service_fn()
+        if result and all(k in result for k in ("teacher", "parent", "student")):
+            return result
+        logger.warning("LLM insight missing required keys, using fallback", extra={"context": context})
+        return fallback
+    except Exception as e:
+        logger.error("LLM insight generation failed", extra={"context": context, "error": str(e)})
+        return fallback
 
 
 def _build_insight_response(
