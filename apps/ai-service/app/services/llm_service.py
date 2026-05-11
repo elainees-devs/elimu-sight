@@ -58,6 +58,9 @@ class LLMService:
             logger.warning("LLM service unavailable — skipping generation")
             return None
 
+        if not self.check_budget():
+            return None
+
         try:
             return self._circuit_breaker.call(lambda: self._execute_generation(
                 system_prompt, user_prompt, max_tokens, temperature
@@ -159,6 +162,24 @@ class LLMService:
         self._token_usage["completion"] += completion_tokens
         self._token_usage["total"] += prompt_tokens + completion_tokens
         self._token_usage["cost"] += round(input_cost + output_cost, 6)
+
+    @property
+    def budget_exceeded(self) -> bool:
+        return (
+            self._token_usage["total"] >= settings.max_daily_tokens
+            or self._token_usage["cost"] >= settings.max_daily_cost_usd
+        )
+
+    def check_budget(self) -> bool:
+        if self.budget_exceeded:
+            logger.warning("Daily LLM budget exceeded", extra={
+                "tokens": self._token_usage["total"],
+                "max_tokens": settings.max_daily_tokens,
+                "cost": self._token_usage["cost"],
+                "max_cost": settings.max_daily_cost_usd,
+            })
+            return False
+        return True
 
     def reset_usage_stats(self):
         self._token_usage = {"prompt": 0, "completion": 0, "total": 0, "cost": 0.0}

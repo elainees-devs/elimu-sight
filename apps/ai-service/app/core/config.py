@@ -34,6 +34,10 @@ class Settings(BaseSettings):
 
     max_request_body_size: int = 1_048_576
 
+    max_daily_tokens: int = 1_000_000
+    max_daily_cost_usd: float = 5.0
+    llm_model_tier: str = "balanced"
+
     @field_validator("openai_api_key", mode="before")
     @classmethod
     def warn_missing_openai_key(cls, v: Optional[str]) -> Optional[str]:
