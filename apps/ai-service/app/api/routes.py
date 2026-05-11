@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from fastapi.responses import PlainTextResponse
 from app.schemas.student import StudentRequest
 from app.schemas.ai import (
     StudentInsightRequest,
@@ -13,6 +14,15 @@ from app.core.config import settings
 from app.core.logging import logger
 
 router = APIRouter()
+
+
+@router.get("/metrics", include_in_schema=False)
+async def metrics():
+    try:
+        from prometheus_client import generate_latest, REGISTRY
+        return PlainTextResponse(generate_latest(REGISTRY), media_type="text/plain")
+    except Exception:
+        return PlainTextResponse("# Metrics temporarily unavailable\n", media_type="text/plain")
 
 
 @router.get("/health")

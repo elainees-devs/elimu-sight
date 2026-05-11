@@ -9,6 +9,18 @@ from app.core.config import settings
 from app.core.logging import logger
 from app.core.security import RateLimitMiddleware, SecurityHeadersMiddleware
 
+
+if settings.sentry_dsn:
+    import sentry_sdk
+    from sentry_sdk.integrations.fastapi import FastApiIntegration
+    sentry_sdk.init(
+        dsn=settings.sentry_dsn,
+        environment="production" if not settings.debug else "development",
+        traces_sample_rate=0.1,
+        integrations=[FastApiIntegration()],
+    )
+    logger.info("Sentry initialized", extra={"dsn": settings.sentry_dsn[:20] + "..."})
+
 app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
