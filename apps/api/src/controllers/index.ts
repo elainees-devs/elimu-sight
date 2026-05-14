@@ -8,3 +8,4 @@ export {StudentController} from "./student.controller";
 export {AssessmentController} from "./assessment.controller";
 export {InsightController} from "./insight.controller";
 export {AIController} from "./ai.controller";
+export {DashboardController} from "./dashboard.controller";

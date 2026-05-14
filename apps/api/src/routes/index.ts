@@ -7,4 +7,5 @@ export {default as userRouter} from "./user.route";
 export {default as classSubjectRouter} from "./class-subject.route";
 export {default as assessmentRouter} from "./assessment.route";
 export {default as aiRouter} from "./ai.route";
+export {default as dashboardRouter} from "./dashboard.route";
 

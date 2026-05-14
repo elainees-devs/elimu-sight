@@ -1,6 +1,17 @@
-import { Outlet } from '@tanstack/react-router'
+import { Outlet, useNavigate } from '@tanstack/react-router'
+import { useEffect } from 'react'
+import { useAuthStore } from '@stores/auth-store'
 
 export function AuthLayout() {
+  const navigate = useNavigate()
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate({ to: '/dashboard' })
+    }
+  }, [isAuthenticated, navigate])
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
       <div className="w-full max-w-md">

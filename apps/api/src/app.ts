@@ -23,6 +23,7 @@ import {
   classSubjectRouter,
   assessmentRouter,
   aiRouter,
+  dashboardRouter,
 } from "@routes/index";
 
 import {
@@ -125,6 +126,9 @@ app.use("/api/v1/subjects", subjectRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/class-subjects", classSubjectRouter);
 app.use("/api/v1/assessments", assessmentRouter);
+
+// Dashboard
+app.use("/api/v1/dashboard", dashboardRouter);
 
 // AI-powered insights generation
 app.use("/api/v1/ai", aiRouter);

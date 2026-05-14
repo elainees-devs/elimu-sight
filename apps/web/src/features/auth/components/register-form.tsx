@@ -1,5 +1,7 @@
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { registerSchema, type RegisterFormData } from '../schemas/auth-schema'
 import { useRegister } from '../hooks/use-register'
@@ -9,7 +11,15 @@ import type { ApiResponse } from '@shared/types/api'
 import type { School } from '@shared/types/common'
 
 export function RegisterForm() {
+  const navigate = useNavigate()
   const registerMutation = useRegister()
+
+  useEffect(() => {
+    if (registerMutation.isSuccess) {
+      const timer = setTimeout(() => navigate({ to: '/auth/login' }), 1500)
+      return () => clearTimeout(timer)
+    }
+  }, [registerMutation.isSuccess, navigate])
 
   const { data: schoolsData } = useQuery({
     queryKey: ['schools'],
@@ -39,7 +49,7 @@ export function RegisterForm() {
 
       {registerMutation.isSuccess && (
         <div className="rounded-md bg-green-50 p-3 text-sm text-green-600">
-          Registration successful! You can now sign in.
+          Registration successful! Redirecting to sign in...
         </div>
       )}
 

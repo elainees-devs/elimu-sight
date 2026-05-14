@@ -1,4 +1,5 @@
 import { RootRoute, Route } from '@tanstack/react-router'
+import type { Role } from '@shared/types/common'
 import { RootLayout } from '@routes/__root'
 import { LandingPage } from '@routes/home'
 import { AuthLayout } from '@routes/_auth-layout'
@@ -23,6 +24,15 @@ import { InsightListPage } from '@routes/insights/insight-list-page'
 import { InsightDetailPage } from '@routes/insights/insight-detail-page'
 import { NotFoundPage } from '@routes/errors/not-found-page'
 import { ErrorPage } from '@routes/errors/error-page'
+import { RoleRoute } from './role-route'
+
+function wrapWithRole(Component: () => JSX.Element, allowedRoles: Role[]) {
+  return () => (
+    <RoleRoute allowedRoles={allowedRoles}>
+      <Component />
+    </RoleRoute>
+  )
+}
 
 const rootRoute = new RootRoute({
   component: RootLayout,
@@ -64,97 +74,97 @@ const overviewRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: '',
   id: 'overview',
-  component: OverviewPage,
+  component: wrapWithRole(OverviewPage, ['ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT']),
 })
 
 const analyticsRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'analytics',
-  component: AnalyticsPage,
+  component: wrapWithRole(AnalyticsPage, ['ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT']),
 })
 
 const settingsRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'settings',
-  component: SettingsPage,
+  component: wrapWithRole(SettingsPage, ['ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT']),
 })
 
 const schoolsListRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'schools',
-  component: SchoolListPage,
+  component: wrapWithRole(SchoolListPage, ['ADMIN']),
 })
 
 const schoolDetailRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'schools/$schoolId',
-  component: SchoolDetailPage,
+  component: wrapWithRole(SchoolDetailPage, ['ADMIN']),
 })
 
 const classesListRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'classes',
-  component: ClassListPage,
+  component: wrapWithRole(ClassListPage, ['ADMIN', 'HEADTEACHER', 'TEACHER']),
 })
 
 const classDetailRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'classes/$classId',
-  component: ClassDetailPage,
+  component: wrapWithRole(ClassDetailPage, ['ADMIN', 'HEADTEACHER', 'TEACHER']),
 })
 
 const subjectsListRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'subjects',
-  component: SubjectListPage,
+  component: wrapWithRole(SubjectListPage, ['ADMIN', 'HEADTEACHER', 'TEACHER']),
 })
 
 const teachersListRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'teachers',
-  component: TeacherListPage,
+  component: wrapWithRole(TeacherListPage, ['ADMIN', 'HEADTEACHER']),
 })
 
 const studentsListRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'students',
-  component: StudentListPage,
+  component: wrapWithRole(StudentListPage, ['ADMIN', 'HEADTEACHER', 'TEACHER']),
 })
 
 const studentDetailRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'students/$studentId',
-  component: StudentDetailPage,
+  component: wrapWithRole(StudentDetailPage, ['ADMIN', 'HEADTEACHER', 'TEACHER']),
 })
 
 const assessmentsListRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'assessments',
-  component: AssessmentListPage,
+  component: wrapWithRole(AssessmentListPage, ['ADMIN', 'HEADTEACHER', 'TEACHER']),
 })
 
 const assessmentCreateRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'assessments/new',
-  component: AssessmentCreatePage,
+  component: wrapWithRole(AssessmentCreatePage, ['ADMIN', 'HEADTEACHER', 'TEACHER']),
 })
 
 const assessmentDetailRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'assessments/$assessmentId',
-  component: AssessmentDetailPage,
+  component: wrapWithRole(AssessmentDetailPage, ['ADMIN', 'HEADTEACHER', 'TEACHER']),
 })
 
 const insightsListRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'insights',
-  component: InsightListPage,
+  component: wrapWithRole(InsightListPage, ['ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT']),
 })
 
 const insightDetailRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'insights/$insightId',
-  component: InsightDetailPage,
+  component: wrapWithRole(InsightDetailPage, ['ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT']),
 })
 
 export const routeTree = rootRoute.addChildren([

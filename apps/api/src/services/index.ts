@@ -7,4 +7,5 @@ export {ClassSubjectService} from "./class-subject.service";
 export {AssessmentService} from "./assessment.service";
 export {StudentService} from "./student.service";
 export {InsightService} from "./insight.service";
+export {DashboardService} from "./dashboard.service";
 

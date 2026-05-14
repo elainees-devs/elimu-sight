@@ -4,18 +4,25 @@ import { useAuthStore } from '@stores/auth-store'
 import { useUIStore } from '@stores/ui-store'
 import { useLogout } from '@features/auth'
 import { ROUTES } from '@shared/config/routes'
+import type { Role } from '@shared/types/common'
 
-const navItems = [
-  { label: 'Overview', to: ROUTES.DASHBOARD },
-  { label: 'Analytics', to: ROUTES.ANALYTICS },
-  { label: 'Students', to: ROUTES.STUDENTS },
-  { label: 'Assessments', to: ROUTES.ASSESSMENTS },
-  { label: 'Insights', to: ROUTES.INSIGHTS },
-  { label: 'Classes', to: ROUTES.CLASSES },
-  { label: 'Subjects', to: ROUTES.SUBJECTS },
-  { label: 'Teachers', to: ROUTES.TEACHERS },
-  { label: 'Schools', to: ROUTES.SCHOOLS },
-  { label: 'Settings', to: ROUTES.SETTINGS },
+interface NavItemConfig {
+  label: string
+  to: string
+  roles: Role[]
+}
+
+const navItems: NavItemConfig[] = [
+  { label: 'Overview', to: ROUTES.DASHBOARD, roles: ['ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT'] },
+  { label: 'Analytics', to: ROUTES.ANALYTICS, roles: ['ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT'] },
+  { label: 'Students', to: ROUTES.STUDENTS, roles: ['ADMIN', 'HEADTEACHER', 'TEACHER'] },
+  { label: 'Assessments', to: ROUTES.ASSESSMENTS, roles: ['ADMIN', 'HEADTEACHER', 'TEACHER'] },
+  { label: 'Insights', to: ROUTES.INSIGHTS, roles: ['ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT'] },
+  { label: 'Classes', to: ROUTES.CLASSES, roles: ['ADMIN', 'HEADTEACHER', 'TEACHER'] },
+  { label: 'Subjects', to: ROUTES.SUBJECTS, roles: ['ADMIN', 'HEADTEACHER', 'TEACHER'] },
+  { label: 'Teachers', to: ROUTES.TEACHERS, roles: ['ADMIN', 'HEADTEACHER'] },
+  { label: 'Schools', to: ROUTES.SCHOOLS, roles: ['ADMIN'] },
+  { label: 'Settings', to: ROUTES.SETTINGS, roles: ['ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT'] },
 ]
 
 export function DashboardLayout() {
@@ -24,6 +31,9 @@ export function DashboardLayout() {
   const sidebarOpen = useUIStore((s) => s.sidebarOpen)
   const toggleSidebar = useUIStore((s) => s.toggleSidebar)
   const logout = useLogout()
+
+  const userRole = user?.role
+  const visibleItems = navItems.filter((item) => userRole && item.roles.includes(userRole))
 
   return (
     <ProtectedRoute>
@@ -38,7 +48,7 @@ export function DashboardLayout() {
             <span className="text-lg font-bold text-gray-900">ElimuSight</span>
           </div>
           <nav className="mt-4 space-y-1 px-3">
-            {navItems.map((item) => (
+            {visibleItems.map((item) => (
               <button
                 key={item.to}
                 onClick={() => navigate({ to: item.to })}

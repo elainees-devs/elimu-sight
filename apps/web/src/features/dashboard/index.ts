@@ -1,2 +1,2 @@
 export { dashboardClient } from './api/dashboard-client'
-export { useDashboardStats } from './hooks/use-dashboard-stats'
+export { useDashboardStats, useRecentActivity } from './hooks/use-dashboard-stats'
