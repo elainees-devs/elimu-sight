@@ -1,0 +1,74 @@
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { loginSchema, type LoginFormData } from '../schemas/auth-schema'
+import { useLogin } from '../hooks/use-login'
+import { useAuthStore } from '@stores/auth-store'
+
+export function LoginForm() {
+  const isLoading = useAuthStore((s) => s.isLoading)
+  const login = useLogin()
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  })
+
+  const onSubmit = (data: LoginFormData) => {
+    login.mutate(data)
+  }
+
+  if (isLoading) {
+    return <div className="flex justify-center p-8">Loading...</div>
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {login.error && (
+        <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
+          {(login.error as any)?.response?.data?.message || 'Login failed'}
+        </div>
+      )}
+
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          Email
+        </label>
+        <input
+          id="email"
+          type="email"
+          {...register('email')}
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        />
+        {errors.email && (
+          <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+          Password
+        </label>
+        <input
+          id="password"
+          type="password"
+          {...register('password')}
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        />
+        {errors.password && (
+          <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+        )}
+      </div>
+
+      <button
+        type="submit"
+        disabled={login.isPending}
+        className="w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+      >
+        {login.isPending ? 'Signing in...' : 'Sign in'}
+      </button>
+    </form>
+  )
+}

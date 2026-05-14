@@ -1,0 +1,7 @@
+export { studentClient } from './api/student-client'
+export { useStudents } from './hooks/use-students'
+export { useStudent } from './hooks/use-student'
+export { useCreateStudent } from './hooks/use-create-student'
+export { useUpdateStudent } from './hooks/use-update-student'
+export { useDeleteStudent } from './hooks/use-delete-student'
+export { studentSchema } from './schemas/student-schema'

@@ -12,6 +12,7 @@ const userBase = {
   role: Joi.string().valid(...RoleValues),
   schoolId: Joi.string().uuid(),
   isActive: Joi.boolean(),
+  assignedClassId: Joi.string().uuid().optional(),
 };
 
 /**

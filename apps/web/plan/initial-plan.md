@@ -94,7 +94,22 @@ web/
     │   └── errors/
     │       ├── not-found-page.tsx
     │       └── error-page.tsx
+    ├── assets/
+    │   └── .gitkeep
     ├── features/
+    │   ├── landing/
+    │   │   ├── index.tsx                  # LandingPage component (composes sections)
+    │   │   ├── components/
+    │   │   │   ├── navbar.tsx
+    │   │   │   └── footer.tsx
+    │   │   ├── sections/
+    │   │   │   ├── hero-section.tsx
+    │   │   │   ├── features-section.tsx
+    │   │   │   ├── how-it-works-section.tsx
+    │   │   │   ├── testimonials-section.tsx
+    │   │   │   └── cta-section.tsx
+    │   │   └── hooks/
+    │   │       └── use-landing-scroll.ts
     │   ├── auth/
     │   │   ├── index.ts
     │   │   ├── api/auth-client.ts
@@ -248,6 +263,30 @@ Route pages (in `routes/`) are thin composition layers — they import feature c
 
 We use programmatic route tree definition (`router/route-tree.tsx`), NOT file-based routing. This avoids TanStack Router's dot-notation file naming convention, letting us keep kebab-case throughout. Pathless layout routes (`_auth-layout.tsx`, `_dashboard-layout.tsx`) provide shared UI chrome.
 
+**Route tree structure:**
+
+```
+RootRoute (__root.tsx — root layout with <Outlet />)
+├── IndexRoute (/)                 → LandingPage (public, no layout wrapper)
+│
+├── AuthLayoutRoute (_auth-layout)  → centered card layout
+│   ├── LoginRoute (/auth/login)
+│   └── RegisterRoute (/auth/register)
+│
+├── DashboardLayoutRoute (_dashboard-layout)  → sidebar + header (ProtectedRoute)
+│   ├── OverviewRoute (/dashboard)
+│   ├── AnalyticsRoute (/dashboard/analytics)
+│   ├── StudentsRoute (/dashboard/students)
+│   ├── AssessmentsRoute (/dashboard/assessments)
+│   ├── InsightsRoute (/dashboard/insights)
+│   ├── ClassesRoute (/dashboard/classes)
+│   ├── SubjectsRoute (/dashboard/subjects)
+│   ├── TeachersRoute (/dashboard/teachers)
+│   └── SettingsRoute (/dashboard/settings)
+│
+└── NotFoundRoute (*)             → NotFoundPage
+```
+
 ### 4. Dual API Layer
 
 | Backend | Base URL | Purpose |
@@ -278,7 +317,44 @@ Custom-built with React + TailwindCSS v3 + `class-variance-authority`. No shadcn
 - Styled via Tailwind utility classes composed through `cn()` helper
 - Organized into: **ui/** (primitives), **charts/** (Recharts wrappers), **data-display/** (composite), **feedback/** (user-facing)
 
-### 8. SaaS Scalability
+### 8. Landing Page Architecture
+
+The landing page is a standalone feature module at `features/landing/`, fully isolated from authenticated app routes.
+
+**Routing:**
+
+```
+RootRoute (__root.tsx)
+├── IndexRoute (/) → LandingPage           # Public, no layout wrapper
+│
+├── AuthLayoutRoute (_auth-layout.tsx)     # Public
+│   ├── LoginRoute (/auth/login)
+│   └── RegisterRoute (/auth/register)
+│
+├── DashboardLayoutRoute (_dashboard-layout.tsx)  # Protected
+│   ├── OverviewRoute (/dashboard)
+│   ├── AnalyticsRoute (/dashboard/analytics)
+│   └── ...
+│
+└── NotFoundRoute (*)
+```
+
+**Component hierarchy:**
+
+```
+LandingPage (features/landing/index.tsx)
+├── <Navbar />                    # Sticky nav: logo, links, "Get Started" CTA
+├── <HeroSection />               # Headline, subtitle, primary CTA
+├── <FeaturesSection />           # Feature cards grid (icon + title + desc)
+├── <HowItWorksSection />         # Numbered steps / process flow
+├── <TestimonialsSection />       # Optional — social proof quote cards
+├── <CtaSection />                # Final banner with CTA button
+└── <Footer />                    # Links, social, copyright
+```
+
+Each section is a standalone component receiving only props (no business logic). Navbar and Footer stay within `features/landing/components/` since they are landing-specific, not shared app-wide.
+
+### 9. SaaS Scalability
 
 - **School-scoped data** — Axios interceptor injects `schoolId` from `school-store`
 - **Role-based access** — route guards + component-level visibility

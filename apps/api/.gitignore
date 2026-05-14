@@ -21,6 +21,8 @@ build/
 # ========================
 logs/
 *.log
+README.pdf
+image.png
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -39,6 +41,11 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# ========================
+# EDITOR FILES
+# ========================
+.pdf
 
 # ========================
 # CACHE / TEMP

@@ -1,0 +1,7 @@
+export { schoolClient } from './api/school-client'
+export { useSchools } from './hooks/use-schools'
+export { useSchool } from './hooks/use-school'
+export { SchoolCard } from './components/school-card'
+export { SchoolForm } from './components/school-form'
+export { schoolSchema } from './schemas/school-schema'
+export type { SchoolFormData } from './types'

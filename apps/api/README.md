@@ -103,6 +103,7 @@ apps/api/
 │   │   └── index.ts
 │   │
 │   ├── app.ts
+│   │
 │   └── server.ts
 │
 ├── .env
@@ -174,98 +175,7 @@ This ensures secure school-level data separation.
 | assessments | Student marks and grades |
 | insights | AI-generated insights |
 | ai_logs | AI request and response logs |
-
----
-
-## 🔗 Relationship Types
-
-### 🏫 School Relationships
-
-| Entity | Relationship Type | Related Entities | Description |
-|---|---|---|---|
-| School | One-to-Many | Users, Students, Classes, Subjects, Assessments, Insights | A school manages multiple academic and system entities |
-
-**Example**
-
-```txt
-One School → Many Students
-```
-
----
-
-### 👤 User & Teacher Relationships
-
-| Entity | Relationship Type | Related Entity | Description |
-|---|---|---|---|
-| User | One-to-One | Teacher | Each teacher is linked to exactly one user account |
-
-**Example**
-
-```txt
-One User ↔ One Teacher
-```
-
----
-
-### 🎓 Class Relationships
-
-| Entity | Relationship Type | Related Entities | Description |
-|---|---|---|---|
-| Class | One-to-Many | Students, Assessments | A class contains multiple students and assessments |
-
-**Example**
-
-```txt
-One Class → Many Students
-```
-
----
-
-### 📚 Class & Subject Relationships
-
-| Entity | Relationship Type | Related Entities | Description |
-|---|---|---|---|
-| Class ↔ Subject | Many-to-Many | class_subjects | Classes can have many subjects and subjects can belong to many classes |
-
-**Junction Table**
-
-```txt
-Classes → class_subjects ← Subjects
-```
-
----
-
-### 📊 Assessment Relationships
-
-| Entity | Relationship Type | Related Entities | Description |
-|---|---|---|---|
-| Assessment | Many-to-One | Student, Subject, Class, School, Teacher | Each assessment belongs to one student, subject, class, school, and teacher |
-
-Supports:
-
-- Analytics
-- Reporting
-- AI insights
-
----
-
-### 🧠 Insight Relationships
-
-| Entity | Relationship Type | Related Entities | Description |
-|---|---|---|---|
-| Insight | Many-to-One | Student, Subject, Class, School | Insights are generated within a student academic context |
-
-Used for:
-
-- Recommendations
-- Predictions
-- Learning analysis
-
----
-
-## 📊 Entity Relationship Diagram (ERD)
-
-![ElimuSight - ERD](docs/elimu_sight_erd.png)
+| refresh_tokens | JWT refresh token rotation |
 
 ---
 
@@ -301,28 +211,34 @@ All tables use UUIDs.
 
 ---
 
-## 🚀 Quick Start
+# 🚀 Quick Start
 
-### Option 1 — Docker (easiest)
+## Option 1 — Docker
 
 ```bash
 # 1. Copy environment config
 cp .env.example .env
-# Edit .env with your database credentials
 
-# 2. Start all services
+# 2. Edit .env with your credentials
+
+# 3. Start all services
 docker compose up
 ```
 
-The API starts at `http://localhost:3000`.
+The API starts at:
 
-Docker Compose runs the API, PostgreSQL (with health check), and wires the AI service URL automatically.
+```txt
+http://localhost:5000
+```
 
 ---
 
-### Option 2 — Local Development
+## Option 2 — Local Development
 
-**Prerequisites:** Node.js v18+, PostgreSQL 15+
+### Prerequisites
+
+- Node.js v18+
+- PostgreSQL 15+
 
 ```bash
 # 1. Navigate to API
@@ -331,50 +247,83 @@ cd apps/api
 # 2. Install dependencies
 npm install
 
-# 3. Copy and configure environment
+# 3. Copy environment config
 cp .env.example .env
-# Edit .env with your PostgreSQL credentials and other settings
 
-# 4. Generate Prisma client and run migrations
+# 4. Generate Prisma client
 npx prisma generate
+
+# 5. Run migrations
 npx prisma migrate dev
 
-# 5. Start in development mode (auto-reloads on changes)
+# 6. Seed database
+npm run seed:sql
+
+# 7. Start development server
 npm run dev
 ```
 
-The API runs on `http://localhost:5000`.
+---
+
+# 🌱 Seed Data
+
+```bash
+npm run seed:sql
+```
+
+## Seeded Records
+
+| Table | Records |
+|---|---|
+| schools | 1 |
+| users | 5 |
+| teachers | 2 |
+| classes | 3 |
+| subjects | 4 |
+| class_subjects | 4 |
+| students | 6 |
+| assessments | 5 |
 
 ---
 
-### Running the AI Service (optional)
+## 🔐 Demo Login Credentials
 
-The AI insight generation requires the Python FastAPI service:
+| Email | Password | Role |
+|---|---|---|
+| `admin@elimuheights.school` | `admin123` | ADMIN |
+| `headteacher@elimuheights.school` | `headteacher123` | HEADTEACHER |
+| `teacher1@elimuheights.school` | `teacher123` | TEACHER |
+| `teacher2@elimuheights.school` | `teacher123` | TEACHER |
+| `accountant@elimuheights.school` | `accountant123` | ACCOUNTANT |
+
+---
+
+# 🤖 Running AI Service
 
 ```bash
 cd apps/ai-service
+
 source venv/bin/activate
+
 uvicorn app.main:app --reload --port 8000
 ```
 
 ---
 
-## 📦 Available Scripts
+# 📦 Available Scripts
 
 | Script | Description |
-|--------|-------------|
-| `npm run dev` | Start dev server with hot reload |
-| `npm run build` | Compile TypeScript to JavaScript |
-| `npm start` | Run compiled production build |
+|---|---|
+| `npm run dev` | Start development server |
+| `npm run build` | Compile TypeScript |
+| `npm start` | Run production build |
 | `npm test` | Run tests |
-| `npm run test:coverage` | Run tests with coverage report |
-| `npm run test:watch` | Run tests in watch mode |
+| `npm run test:coverage` | Coverage report |
+| `npm run test:watch` | Watch tests |
 
 ---
 
-## 🧠 Architecture
-
-ElimuSight uses a layered backend architecture:
+# 🧠 Backend Architecture
 
 ```txt
 Routes
@@ -392,9 +341,9 @@ PostgreSQL
 
 ---
 
-## 📦 API Response Format
+# 📦 Standard API Response Format
 
-### Successful Response
+## Successful Response
 
 ```json
 {
@@ -404,7 +353,7 @@ PostgreSQL
 }
 ```
 
-### Error Response
+## Error Response
 
 ```json
 {
@@ -416,17 +365,82 @@ PostgreSQL
 
 ---
 
-## 🔌 Core Modules
+# 🔌 API Testing
 
-### 🔐 Authentication
+## 🔐 Authentication
+
+### Login Endpoint
+
+```http
+POST /api/v1/auth/login
+```
+
+### Request Body
+
+```json
+{
+  "email": "admin@elimuheights.school",
+  "password": "admin123"
+}
+```
+
+---
+
+## Thunder Client Example
+
+![Thunder Client Login Response](docs/images/auth-login-response.png)
+
+---
+
+## Successful Login Response
+
+```json
+{
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "8d45b4ff2a9d46b4ecdfde21d09e40aec5b57cc6bb8877bb90165b8cd..."
+  }
+}
+```
+
+---
+
+## cURL Example
+
+```bash
+curl -X POST http://localhost:5000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@elimuheights.school",
+    "password": "admin123"
+  }'
+```
+
+---
+
+## Using JWT Token
+
+```bash
+curl -H "Authorization: Bearer <token>" \
+http://localhost:5000/api/v1/schools
+```
+
+---
+
+# 🔌 Core Modules
+
+## 🔐 Authentication
 
 Handles:
 
 - User login
-- JWT + refresh token rotation
+- JWT authentication
+- Refresh token rotation
 - Role-based access control
 
-#### Endpoints
+### Endpoints
 
 ```http
 POST /api/v1/auth/login
@@ -436,15 +450,15 @@ POST /api/v1/auth/logout
 
 ---
 
-### 👨‍🎓 Students
+## 👨‍🎓 Students
 
 Handles:
 
 - Student profiles
-- Student records
 - Student management
+- Academic records
 
-#### Endpoints
+### Endpoints
 
 ```http
 GET    /api/v1/students
@@ -456,15 +470,15 @@ DELETE /api/v1/students/:id
 
 ---
 
-### 📊 Assessments
+## 📊 Assessments
 
 Handles:
 
 - CBC assessments
 - Student marks
-- Strand performance
+- Performance analytics
 
-#### Endpoints
+### Endpoints
 
 ```http
 GET    /api/v1/assessments/school/:schoolId
@@ -477,15 +491,16 @@ DELETE /api/v1/assessments/school/:schoolId/:id
 
 ---
 
-### 🧠 AI Insights
+## 🧠 AI Insights
 
 Handles:
 
-- Class, student, and subject insight generation
-- Bulk insight generation
-- AI service health checks
+- Student insight generation
+- Subject insight generation
+- Class analytics
+- Bulk AI processing
 
-#### Endpoints
+### Endpoints
 
 ```http
 POST /api/v1/ai/generate/class
@@ -498,15 +513,15 @@ GET  /api/v1/ai/health
 
 ---
 
-### 💡 Insights
+## 💡 Insights
 
 Handles:
 
-- Generated student insights
-- Recommendations storage
+- AI-generated recommendations
 - Learning analytics
+- Student intelligence reports
 
-#### Endpoints
+### Endpoints
 
 ```http
 GET    /api/v1/insights/crud/:id
@@ -525,7 +540,23 @@ GET    /api/v1/insights/analytics/period/:period
 
 ---
 
-## 🔄 System Workflow
+# 📋 Key Endpoints Summary
+
+| Method | Endpoint | Auth | Roles |
+|---|---|---|---|
+| POST | `/api/v1/auth/login` | No | — |
+| POST | `/api/v1/auth/refresh` | No | — |
+| POST | `/api/v1/auth/logout` | Yes | All |
+| GET | `/api/v1/schools` | Yes | All |
+| GET | `/api/v1/students` | Yes | All |
+| POST | `/api/v1/assessments` | Yes | ADMIN, HEADTEACHER, TEACHER |
+| POST | `/api/v1/ai/generate/class` | Yes | ADMIN, HEADTEACHER, TEACHER |
+| GET | `/api/v1/ai/health` | Yes | ADMIN |
+| GET | `/health` | No | — |
+
+---
+
+# 🔄 System Workflow
 
 ```txt
 Teacher submits assessment data
@@ -545,22 +576,23 @@ Dashboard visualizes intelligence
 
 ---
 
-## 🛡️ Security
+# 🛡️ Security
 
 The API includes:
 
 - JWT authentication
-- Password hashing with bcrypt
-- Helmet security middleware
-- Request validation with Joi
-- Protected environment variables
+- bcrypt password hashing
+- Helmet middleware
+- Joi request validation
+- Environment variable protection
 - CORS configuration
+- Refresh token rotation
 
 ---
 
-## 📜 Logging
+# 📜 Logging
 
-Logging is handled using:
+Logging stack:
 
 - Winston
 - Morgan
@@ -568,21 +600,21 @@ Logging is handled using:
 
 Logs include:
 
-- API requests
+- Requests
 - Errors
 - System events
 
 ---
 
-## 🧩 Validation
+# 🧩 Validation
 
-Validation is handled using:
+Validation uses:
 
 ```txt
 Joi
 ```
 
-Schemas are located inside:
+Schemas are located in:
 
 ```bash
 src/schemas/
@@ -590,87 +622,38 @@ src/schemas/
 
 ---
 
-## ⚙️ Infrastructure Features
+# ⚙️ Infrastructure Features
 
 - Centralized error handling
 - Async request handling
-- Request logging
-- Environment-based configuration
+- Environment configuration
 - Validation middleware
 - JWT middleware
+- Request logging
 
 ---
 
-## 🧪 Testing
+# 🧪 Testing
 
 ```bash
 npm test
-npm run test:coverage  # with coverage report
+npm run test:coverage
+npm run test:watch
 ```
 
 ---
 
-## 🔌 Testing API Endpoints (Postman / curl)
-
-### Authentication
-
-1. Login to get a JWT token:
-
-```bash
-curl -X POST http://localhost:5000/api/v1/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email": "admin@school.com", "password": "yourpassword"}'
-```
-
-2. Use the returned token in subsequent requests:
-
-```bash
-curl -H "Authorization: Bearer <token>" http://localhost:5000/api/v1/schools
-```
-
-### Key Endpoints
-
-| Method | Endpoint | Auth Required | Roles |
-|--------|----------|---------------|-------|
-| POST | `/api/v1/auth/login` | No | — |
-| GET | `/api/v1/schools` | Yes | All |
-| GET | `/api/v1/students` | Yes | All |
-| GET | `/api/v1/assessments/school/:schoolId` | Yes | All |
-| POST | `/api/v1/assessments` | Yes | ADMIN, HEADTEACHER, TEACHER |
-| PATCH | `/api/v1/assessments/school/:schoolId/:id` | Yes | ADMIN, HEADTEACHER |
-| DELETE | `/api/v1/assessments/school/:schoolId/:id` | Yes | ADMIN, HEADTEACHER |
-| POST | `/api/v1/ai/generate/class` | Yes | ADMIN, HEADTEACHER, TEACHER |
-| POST | `/api/v1/ai/generate/student` | Yes | ADMIN, HEADTEACHER, TEACHER |
-| POST | `/api/v1/ai/generate/subject` | Yes | ADMIN, HEADTEACHER, TEACHER |
-| POST | `/api/v1/ai/bulk` | Yes | ADMIN, HEADTEACHER |
-| GET | `/api/v1/ai/health` | Yes | ADMIN |
-| GET | `/api/v1/insights/crud/:id` | Yes | All |
-| GET | `/api/v1/insights/query/school/:schoolId` | Yes | All |
-| GET | `/api/v1/insights/analytics/class/:classId` | Yes | All |
-| GET | `/health` | No | — |
-
-### AI Endpoints — Example
-
-```bash
-curl -X POST http://localhost:5000/api/v1/ai/generate/class \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <token>" \
-  -d '{"classId": "uuid-here", "schoolId": "uuid-here"}'
-```
-
-### Rate Limiting
+# 🚦 Rate Limiting
 
 | Tier | Limit |
-|------|-------|
+|---|---|
 | Global | 100 requests / 15 min |
 | Auth | 10 requests / 15 min |
 | AI | 20 requests / 15 min |
 
 ---
 
-## 🚀 MVP Goals
-
-The initial MVP focuses on:
+# 🚀 MVP Goals
 
 - CBC analytics
 - Student intelligence
@@ -679,22 +662,20 @@ The initial MVP focuses on:
 
 ---
 
-## ⚖️ Architectural Trade-Offs
+# ⚖️ Architectural Trade-Offs
 
 [View Architectural Trade-Offs](docs/architectural_trade_offs.md)
 
 ---
 
-## 📈 Scalability Strategy
+# 📈 Scalability Strategy
 
-### Phase 1 — MVP
+## Phase 1 — MVP
 
 - Single PostgreSQL database
 - Supports 10–50 schools
 
----
-
-### Phase 2 — Growth
+## Phase 2 — Growth
 
 Add:
 
@@ -706,9 +687,7 @@ Supports:
 
 - Hundreds of schools
 
----
-
-### Phase 3 — Large Scale SaaS
+## Phase 3 — Enterprise SaaS
 
 Add:
 
@@ -722,32 +701,33 @@ Supports:
 
 ---
 
-## 🔮 Future Architecture Evolution
+# 🔮 Future Architecture Evolution
 
-Planned improvements include:
+Planned improvements:
 
 - Feature-based modularization
-- Background job queues
 - Redis caching
-- Event-driven insight processing
+- Background workers
+- Event-driven architecture
 - AI worker services
-- Read replicas for analytics
+- Read replicas
 
 ---
 
-## 🛣️ Future Roadmap
+# 🛣️ Product Roadmap
 
 - Multi-school SaaS architecture
 - Parent portal
-- School-wide analytics dashboards
 - AI tutoring assistant
-- SMS/WhatsApp notifications
-- Mobile app integration
-- Real-time insights
+- School analytics dashboards
+- WhatsApp notifications
+- SMS integration
+- Mobile app
+- Real-time analytics
 
 ---
 
-## 👤 Author
+# 👤 Author
 
 Elaine Muhombe
 
