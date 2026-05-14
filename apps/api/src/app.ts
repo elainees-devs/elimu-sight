@@ -42,6 +42,19 @@ const app: Application = express();
 app.set("trust proxy", 1);
 
 // =========================================
+// HTTPS REDIRECT (production only)
+// =========================================
+if (env.isProduction) {
+  app.use((req, res, next) => {
+    if (req.headers["x-forwarded-proto"] !== "https") {
+      const host = req.headers.host || req.hostname;
+      return res.redirect(301, `https://${host}${req.originalUrl}`);
+    }
+    next();
+  });
+}
+
+// =========================================
 // REQUEST ID
 // =========================================
 app.use(requestIdMiddleware);
