@@ -25,6 +25,14 @@ router.post(
 );
 
 router.get(
+  "/school/:schoolId",
+  authenticateMiddleware,
+  validateSchoolAccess,
+  (req, res, next) =>
+    controller.getAllInsightsBySchool(req, res, next),
+);
+
+router.get(
   "/schools/:schoolId/trends",
   authenticateMiddleware,
   validateSchoolAccess,

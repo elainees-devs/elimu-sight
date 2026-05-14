@@ -11,3 +11,14 @@ export function useInsight(id: string) {
     enabled: !!id,
   })
 }
+
+export function useSchoolInsights(schoolId: string, page?: number) {
+  return useQuery({
+    queryKey: ['insights', 'school', schoolId, page ?? 1],
+    queryFn: async () => {
+      const res = await insightClient.listBySchool(schoolId, page)
+      return res.data.data
+    },
+    enabled: !!schoolId,
+  })
+}

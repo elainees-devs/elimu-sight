@@ -24,9 +24,9 @@ export function InsightCard({ insight, onClick }: InsightCardProps) {
           </div>
           <div className="flex flex-col items-end gap-2">
             {insight.type && <Badge>{insight.type}</Badge>}
-            {insight.confidenceScore && (
+            {insight.confidenceScore !== undefined && (
               <span className="text-xs text-gray-500">
-                {Math.round(insight.confidenceScore * 100)}% confidence
+                {Math.round(insight.confidenceScore)}% confidence
               </span>
             )}
           </div>

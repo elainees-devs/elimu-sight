@@ -5,8 +5,8 @@ import type { Insight } from '@shared/types/common'
 
 export function useRefreshInsight() {
   return useMutation({
-    mutationFn: async (params: { type: string; studentId: string; subjectId: string; classId: string }) => {
-      const res = await apiClient.post<ApiResponse<Insight>>('/ai/generate/insight', { ...params, refresh: true })
+    mutationFn: async (insightId: string) => {
+      const res = await apiClient.post<ApiResponse<Insight>>('/ai/refresh', { insightId })
       return res.data.data
     },
   })
