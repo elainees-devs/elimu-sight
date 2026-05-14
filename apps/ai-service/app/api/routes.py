@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import JSONResponse, PlainTextResponse
 from app.schemas.student import StudentRequest
 from app.schemas.ai import (
     StudentInsightRequest,
@@ -52,15 +52,21 @@ async def health():
         for dep in deps.values()
     )
 
-    return {
-        "status": "ok" if all_healthy else "degraded",
-        "service": "ai_engine",
-        "version": settings.app_version,
-        "dependencies": deps,
-        "llm_enabled": llm_enabled,
-        "llm_available": llm_available,
-        "ml_enabled": settings.enable_ml,
-    }
+    status = "ok" if all_healthy else "degraded"
+    status_code = 200 if all_healthy else 503
+
+    return JSONResponse(
+        content={
+            "status": status,
+            "service": "ai_engine",
+            "version": settings.app_version,
+            "dependencies": deps,
+            "llm_enabled": llm_enabled,
+            "llm_available": llm_available,
+            "ml_enabled": settings.enable_ml,
+        },
+        status_code=status_code,
+    )
 
 
 @router.post("/analyze")
