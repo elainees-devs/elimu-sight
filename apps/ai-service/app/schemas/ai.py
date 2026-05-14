@@ -41,9 +41,16 @@ class ClassInsightRequest(BaseModel):
     context: ClassContext
 
 
+class SubjectContext(BaseModel):
+    id: SanitizedString
+    name: SanitizedString
+    code: Optional[SanitizedString] = None
+    assessments: list[Assessment]
+
+
 class SubjectInsightRequest(BaseModel):
     type: str = "SUBJECT"
-    context: dict[str, Any]
+    context: SubjectContext
 
 
 class RefreshInsightRequest(BaseModel):

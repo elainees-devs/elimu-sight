@@ -12,6 +12,8 @@ from app.services.prompts import (
     build_class_prompt,
     FEEDBACK_INSTRUCTION,
 )
+from app.schemas.ai import ClassContext, SubjectContext
+from app.schemas.student import Assessment
 
 
 def analyze_student(student):
@@ -83,12 +85,12 @@ def analyze_student(student):
     return result
 
 
-def analyze_class(class_context):
-    name = class_context.get("name", "Unknown Class")
-    level = class_context.get("level", "")
-    stream = class_context.get("stream")
-    student_count = class_context.get("studentCount", 0)
-    subject_count = class_context.get("subjectCount", 0)
+def analyze_class(class_context: ClassContext):
+    name = class_context.name
+    level = class_context.level
+    stream = class_context.stream
+    student_count = class_context.studentCount
+    subject_count = class_context.subjectCount
 
     insight = _try_llm_insight(
         service_fn=lambda: llm_service.generate_insight(
@@ -102,14 +104,14 @@ def analyze_class(class_context):
             "parent": f"Your child's class ({name}) is being monitored for academic performance.",
             "student": "Stay focused and keep up with your studies!",
         },
-        context=f"class:{class_context.get('id')}",
+        context=f"class:{class_context.id}",
     )
 
     return _build_insight_response(
         title="Class Performance Overview",
         summary=f"Analysis for {name}: {student_count} students across {subject_count} subjects.",
         data={
-            "class_id": class_context.get("id"),
+            "class_id": class_context.id,
             "name": name,
             "level": level,
             "stream": stream,
@@ -121,14 +123,14 @@ def analyze_class(class_context):
     )
 
 
-def analyze_subject(subject_context):
-    name = subject_context.get("name", "Unknown Subject")
-    assessments = subject_context.get("assessments", [])
+def analyze_subject(subject_context: SubjectContext):
+    name = subject_context.name
+    assessments = subject_context.assessments
 
     scores = []
     for a in assessments:
-        if a.get("total_marks", 0) > 0:
-            scores.append((a.get("score", 0) / a.get("total_marks", 1)) * 100)
+        if a.total_marks > 0:
+            scores.append((a.score / a.total_marks) * 100)
 
     average = sum(scores) / len(scores) if scores else 0
     risk_score = _calculate_risk_score(average) if scores else 1.0
@@ -138,9 +140,9 @@ def analyze_subject(subject_context):
         title="Subject Performance Analysis",
         summary=f"Analysis for {name}: {len(scores)} assessments recorded, average {average:.1f}%.",
         data={
-            "subject_id": subject_context.get("id"),
+            "subject_id": subject_context.id,
             "name": name,
-            "code": subject_context.get("code"),
+            "code": subject_context.code,
             "average": round(average, 2),
             "risk_score": risk_score,
             "assessment_count": len(scores),

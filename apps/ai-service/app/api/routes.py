@@ -90,13 +90,12 @@ async def insight_student(request: StudentInsightRequest):
 @router.post("/insights/class", response_model=InsightResponse)
 async def insight_class(request: ClassInsightRequest):
     logger.info("Generating class insight", extra={"class_id": request.context.id})
-    context_dict = request.context.model_dump()
-    return analyze_class(context_dict)
+    return analyze_class(request.context)
 
 
 @router.post("/insights/subject", response_model=InsightResponse)
 async def insight_subject(request: SubjectInsightRequest):
-    logger.info("Generating subject insight", extra={"context": request.context.get("id")})
+    logger.info("Generating subject insight", extra={"subject_id": request.context.id})
     return analyze_subject(request.context)
 
 
