@@ -20,12 +20,40 @@ const studentController = new StudentController();
 // STUDENT ROUTES
 // ===============================
 
-// GET ALL STUDENTS BY SCHOOL
+/**
+ * @openapi
+ * /api/v1/students:
+ *   get:
+ *     tags: [Students]
+ *     summary: Get all students by school
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of students
+ */
 router.get("/", authenticateMiddleware, (req, res, next) =>
   studentController.getAllStudentsBySchool(req, res, next),
 );
 
-// GET STUDENTS BY CLASS
+/**
+ * @openapi
+ * /api/v1/students/class/{classId}:
+ *   get:
+ *     tags: [Students]
+ *     summary: Get students by class
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: classId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of students in class
+ */
 router.get(
   "/class/:classId",
   authenticateMiddleware,
@@ -34,7 +62,26 @@ router.get(
     studentController.getStudentsByClass(req, res, next),
 );
 
-// GET STUDENT BY ID
+/**
+ * @openapi
+ * /api/v1/students/{id}:
+ *   get:
+ *     tags: [Students]
+ *     summary: Get student by ID
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Student data
+ *       404:
+ *         description: Student not found
+ */
 router.get(
   "/:id",
   authenticateMiddleware,
@@ -43,7 +90,32 @@ router.get(
     studentController.getStudentById(req, res, next),
 );
 
-// CREATE STUDENT
+/**
+ * @openapi
+ * /api/v1/students:
+ *   post:
+ *     tags: [Students]
+ *     summary: Create a new student
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, admissionNumber, classId]
+ *             properties:
+ *               name:
+ *                 type: string
+ *               admissionNumber:
+ *                 type: string
+ *               classId:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Student created
+ */
 router.post(
   "/",
   authenticateMiddleware,
@@ -53,7 +125,37 @@ router.post(
     studentController.createStudent(req, res, next),
 );
 
-// UPDATE STUDENT
+/**
+ * @openapi
+ * /api/v1/students/{id}:
+ *   patch:
+ *     tags: [Students]
+ *     summary: Update a student
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               admissionNumber:
+ *                 type: string
+ *               classId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Student updated
+ */
 router.patch(
   "/:id",
   authenticateMiddleware,
@@ -63,7 +165,24 @@ router.patch(
     studentController.updateStudent(req, res, next),
 );
 
-// DELETE STUDENT
+/**
+ * @openapi
+ * /api/v1/students/{id}:
+ *   delete:
+ *     tags: [Students]
+ *     summary: Delete a student
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Student deleted
+ */
 router.delete(
   "/:id",
   authenticateMiddleware,
@@ -73,7 +192,24 @@ router.delete(
     studentController.deleteStudent(req, res, next),
 );
 
-// ACTIVATE STUDENT
+/**
+ * @openapi
+ * /api/v1/students/{id}/activate:
+ *   patch:
+ *     tags: [Students]
+ *     summary: Activate a student
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Student activated
+ */
 router.patch(
   "/:id/activate",
   authenticateMiddleware,
@@ -82,7 +218,24 @@ router.patch(
     studentController.activateStudent(req, res, next),
 );
 
-// DEACTIVATE STUDENT
+/**
+ * @openapi
+ * /api/v1/students/{id}/deactivate:
+ *   patch:
+ *     tags: [Students]
+ *     summary: Deactivate a student
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Student deactivated
+ */
 router.patch(
   "/:id/deactivate",
   authenticateMiddleware,
@@ -91,7 +244,34 @@ router.patch(
     studentController.deactivateStudent(req, res, next),
 );
 
-// TRANSFER STUDENT CLASS
+/**
+ * @openapi
+ * /api/v1/students/{id}/transfer:
+ *   patch:
+ *     tags: [Students]
+ *     summary: Transfer student to another class
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [newClassId]
+ *             properties:
+ *               newClassId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Student transferred
+ */
 router.patch(
   "/:id/transfer",
   authenticateMiddleware,
@@ -100,12 +280,34 @@ router.patch(
     studentController.transferStudentClass(req, res, next),
 );
 
-// COUNT STUDENTS
+/**
+ * @openapi
+ * /api/v1/students/count:
+ *   get:
+ *     tags: [Students]
+ *     summary: Count all students
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Student count
+ */
 router.get("/count", authenticateMiddleware, (req, res, next) =>
   studentController.countAllStudents(req, res, next),
 );
 
-// STUDENT STATISTICS
+/**
+ * @openapi
+ * /api/v1/students/statistics:
+ *   get:
+ *     tags: [Students]
+ *     summary: Get student statistics
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Student statistics
+ */
 router.get("/statistics", authenticateMiddleware, (req, res, next) =>
   studentController.getStudentStatistics(req, res, next),
 );

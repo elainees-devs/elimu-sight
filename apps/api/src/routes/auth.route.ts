@@ -11,7 +11,34 @@ const authController = new AuthController();
 // AUTH ROUTES
 // ===============================
 
-// REGISTER
+/**
+ * @openapi
+ * /api/v1/auth/register:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Register a new user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password, name]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 minLength: 6
+ *               name:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *       400:
+ *         description: Validation error
+ */
 router.post(
   "/register",
   authRateLimiter,
@@ -19,7 +46,31 @@ router.post(
   (req, res, next) => authController.register(req, res, next)
 );
 
-// LOGIN
+/**
+ * @openapi
+ * /api/v1/auth/login:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Login with email and password
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login successful, returns tokens
+ *       401:
+ *         description: Invalid credentials
+ */
 router.post(
   "/login",
   authRateLimiter,
@@ -27,20 +78,65 @@ router.post(
   (req, res, next) => authController.login(req, res, next)
 );
 
-// REFRESH TOKEN
+/**
+ * @openapi
+ * /api/v1/auth/refresh:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Refresh access token
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [refreshToken]
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Tokens refreshed successfully
+ *       401:
+ *         description: Invalid or expired refresh token
+ */
 router.post(
   "/refresh",
   (req, res, next) => authController.refresh(req, res, next)
 );
 
-// LOGOUT
+/**
+ * @openapi
+ * /api/v1/auth/logout:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Logout and invalidate tokens
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logged out successfully
+ */
 router.post(
   "/logout",
   authenticateMiddleware,
   (req, res, next) => authController.logout(req, res, next)
 );
 
-// GET CURRENT USER
+/**
+ * @openapi
+ * /api/v1/auth/me:
+ *   get:
+ *     tags: [Auth]
+ *     summary: Get current authenticated user
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Current user data
+ *       401:
+ *         description: Not authenticated
+ */
 router.get(
   "/me",
   authenticateMiddleware,

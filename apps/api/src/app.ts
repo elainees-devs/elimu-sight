@@ -2,8 +2,8 @@ import express, { Application } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "@config/swagger";
 
 import { errorHandler } from "@middlewares/index";
 import {
@@ -119,25 +119,9 @@ app.get("/health", async (_req, res) => {
 // =========================================
 // SWAGGER DOCUMENTATION
 // =========================================
-const swaggerSpec = swaggerJsdoc({
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "Elimu Sight API",
-      version: "1.0.0",
-      description: "API documentation for Elimu Sight",
-    },
-    servers: [
-      {
-        url: `http://localhost:${env.PORT || 4000}`,
-        description: "Development server",
-      },
-    ],
-  },
-  apis: ["./src/routes/*.ts"],
-});
-
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.get("/api-docs.json", (_req, res) => res.json(swaggerSpec));
 
 // =========================================
 // API ROUTES
