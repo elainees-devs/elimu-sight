@@ -41,6 +41,7 @@ VALUES (
 -- ----------------------------------------------------------------------------
 -- USERS
 -- Passwords (bcrypt, 10 rounds):
+--   superadmin   → super123
 --   admin        → admin123
 --   headteacher  → headteacher123
 --   teacher1/2   → teacher123
@@ -48,6 +49,17 @@ VALUES (
 -- ----------------------------------------------------------------------------
 INSERT INTO users (id, school_id, full_name, email, password_hash, role, is_active, created_at, updated_at)
 VALUES
+  (
+    '22222222-2222-2222-2222-222222222200',
+    '11111111-1111-1111-1111-111111111111',
+    'System Administrator',
+    'superadmin@example.com',
+    '$2b$10$M1PqTE6vwGEZm52kp1Lm2OB1OcY8xRqothlgPl.nqs4ch5/xdJ.l.',
+    'SUPER_ADMIN',
+    TRUE,
+    NOW(),
+    NOW()
+  ),
   (
     '22222222-2222-2222-2222-222222222201',
     '11111111-1111-1111-1111-111111111111',
