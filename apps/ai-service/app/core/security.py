@@ -78,13 +78,13 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         api_key = request.headers.get("X-API-Key", "")
-        expected_key = settings.api_key
 
-        if not expected_key:
-            logger.warning("API_KEY not configured — skipping auth")
+        if not settings.api_keys:
+            logger.warning("API_KEYS not configured — skipping auth")
             return await call_next(request)
 
-        if not api_key or api_key != expected_key:
+        school_id = settings.api_keys.get(api_key)
+        if school_id is None:
             logger.warning("Invalid or missing API key", extra={
                 "path": request.url.path,
                 "ip": request.client.host if request.client else "unknown",
@@ -97,6 +97,7 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
             )
 
         request.state.authenticated = True
+        request.state.school_id = school_id or None
         return await call_next(request)
 
 

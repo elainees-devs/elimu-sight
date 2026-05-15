@@ -1,8 +1,10 @@
+import json
+import os
+from typing import Optional
+
+from dotenv import load_dotenv
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
-from typing import Optional
-from dotenv import load_dotenv
-import os
 
 # Load environment variables from .env file explicitly
 load_dotenv()
@@ -31,7 +33,7 @@ class Settings(BaseSettings):
 
     sentry_dsn: Optional[str] = os.environ.get("SENTRY_DSN")
 
-    api_key: Optional[str] = os.environ.get("API_KEY")
+    api_keys: dict[str, str] = Field(default_factory=dict)
 
     cache_ttl_seconds: int = int(os.environ.get("CACHE_TTL_SECONDS", "120"))
     redis_url: Optional[str] = os.environ.get("REDIS_URL")
@@ -57,6 +59,23 @@ class Settings(BaseSettings):
             return None
         return v
 
+    @field_validator("api_keys", mode="before")
+    @classmethod
+    def parse_api_keys(cls, v):
+        if isinstance(v, dict):
+            return v
+        if v and isinstance(v, str):
+            try:
+                return json.loads(v)
+            except json.JSONDecodeError:
+                pass
+        single_key = os.environ.get("API_KEY")
+        if single_key:
+            import warnings
+            warnings.warn("API_KEY is deprecated. Use API_KEYS as a JSON dict mapping key→school_id instead.")
+            return {single_key: ""}
+        return {}
+
     @field_validator("debug", mode="before")
     @classmethod
     def coerce_debug(cls, v: Optional[bool]) -> bool:
@@ -78,6 +97,8 @@ class Settings(BaseSettings):
             warnings_list.append("OPENAI_API_KEY is not set — LLM features will be disabled")
         if not self.sentry_dsn:
             warnings_list.append("SENTRY_DSN is not set — error tracking will be disabled")
+        if not self.api_keys:
+            warnings_list.append("API_KEYS is not set — API key authentication will be disabled")
         return warnings_list
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8", "extra": "ignore"}

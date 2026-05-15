@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse, PlainTextResponse
 
 from app.schemas.ai import (
@@ -70,12 +70,28 @@ async def health():
 
 
 # =========================================
+# TENANT VERIFICATION
+# =========================================
+
+
+def _verify_school_id(raw_request: Request, payload_school_id: str) -> None:
+    key_school_id = getattr(raw_request.state, "school_id", None)
+    if key_school_id is not None and key_school_id != payload_school_id:
+        logger.warning("Tenant mismatch", extra={
+            "key_school_id": key_school_id,
+            "payload_school_id": payload_school_id,
+        })
+        raise HTTPException(status_code=403, detail="Tenant mismatch")
+
+
+# =========================================
 # INSIGHT ENDPOINTS (Node.js API Contract)
 # =========================================
 
 
 @router.post("/insights/student", response_model=InsightResponse)
-async def insight_student(request: StudentInsightRequest):
+async def insight_student(request: StudentInsightRequest, raw_request: Request):
+    _verify_school_id(raw_request, request.context.school_id)
     logger.info("Generating student insight", extra={"student_id": request.context.id})
     return analyze_student(request.context)
 
@@ -104,7 +120,8 @@ async def insight_refresh(request: RefreshInsightRequest):
 
 
 @router.post("/insights/bulk")
-async def insight_bulk(request: BulkInsightRequest):
+async def insight_bulk(request: BulkInsightRequest, raw_request: Request):
+    _verify_school_id(raw_request, request.schoolId)
     logger.info("Bulk insight generation", extra={
         "school_id": request.schoolId,
         "student_count": len(request.studentIds or []),
