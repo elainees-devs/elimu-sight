@@ -28,7 +28,7 @@ export const env = {
 
   REDIS_URL: optionalEnv("REDIS_URL", "redis://localhost:6379"),
 
-  CLIENT_URL: optionalEnv("CLIENT_URL", "http://localhost:3000"),
+  CLIENT_URL: optionalEnv("CLIENT_URL", "http://localhost:5173"),
 
   get isDevelopment(): boolean {
     return this.NODE_ENV === "development";
