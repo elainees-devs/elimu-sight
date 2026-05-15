@@ -31,7 +31,7 @@ class Settings(BaseSettings):
 
     sentry_dsn: Optional[str] = os.environ.get("SENTRY_DSN")
 
-    cache_ttl_seconds: int = int(os.environ.get("CACHE_TTL_SECONDS", "300"))
+    cache_ttl_seconds: int = int(os.environ.get("CACHE_TTL_SECONDS", "120"))
     redis_url: Optional[str] = os.environ.get("REDIS_URL")
 
     enable_llm: bool = os.environ.get("ENABLE_LLM", "True").lower() in ("true", "1", "yes")
