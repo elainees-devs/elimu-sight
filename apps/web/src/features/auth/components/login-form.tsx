@@ -1,8 +1,10 @@
+import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchema, type LoginFormData } from '../schemas/auth-schema'
 import { useLogin } from '../hooks/use-login'
 import { useAuthStore } from '@stores/auth-store'
+import type { ApiError } from '@shared/types/api'
 
 export function LoginForm() {
   const isLoading = useAuthStore((s) => s.isLoading)
@@ -28,7 +30,7 @@ export function LoginForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       {login.error && (
         <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
-          {(login.error as any)?.response?.data?.message || 'Login failed'}
+          {isAxiosError<ApiError>(login.error) ? login.error.response?.data?.message : 'Login failed'}
         </div>
       )}
 
