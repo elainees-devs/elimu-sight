@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { ApiError, prisma, logger } from "@utils/index";
 
 export interface DashboardStats {
@@ -23,9 +24,9 @@ export class DashboardService {
     classId?: string
   ): Promise<DashboardStats> {
     try {
-      const studentWhere: any = { school_id: schoolId, is_active: true };
-      const assessmentWhere: any = { school_id: schoolId };
-      const classWhere: any = { school_id: schoolId };
+      const studentWhere: Prisma.studentsWhereInput = { school_id: schoolId, is_active: true };
+      const assessmentWhere: Prisma.assessmentsWhereInput = { school_id: schoolId };
+      const classWhere: Prisma.classesWhereInput = { school_id: schoolId };
 
       if (role === "TEACHER" && classId) {
         studentWhere.class_id = classId;

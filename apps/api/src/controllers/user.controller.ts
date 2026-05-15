@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { AuthRequest } from "../types/express";
 import { UserService } from "@services/index";
 
 import { toUserId, toSchoolId } from "mappers";
@@ -37,10 +38,10 @@ export class UserController {
   // ===================================
   // GET USER BY EMAIL (scoped to authenticated user's school)
   // ===================================
-  async getUserByEmail(req: Request, res: Response, next: NextFunction) {
+  async getUserByEmail(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const email = req.params.email as string;
-      const authUser = (req as any).user;
+      const authUser = req.user!;
 
       const user = await userService.getUserByEmail(
         email,

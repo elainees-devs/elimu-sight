@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma, ApiError, logger } from "@utils/index";
 
 type PaginationParams = {
@@ -101,7 +102,7 @@ export class InsightQueryService {
         );
       }
 
-      const data: any[] = [];
+      const data: Prisma.insightsCreateManyInput[] = [];
 
       // =========================
       // STUDENTS

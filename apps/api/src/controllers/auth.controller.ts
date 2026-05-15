@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { AuthRequest } from "../types/express";
 import { AuthService } from "../services/auth.service";
 
 export class AuthController {
@@ -78,9 +79,9 @@ export class AuthController {
   // ===============================
   // LOGOUT
   // ===============================
-  async logout(req: Request, res: Response, next: NextFunction) {
+  async logout(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const userId = (req as any).user.id;
+      const userId = req.user!.id;
 
       await this.authService.logoutUser(userId);
 
@@ -96,9 +97,9 @@ export class AuthController {
   // ===============================
   // GET CURRENT USER
   // ===============================
-  async me(req: Request, res: Response, next: NextFunction) {
+  async me(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const userId = (req as any).user.id;
+      const userId = req.user!.id;
 
       const user = await this.authService.getCurrentUser(userId);
 

@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { ApiError, prisma, logger } from "@utils/index";
 import {
   SchoolDB,
@@ -37,7 +38,7 @@ export class SchoolService {
 
       const skip = (page - 1) * limit;
 
-      const where: any = {
+      const where: Prisma.schoolsWhereInput = {
         deleted_at: null,
       };
 

@@ -42,12 +42,12 @@ export class AuthService {
       });
 
       return toUserResponse(newUser as UserDB);
-    } catch (error: any) {
-      if (error?.code === "P2002") {
+    } catch (error: unknown) {
+      if ((error as { code?: string })?.code === "P2002") {
         throw new ApiError(400, "Email already exists");
       }
 
-      logger.error("Failed to create user", { error: error?.message ?? error });
+      logger.error("Failed to create user", { error: error instanceof Error ? error.message : String(error) });
       throw new ApiError(500, "Failed to create user");
     }
   }

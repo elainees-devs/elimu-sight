@@ -8,7 +8,7 @@ export async function validateSchoolAccess(
   next: NextFunction
 ) {
   try {
-    const userId = req.user?.id || (req as any).user?.id;
+    const userId = req.user!.id;
     const schoolId = req.params.schoolId || req.body.schoolId;
 
     const user = await prisma.users.findUnique({

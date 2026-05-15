@@ -1,15 +1,23 @@
 import { Request, Response, NextFunction } from "express";
 import { logger, env } from "@utils/index";
 import { sendError } from "@utils/response";
+import { AuthRequest } from "../types/express";
+
+type ErrorPayload = {
+  statusCode?: number;
+  message?: string;
+  details?: unknown;
+  stack?: string;
+};
 
 export const errorHandler = (
-  err: any,
+  err: ErrorPayload,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const statusCode = err.statusCode || 500;
-  const requestId = (req as any).requestId;
+  const requestId = (req as AuthRequest).requestId;
 
   // ======================
   // LOGGING STRATEGY

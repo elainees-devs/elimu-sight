@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { ApiError, prisma, logger } from "@utils/index";
 import {
   toUserId,
@@ -32,7 +33,7 @@ export class UserService {
 
       const skip = (page - 1) * limit;
 
-      const where: any = {
+      const where: Prisma.usersWhereInput = {
         school_id: schoolId,
         is_active: true,
       };
@@ -104,7 +105,7 @@ export class UserService {
   // ===================================
   async getUserByEmail(email: string, schoolId?: string) {
     try {
-      const where: any = {
+      const where: Prisma.usersWhereInput = {
         email,
         is_active: true,
       };

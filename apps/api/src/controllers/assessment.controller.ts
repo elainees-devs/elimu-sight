@@ -20,7 +20,7 @@ export class AssessmentController {
       const result = await assessmentService.getAllAssessments(schoolId, {
         page: page ? Number(page) : undefined,
         limit: limit ? Number(limit) : undefined,
-        sortBy: sortBy as any,
+        sortBy: sortBy as "created_at" | "score" | "term" | "exam_type" | "grade" | undefined,
         sortOrder: sortOrder === "asc" ? "asc" : "desc",
         search: search ? String(search) : undefined,
       });

@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { ApiError, prisma, logger } from "@utils/index";
 import {
   toAssessmentListResponse,
@@ -21,8 +22,7 @@ type GetAssessmentParams = {
   search?: string;
 };
 
-type AssessmentWhere = {
-  school_id: string;
+type AssessmentWhere = Prisma.assessmentsWhereInput & {
   OR?: Array<Record<string, unknown>>;
 };
 

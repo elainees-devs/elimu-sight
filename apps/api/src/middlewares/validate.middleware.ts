@@ -27,7 +27,7 @@ export const validate =
     }
 
     // replace only validated & cleaned data
-    (req as any)[source] = value;
+    (req as unknown as Record<string, unknown>)[source] = value;
 
     next();
   };

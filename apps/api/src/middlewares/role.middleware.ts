@@ -11,7 +11,7 @@ export function authorize(...allowedRoles: string[]) {
         throw new ApiError(401, "Authentication required");
       }
 
-      if (!Roles.includes(userRole as any)) {
+      if (!Roles.includes(userRole as (typeof Roles)[number])) {
         throw new ApiError(403, "Invalid role");
       }
 

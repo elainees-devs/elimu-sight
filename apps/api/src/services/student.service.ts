@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { ApiError, prisma, logger } from "@utils/index";
 import {
   StudentDB,
@@ -45,7 +46,7 @@ export class StudentService {
 
       const skip = (page - 1) * limit;
 
-      const where: any = {
+      const where: Prisma.studentsWhereInput = {
         school_id: schoolId,
       };
 
@@ -281,7 +282,7 @@ export class StudentService {
 
       const skip = (page - 1) * limit;
 
-      const where: any = {
+      const where: Prisma.studentsWhereInput = {
         class_id: classId,
       };
 
@@ -330,7 +331,7 @@ export class StudentService {
     try {
       const { classId, isActive } = params;
 
-      const where: any = {
+      const where: Prisma.studentsWhereInput = {
         school_id: schoolId,
       };
 

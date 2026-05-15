@@ -18,8 +18,8 @@ export class ClassController {
       const result = await classService.getAllClasses(schoolId, {
         page: req.query.page ? Number(req.query.page) : undefined,
         limit: req.query.limit ? Number(req.query.limit) : undefined,
-        sortBy: req.query.sortBy as any,
-        sortOrder: req.query.sortOrder as any,
+        sortBy: req.query.sortBy as "name" | "created_at" | undefined,
+        sortOrder: req.query.sortOrder as "asc" | "desc" | undefined,
         search: req.query.search ? String(req.query.search) : undefined,
       });
 

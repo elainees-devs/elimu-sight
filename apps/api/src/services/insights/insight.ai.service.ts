@@ -1,5 +1,5 @@
 import { prisma, ApiError } from "@utils/index";
-import { AIService } from "ai/ai.service";
+import { AIService, AIServiceResponse } from "ai/ai.service";
 import { InsightCrudService } from "./insight.crud.service";
 
 export class InsightAIService {
@@ -177,7 +177,7 @@ export class InsightAIService {
   // =========================================
   // NORMALIZE AI RESPONSE
   // =========================================
-  private handleAIResponse(response: any) {
+  private handleAIResponse(response: AIServiceResponse) {
     return {
       title: response?.title ?? "AI Generated Insight",
       summary: response?.summary ?? "",
@@ -195,7 +195,7 @@ export class InsightAIService {
     studentId?: string;
     subjectId?: string;
     type: string;
-    aiResponse: any;
+    aiResponse: AIServiceResponse;
   }) {
     const normalized = this.handleAIResponse(input.aiResponse);
 
