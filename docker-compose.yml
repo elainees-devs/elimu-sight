@@ -17,6 +17,10 @@ services:
       - CLIENT_URL=${CLIENT_URL:-http://localhost:5173}
       - AI_SERVICE_URL=http://ai-service:8000
     depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
   ai-service:
     build:
       context: ./apps/ai-service
@@ -34,10 +38,6 @@ services:
       - REDIS_URL=
     depends_on:
       db:
-        condition: service_healthy
-    restart: unless-stopped
-
-  db:
         condition: service_healthy
     restart: unless-stopped
 
