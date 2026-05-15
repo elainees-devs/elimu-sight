@@ -1,2 +1,6 @@
 export { dashboardClient } from './api/dashboard-client'
 export { useDashboardStats, useRecentActivity } from './hooks/use-dashboard-stats'
+export { StatsGrid } from './components/stats-grid'
+export { QuickActions } from './components/quick-actions'
+export { RecentActivity } from './components/recent-activity'
+export { AlertsWidget } from './components/alerts-widget'

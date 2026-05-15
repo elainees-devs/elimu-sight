@@ -3,6 +3,7 @@ import { SchoolController } from "@controllers/index";
 import {
   validate,
   authenticateMiddleware,
+  authorize,
   validateSchoolAccess,
 } from "@middlewares/index";
 import {
@@ -30,7 +31,7 @@ const schoolController = new SchoolController();
  *       200:
  *         description: List of schools
  */
-router.get("/", authenticateMiddleware, (req, res, next) =>
+router.get("/", authenticateMiddleware, authorize("SUPER_ADMIN"), (req, res, next) =>
   schoolController.getAllSchools(req, res, next),
 );
 

@@ -1,4 +1,7 @@
 export { teacherClient } from './api/teacher-client'
 export { useTeachers } from './hooks/use-teachers'
 export { useCreateTeacher } from './hooks/use-create-teacher'
+export { TeacherTable } from './components/teacher-table'
+export { TeacherCard } from './components/teacher-card'
 export { teacherSchema } from './schemas/teacher-schema'
+export type { TeacherFormData } from './types'

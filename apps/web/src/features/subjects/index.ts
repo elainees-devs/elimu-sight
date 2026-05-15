@@ -1,4 +1,7 @@
 export { subjectClient } from './api/subject-client'
 export { useSubjects } from './hooks/use-subjects'
 export { useCreateSubject } from './hooks/use-create-subject'
+export { SubjectCard } from './components/subject-card'
+export { SubjectForm } from './components/subject-form'
 export { subjectSchema } from './schemas/subject-schema'
+export type { SubjectFormData } from './types'
