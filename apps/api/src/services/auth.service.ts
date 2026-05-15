@@ -80,7 +80,9 @@ export class AuthService {
     const token = generateToken({
       id: user.id,
       email: user.email,
-      roles: role as (typeof Roles)[number],
+      name: user.full_name,
+      role: role as (typeof Roles)[number],
+      schoolId: user.school_id,
     });
 
     const refreshToken = await this.generateRefreshToken(user.id);
@@ -121,7 +123,9 @@ export class AuthService {
     const newAccessToken = generateToken({
       id: user.id,
       email: user.email,
-      roles: role as (typeof Roles)[number],
+      name: user.full_name,
+      role: role as (typeof Roles)[number],
+      schoolId: user.school_id,
     });
 
     const newRefreshToken = await this.generateRefreshToken(user.id);

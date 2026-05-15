@@ -7,7 +7,9 @@ import { Roles } from "./constants";
 export interface JwtPayload {
   id: string;
   email?: string;
-  roles: (typeof Roles)[number];
+  name: string;
+  role: (typeof Roles)[number];
+  schoolId: string;
 }
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -50,7 +52,9 @@ export const refreshToken = (token: string): string | null => {
     return generateToken({
       id: decoded.id,
       email: decoded.email,
-      roles: decoded.roles,
+      name: decoded.name,
+      role: decoded.role,
+      schoolId: decoded.schoolId,
     });
   } catch {
     return null;
