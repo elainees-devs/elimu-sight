@@ -78,7 +78,7 @@ model schools {
 model users {
   id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
-  school_id     String @db.Uuid
+  school_id     String? @db.Uuid
   full_name     String @db.VarChar(255)
   email         String @unique @db.VarChar(255)
   password_hash String
@@ -97,7 +97,7 @@ model users {
   classes        classes[]
   refresh_tokens refresh_tokens[]
 
-  schools schools @relation(fields: [school_id], references: [id], onDelete: Cascade)
+  schools schools? @relation(fields: [school_id], references: [id], onDelete: Cascade)
 
   teacher teachers?
 

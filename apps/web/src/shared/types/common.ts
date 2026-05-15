@@ -8,7 +8,7 @@ export type SubscriptionPlan = (typeof SUBSCRIPTION_PLANS)[number]
 
 export interface User {
   id: string
-  schoolId: string
+  schoolId?: string
   fullName: string
   email: string
   role: Role

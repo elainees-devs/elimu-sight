@@ -9,7 +9,7 @@ export interface JwtPayload {
   email?: string;
   name: string;
   role: (typeof Roles)[number];
-  schoolId: string;
+  schoolId?: string;
 }
 
 const JWT_SECRET = process.env.JWT_SECRET;

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
@@ -27,13 +27,18 @@ export function RegisterForm() {
       apiClient.get<ApiResponse<School[]>>('/schools').then((r) => r.data.data),
   })
 
+  const selectedRole = useWatch<RegisterFormData>({ control, name: 'role' })
+
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   })
+
+  const showSchoolField = !selectedRole || selectedRole !== 'SUPER_ADMIN'
 
   const onSubmit = (data: RegisterFormData) => {
     registerMutation.mutate(data)
@@ -98,26 +103,28 @@ export function RegisterForm() {
         )}
       </div>
 
-      <div>
-        <label htmlFor="schoolId" className="block text-sm font-medium text-gray-700">
-          School
-        </label>
-        <select
-          id="schoolId"
-          {...register('schoolId')}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        >
-          <option value="">Select a school</option>
-          {schoolsData?.map((school) => (
-            <option key={school.id} value={school.id}>
-              {school.name}
-            </option>
-          ))}
-        </select>
-        {errors.schoolId && (
-          <p className="mt-1 text-sm text-red-600">{errors.schoolId.message}</p>
-        )}
-      </div>
+      {showSchoolField && (
+        <div>
+          <label htmlFor="schoolId" className="block text-sm font-medium text-gray-700">
+            School
+          </label>
+          <select
+            id="schoolId"
+            {...register('schoolId')}
+            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          >
+            <option value="">Select a school</option>
+            {schoolsData?.map((school) => (
+              <option key={school.id} value={school.id}>
+                {school.name}
+              </option>
+            ))}
+          </select>
+          {errors.schoolId && (
+            <p className="mt-1 text-sm text-red-600">{errors.schoolId.message}</p>
+          )}
+        </div>
+      )}
 
       <div>
         <label htmlFor="role" className="block text-sm font-medium text-gray-700">

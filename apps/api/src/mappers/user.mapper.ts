@@ -17,7 +17,7 @@ import {
 export type UserDB = {
   id: string;
 
-  school_id: string;
+  school_id: string | null;
   full_name: string;
   email: string;
   password_hash: string;
@@ -43,7 +43,7 @@ export const toUserResponse = (db: UserDB): User => {
   const mapped: User = {
     id: db.id,
 
-    schoolId: db.school_id,
+    schoolId: db.school_id ?? undefined,
     fullName: db.full_name,
     email: db.email,
 
@@ -90,7 +90,7 @@ export const toCreateUserDB = (
   }
 
   return {
-    school_id: value.schoolId,
+    school_id: value.role === "SUPER_ADMIN" ? null : value.schoolId!,
     full_name: value.fullName,
     email: value.email,
     role: value.role,

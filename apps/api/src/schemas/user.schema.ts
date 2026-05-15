@@ -10,7 +10,7 @@ const userBase = {
   fullName: Joi.string().min(3).max(255),
   email: Joi.string().email(),
   role: Joi.string().valid(...RoleValues),
-  schoolId: Joi.string().uuid(),
+  schoolId: Joi.string().uuid().optional(),
   isActive: Joi.boolean(),
   assignedClassId: Joi.string().uuid().optional(),
 };
@@ -39,7 +39,7 @@ export const createUserSchema = Joi.object({
   fullName: userBase.fullName.required(),
   email: userBase.email.required(),
   role: userBase.role.required(),
-  schoolId: userBase.schoolId.required(),
+  schoolId: userBase.schoolId,
   password: Joi.string().min(6).max(255).required(),
 });
 

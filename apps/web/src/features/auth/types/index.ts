@@ -10,7 +10,7 @@ export interface RegisterInput {
   fullName: string
   email: string
   password: string
-  schoolId: string
+  schoolId?: string
   role: User['role']
 }
 

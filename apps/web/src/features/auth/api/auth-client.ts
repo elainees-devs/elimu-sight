@@ -7,7 +7,7 @@ export const authClient = {
   login: (email: string, password: string) =>
     apiClient.post<ApiResponse<LoginResponse>>('/auth/login', { email, password }),
 
-  register: (data: { fullName: string; email: string; password: string; schoolId: string; role: string }) =>
+  register: (data: { fullName: string; email: string; password: string; schoolId?: string; role: string }) =>
     apiClient.post<ApiResponse<User>>('/auth/register', data),
 
   refresh: (refreshToken: string) =>

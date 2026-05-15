@@ -66,4 +66,25 @@ describe('registerSchema', () => {
     })
     expect(result.success).toBe(false)
   })
+
+  it('accepts SUPER_ADMIN without schoolId', () => {
+    const result = registerSchema.safeParse({
+      fullName: 'Dev Admin',
+      email: 'dev@example.com',
+      password: 'password123',
+      role: 'SUPER_ADMIN',
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts SUPER_ADMIN with empty schoolId', () => {
+    const result = registerSchema.safeParse({
+      fullName: 'Dev Admin',
+      email: 'dev@example.com',
+      password: 'password123',
+      schoolId: '',
+      role: 'SUPER_ADMIN',
+    })
+    expect(result.success).toBe(true)
+  })
 })

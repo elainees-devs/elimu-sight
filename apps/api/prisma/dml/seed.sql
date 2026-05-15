@@ -51,7 +51,7 @@ INSERT INTO users (id, school_id, full_name, email, password_hash, role, is_acti
 VALUES
   (
     '22222222-2222-2222-2222-222222222200',
-    '11111111-1111-1111-1111-111111111111',
+    NULL,
     'System Administrator',
     'superadmin@example.com',
     '$2b$10$M1PqTE6vwGEZm52kp1Lm2OB1OcY8xRqothlgPl.nqs4ch5/xdJ.l.',

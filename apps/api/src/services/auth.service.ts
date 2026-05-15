@@ -27,6 +27,10 @@ export class AuthService {
       throw new ApiError(400, "Email already in use");
     }
 
+    if (input.role !== "SUPER_ADMIN" && !input.schoolId) {
+      throw new ApiError(400, "School ID is required for this role");
+    }
+
     const passwordHash = await hashPassword(input.password);
 
     try {
@@ -36,7 +40,7 @@ export class AuthService {
           email: input.email,
           password_hash: passwordHash,
           role: input.role,
-          school_id: input.schoolId,
+          school_id: input.role === "SUPER_ADMIN" ? null : input.schoolId!,
           is_active: true,
         },
       });
@@ -84,7 +88,7 @@ export class AuthService {
       email: user.email,
       name: user.full_name,
       role: role as (typeof Roles)[number],
-      schoolId: user.school_id,
+      schoolId: user.school_id ?? undefined,
     });
 
     const refreshToken = await this.generateRefreshToken(user.id);
@@ -127,7 +131,7 @@ export class AuthService {
       email: user.email,
       name: user.full_name,
       role: role as (typeof Roles)[number],
-      schoolId: user.school_id,
+      schoolId: user.school_id ?? undefined,
     });
 
     const newRefreshToken = await this.generateRefreshToken(user.id);
