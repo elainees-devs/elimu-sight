@@ -1,4 +1,4 @@
-import { prisma, ApiError } from "@utils/index";
+import { prisma, ApiError, logger } from "@utils/index";
 
 type PaginationParams = {
   page?: number;
@@ -50,6 +50,7 @@ export class InsightAnalyticsService {
         insights: result.data,
       };
     } catch {
+      logger.error("Failed to fetch insights by class");
       throw new ApiError(500, "Failed to fetch insights by class");
     }
   }
@@ -70,6 +71,7 @@ export class InsightAnalyticsService {
         insights: result.data,
       };
     } catch {
+      logger.error("Failed to fetch insights by student");
       throw new ApiError(500, "Failed to fetch insights by student");
     }
   }
@@ -90,6 +92,7 @@ export class InsightAnalyticsService {
         insights: result.data,
       };
     } catch {
+      logger.error("Failed to fetch insights by subject");
       throw new ApiError(500, "Failed to fetch insights by subject");
     }
   }
@@ -110,6 +113,7 @@ export class InsightAnalyticsService {
         insights: result.data,
       };
     } catch {
+      logger.error("Failed to fetch insights by type");
       throw new ApiError(500, "Failed to fetch insights by type");
     }
   }
@@ -130,6 +134,7 @@ export class InsightAnalyticsService {
         insights: result.data,
       };
     } catch {
+      logger.error("Failed to fetch insights by period");
       throw new ApiError(500, "Failed to fetch insights by period");
     }
   }

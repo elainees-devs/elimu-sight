@@ -1,4 +1,4 @@
-import { ApiError, prisma } from "@utils/index";
+import { ApiError, prisma, logger } from "@utils/index";
 import {
   SubjectDB,
   toSubjectListResponse,
@@ -72,6 +72,7 @@ export class SubjectService {
         },
       };
     } catch {
+      logger.error("Failed to fetch subjects");
       throw new ApiError(500, "Failed to fetch subjects");
     }
   }
@@ -94,6 +95,7 @@ export class SubjectService {
       return toSubjectResponse(subject as SubjectDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to fetch subject", { error });
       throw new ApiError(500, "Failed to fetch subject");
     }
   }
@@ -120,6 +122,7 @@ export class SubjectService {
       return toSubjectResponse(subject as SubjectDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to fetch subject by name", { error });
       throw new ApiError(500, "Failed to fetch subject by name");
     }
   }
@@ -151,6 +154,7 @@ export class SubjectService {
       return toSubjectResponse(created as SubjectDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to create subject", { error });
       throw new ApiError(500, "Failed to create subject");
     }
   }
@@ -194,6 +198,7 @@ export class SubjectService {
       return toSubjectResponse(updated as SubjectDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to update subject", { error });
       throw new ApiError(500, "Failed to update subject");
     }
   }
@@ -220,6 +225,7 @@ export class SubjectService {
       return toSubjectResponse(deleted as SubjectDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to delete subject", { error });
       throw new ApiError(500, "Failed to delete subject");
     }
   }
@@ -235,6 +241,7 @@ export class SubjectService {
         },
       });
     } catch {
+      logger.error("Failed to get subject count");
       throw new ApiError(500, "Failed to get subject count");
     }
   }

@@ -1,4 +1,4 @@
-import { ApiError, prisma } from "@utils/index";
+import { ApiError, prisma, logger } from "@utils/index";
 import {
   SchoolDB,
   toSchoolId,
@@ -71,6 +71,7 @@ export class SchoolService {
         },
       };
     } catch {
+      logger.error("Failed to fetch schools");
       throw new ApiError(500, "Failed to fetch schools");
     }
   }
@@ -96,6 +97,7 @@ export class SchoolService {
       return toSchoolResponse(school as SchoolDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to fetch school", { error });
       throw new ApiError(500, "Failed to fetch school");
     }
   }
@@ -119,6 +121,7 @@ export class SchoolService {
       return toSchoolResponse(school as SchoolDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to fetch school by email", { error });
       throw new ApiError(500, "Failed to fetch school by email");
     }
   }
@@ -150,6 +153,7 @@ export class SchoolService {
       return toSchoolResponse(created as SchoolDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to create school", { error });
       throw new ApiError(500, "Failed to create school");
     }
   }
@@ -196,6 +200,7 @@ export class SchoolService {
       return toSchoolResponse(updated as SchoolDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to update school", { error });
       throw new ApiError(500, "Failed to update school");
     }
   }
@@ -228,6 +233,7 @@ export class SchoolService {
       return toSchoolResponse(deleted as SchoolDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to delete school", { error });
       throw new ApiError(500, "Failed to delete school");
     }
   }
@@ -243,6 +249,7 @@ export class SchoolService {
         },
       });
     } catch {
+      logger.error("Failed to get school count");
       throw new ApiError(500, "Failed to get school count");
     }
   }

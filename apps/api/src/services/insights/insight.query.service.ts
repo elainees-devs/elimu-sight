@@ -1,4 +1,4 @@
-import { prisma, ApiError } from "@utils/index";
+import { prisma, ApiError, logger } from "@utils/index";
 
 type PaginationParams = {
   page?: number;
@@ -34,6 +34,7 @@ export class InsightQueryService {
         insights,
       };
     } catch {
+      logger.error("Failed to fetch insights");
       throw new ApiError(500, "Failed to fetch insights");
     }
   }
@@ -58,6 +59,7 @@ export class InsightQueryService {
         archivedCount: archived.count,
       };
     } catch {
+      logger.error("Failed to archive insights");
       throw new ApiError(500, "Failed to archive insights");
     }
   }
@@ -172,6 +174,7 @@ export class InsightQueryService {
         generatedCount: created.count,
       };
     } catch {
+      logger.error("Failed to bulk generate insights");
       throw new ApiError(500, "Failed to bulk generate insights");
     }
   }
@@ -212,6 +215,7 @@ export class InsightQueryService {
         generatedAt: new Date(),
       };
     } catch {
+      logger.error("Failed to generate trend analysis");
       throw new ApiError(500, "Failed to generate trend analysis");
     }
   }

@@ -1,4 +1,4 @@
-import { ApiError, prisma } from "@utils/index";
+import { ApiError, prisma, logger } from "@utils/index";
 import {
   ClassDB,
   toClassId,
@@ -73,6 +73,7 @@ export class ClassService {
         },
       };
     } catch {
+      logger.error("Failed to fetch classes");
       throw new ApiError(500, "Failed to fetch classes");
     }
   }
@@ -95,6 +96,7 @@ export class ClassService {
       return toClassResponse(classData as ClassDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to fetch class", { error });
       throw new ApiError(500, "Failed to fetch class");
     }
   }
@@ -129,6 +131,7 @@ export class ClassService {
       return toClassResponse(created as ClassDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to create class", { error });
       throw new ApiError(500, "Failed to create class");
     }
   }
@@ -158,6 +161,7 @@ export class ClassService {
       return toClassResponse(updated as ClassDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to update class", { error });
       throw new ApiError(500, "Failed to update class");
     }
   }
@@ -184,6 +188,7 @@ export class ClassService {
       return toClassResponse(deleted as ClassDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to delete class", { error });
       throw new ApiError(500, "Failed to delete class");
     }
   }
@@ -199,6 +204,7 @@ export class ClassService {
         },
       });
     } catch {
+      logger.error("Failed to get class count");
       throw new ApiError(500, "Failed to get class count");
     }
   }

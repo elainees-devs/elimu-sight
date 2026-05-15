@@ -1,4 +1,4 @@
-import { ApiError, prisma } from "@utils/index";
+import { ApiError, prisma, logger } from "@utils/index";
 
 export interface DashboardStats {
   totalStudents: number;
@@ -74,6 +74,7 @@ export class DashboardService {
         atRiskCount,
       };
     } catch {
+      logger.error("Failed to fetch dashboard stats");
       throw new ApiError(500, "Failed to fetch dashboard stats");
     }
   }
@@ -102,6 +103,7 @@ export class DashboardService {
         timestamp: a.created_at.toISOString(),
       }));
     } catch {
+      logger.error("Failed to fetch recent activity");
       throw new ApiError(500, "Failed to fetch recent activity");
     }
   }

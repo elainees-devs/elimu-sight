@@ -1,4 +1,4 @@
-import { ApiError, prisma } from "@utils/index";
+import { ApiError, prisma, logger } from "@utils/index";
 import {
   toAssessmentListResponse,
   toUpdateAssessmentDB,
@@ -85,6 +85,7 @@ export class AssessmentService {
         },
       };
     } catch {
+      logger.error("Failed to fetch assessments");
       throw new ApiError(500, "Failed to fetch assessments");
     }
   }
@@ -111,6 +112,7 @@ export class AssessmentService {
       return toAssessmentResponse(assessment as AssessmentDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to fetch assessment", { error });
       throw new ApiError(500, "Failed to fetch assessment");
     }
   }
@@ -149,6 +151,7 @@ export class AssessmentService {
       return toAssessmentResponse(assessment as AssessmentDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to create assessment", { error });
       throw new ApiError(500, "Failed to create assessment");
     }
   }
@@ -176,6 +179,7 @@ export class AssessmentService {
       return toAssessmentResponse(updated as AssessmentDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to update assessment", { error });
       throw new ApiError(500, "Failed to update assessment");
     }
   }
@@ -202,6 +206,7 @@ export class AssessmentService {
       return toAssessmentResponse(deleted as AssessmentDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to delete assessment", { error });
       throw new ApiError(500, "Failed to delete assessment");
     }
   }
@@ -217,6 +222,7 @@ export class AssessmentService {
         },
       });
     } catch {
+      logger.error("Failed to get assessment count");
       throw new ApiError(500, "Failed to get assessment count");
     }
   }

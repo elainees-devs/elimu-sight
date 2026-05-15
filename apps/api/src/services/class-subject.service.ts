@@ -1,4 +1,4 @@
-import { ApiError, prisma } from "@utils/index";
+import { ApiError, prisma, logger } from "@utils/index";
 import {
   toClassSubjectListResponse,
   ClassSubjectDB,
@@ -50,6 +50,7 @@ export class ClassSubjectService {
         },
       };
     } catch {
+      logger.error("Failed to fetch class subjects");
       throw new ApiError(500, "Failed to fetch class subjects");
     }
   }
@@ -72,6 +73,7 @@ export class ClassSubjectService {
       return toClassSubjectResponse(classSubject as ClassSubjectDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to fetch class subject", { error });
       throw new ApiError(500, "Failed to fetch class subject");
     }
   }
@@ -106,6 +108,7 @@ export class ClassSubjectService {
         },
       };
     } catch {
+      logger.error("Failed to fetch classes by subject");
       throw new ApiError(500, "Failed to fetch classes by subject");
     }
   }
@@ -119,6 +122,7 @@ export class ClassSubjectService {
         where: { class_id: classId },
       });
     } catch {
+      logger.error("Failed to get class subject count");
       throw new ApiError(500, "Failed to get class subject count");
     }
   }
@@ -150,6 +154,7 @@ export class ClassSubjectService {
       return toClassSubjectResponse(created as ClassSubjectDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to create class subject", { error });
       throw new ApiError(500, "Failed to create class subject");
     }
   }
@@ -179,6 +184,7 @@ export class ClassSubjectService {
       return toClassSubjectResponse(updated as ClassSubjectDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to update class subject", { error });
       throw new ApiError(500, "Failed to update class subject");
     }
   }
@@ -205,6 +211,7 @@ export class ClassSubjectService {
       return toClassSubjectResponse(deleted as ClassSubjectDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to delete class subject", { error });
       throw new ApiError(500, "Failed to delete class subject");
     }
   }
@@ -232,6 +239,7 @@ export class ClassSubjectService {
       return toClassSubjectResponse(updated as ClassSubjectDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to assign teacher", { error });
       throw new ApiError(500, "Failed to assign teacher");
     }
   }
@@ -266,9 +274,10 @@ export class ClassSubjectService {
     });
 
     return toClassSubjectResponse(updated as ClassSubjectDB);
-  } catch (error) {
-    if (error instanceof ApiError) throw error;
-    throw new ApiError(500, "Failed to update teacher assignment");
+    } catch (error) {
+      if (error instanceof ApiError) throw error;
+      logger.error("Failed to update teacher assignment", { error });
+      throw new ApiError(500, "Failed to update teacher assignment");
   }
 }
   // ===================================
@@ -301,6 +310,7 @@ export class ClassSubjectService {
 
       return toClassSubjectListResponse(result);
     } catch {
+      logger.error("Failed to replace class subjects");
       throw new ApiError(500, "Failed to replace class subjects");
     }
   }
@@ -347,6 +357,7 @@ export class ClassSubjectService {
 
       return toClassSubjectListResponse(result);
     } catch {
+      logger.error("Failed to sync class subjects");
       throw new ApiError(500, "Failed to sync class subjects");
     }
   }

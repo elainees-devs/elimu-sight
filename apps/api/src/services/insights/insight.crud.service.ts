@@ -1,4 +1,4 @@
-import { prisma, ApiError } from "@utils/index";
+import { prisma, ApiError, logger } from "@utils/index";
 import { toCreateInsightDB, toUpdateInsightDB } from "mappers";
 
 import {
@@ -20,6 +20,7 @@ export class InsightCrudService {
 
       return insight;
     } catch {
+      logger.error("Failed to create insight");
       throw new ApiError(500, "Failed to create insight");
     }
   }
@@ -55,6 +56,7 @@ export class InsightCrudService {
         insights,
       };
     } catch {
+      logger.error("Failed to fetch insights");
       throw new ApiError(500, "Failed to fetch insights");
     }
   }
@@ -75,6 +77,7 @@ export class InsightCrudService {
       return insight;
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to fetch insight", { error });
       throw new ApiError(500, "Failed to fetch insight");
     }
   }
@@ -102,6 +105,7 @@ export class InsightCrudService {
       return updated;
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to update insight", { error });
       throw new ApiError(500, "Failed to update insight");
     }
   }
@@ -130,6 +134,7 @@ export class InsightCrudService {
       return deleted;
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to delete insight", { error });
       throw new ApiError(500, "Failed to delete insight");
     }
   }

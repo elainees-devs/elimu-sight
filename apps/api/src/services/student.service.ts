@@ -1,4 +1,4 @@
-import { ApiError, prisma } from "@utils/index";
+import { ApiError, prisma, logger } from "@utils/index";
 import {
   StudentDB,
   toCreateStudentDB,
@@ -81,6 +81,7 @@ export class StudentService {
         },
       };
     } catch {
+      logger.error("Failed to fetch students");
       throw new ApiError(500, "Failed to fetch students");
     }
   }
@@ -114,6 +115,7 @@ export class StudentService {
       return toStudentResponse(created as StudentDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to create student", { error });
       throw new ApiError(500, "Failed to create student");
     }
   }
@@ -136,6 +138,7 @@ export class StudentService {
       return toStudentResponse(student as StudentDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to fetch student", { error });
       throw new ApiError(500, "Failed to fetch student");
     }
   }
@@ -167,6 +170,7 @@ export class StudentService {
       return toStudentResponse(updated as StudentDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to update student details", { error });
       throw new ApiError(500, "Failed to update student details");
     }
   }
@@ -196,6 +200,7 @@ export class StudentService {
       return toStudentResponse(updated as StudentDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to delete student", { error });
       throw new ApiError(500, "Failed to delete student");
     }
   }
@@ -227,6 +232,7 @@ export class StudentService {
       return toStudentResponse(updated as StudentDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to activate student", { error });
       throw new ApiError(500, "Failed to activate student");
     }
   }
@@ -258,6 +264,7 @@ export class StudentService {
       return toStudentResponse(updated as StudentDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to deactivate student", { error });
       throw new ApiError(500, "Failed to deactivate student");
     }
   }
@@ -308,6 +315,7 @@ export class StudentService {
         },
       };
     } catch {
+      logger.error("Failed to fetch students by class");
       throw new ApiError(500, "Failed to fetch students by class");
     }
   }
@@ -333,6 +341,7 @@ export class StudentService {
 
       return { total };
     } catch {
+      logger.error("Failed to count students");
       throw new ApiError(500, "Failed to count students");
     }
   }
@@ -375,6 +384,7 @@ export class StudentService {
       return toStudentResponse(updated as StudentDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to transfer student class", { error });
       throw new ApiError(500, "Failed to transfer student class");
     }
   }
@@ -416,6 +426,7 @@ export class StudentService {
         byGender,
       };
     } catch {
+      logger.error("Failed to fetch student statistics");
       throw new ApiError(500, "Failed to fetch student statistics");
     }
   }

@@ -1,4 +1,4 @@
-import { ApiError, prisma } from "@utils/index";
+import { ApiError, prisma, logger } from "@utils/index";
 import {
   toUserId,
   toUserListResponse,
@@ -68,6 +68,7 @@ export class UserService {
         },
       };
     } catch {
+      logger.error("Failed to fetch users");
       throw new ApiError(500, "Failed to fetch users");
     }
   }
@@ -93,6 +94,7 @@ export class UserService {
       return toUserResponse(user as UserDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to fetch user", { error });
       throw new ApiError(500, "Failed to fetch user");
     }
   }
@@ -120,6 +122,7 @@ export class UserService {
       return toUserResponse(user as UserDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to fetch user by email", { error });
       throw new ApiError(500, "Failed to fetch user by email");
     }
   }
@@ -152,6 +155,7 @@ export class UserService {
       return toUserResponse(updated as UserDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to update user", { error });
       throw new ApiError(500, "Failed to update user");
     }
   }
@@ -185,6 +189,7 @@ export class UserService {
       return toUserResponse(deleted as UserDB);
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      logger.error("Failed to delete user", { error });
       throw new ApiError(500, "Failed to delete user");
     }
   }
@@ -200,6 +205,7 @@ export class UserService {
         },
       });
     } catch {
+      logger.error("Failed to get user count");
       throw new ApiError(500, "Failed to get user count");
     }
   }

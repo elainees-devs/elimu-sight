@@ -8,6 +8,7 @@ import {
   generateToken,
   Roles,
   env,
+  logger,
 } from "@utils/index";
 
 import { CreateUserInput } from "schemas";
@@ -46,6 +47,7 @@ export class AuthService {
         throw new ApiError(400, "Email already exists");
       }
 
+      logger.error("Failed to create user", { error: error?.message ?? error });
       throw new ApiError(500, "Failed to create user");
     }
   }
