@@ -7,7 +7,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from app.api.routes import router
 from app.core.config import settings
 from app.core.logging import logger
-from app.core.security import RateLimitMiddleware, SecurityHeadersMiddleware
+from app.core.security import APIKeyMiddleware, RateLimitMiddleware, SecurityHeadersMiddleware
 
 
 if settings.sentry_dsn:
@@ -82,10 +82,11 @@ app.add_middleware(
     allow_origins=settings.cors_origin_list,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PATCH", "DELETE", "PUT"],
-    allow_headers=["Content-Type", "Authorization", "X-Request-ID"],
+    allow_headers=["Content-Type", "Authorization", "X-Request-ID", "X-API-Key"],
 )
 
 app.add_middleware(RequestLoggingMiddleware)
+app.add_middleware(APIKeyMiddleware)
 app.add_middleware(RateLimitMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
 

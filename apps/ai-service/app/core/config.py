@@ -31,6 +31,8 @@ class Settings(BaseSettings):
 
     sentry_dsn: Optional[str] = os.environ.get("SENTRY_DSN")
 
+    api_key: Optional[str] = os.environ.get("API_KEY")
+
     cache_ttl_seconds: int = int(os.environ.get("CACHE_TTL_SECONDS", "120"))
     redis_url: Optional[str] = os.environ.get("REDIS_URL")
 

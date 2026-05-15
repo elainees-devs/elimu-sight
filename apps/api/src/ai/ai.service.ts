@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
 import Joi from "joi";
-import { ApiError } from "@utils/index";
+import { ApiError, env } from "@utils/index";
 import { logger } from "@utils/logger";
 
 // =========================================
@@ -140,12 +140,18 @@ export class AIService {
   constructor() {
     this.baseURL = process.env.AI_SERVICE_URL || "http://localhost:8000";
 
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+
+    if (env.AI_SERVICE_API_KEY) {
+      headers["X-API-Key"] = env.AI_SERVICE_API_KEY;
+    }
+
     this.client = axios.create({
       baseURL: this.baseURL,
       timeout: 15000,
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
     });
   }
 

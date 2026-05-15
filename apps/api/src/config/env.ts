@@ -25,6 +25,7 @@ export const env = {
   REFRESH_TOKEN_EXPIRES_IN: optionalEnv("REFRESH_TOKEN_EXPIRES_IN", "30d"),
 
   AI_SERVICE_URL: optionalEnv("AI_SERVICE_URL", "http://localhost:8000"),
+  AI_SERVICE_API_KEY: optionalEnv("AI_SERVICE_API_KEY", ""),
 
   REDIS_URL: optionalEnv("REDIS_URL", "redis://localhost:6379"),
 

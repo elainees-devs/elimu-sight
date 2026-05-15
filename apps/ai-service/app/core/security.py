@@ -72,6 +72,34 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         return response
 
 
+class APIKeyMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
+        if request.url.path in ("/api/v1/health", "/api/v1/metrics"):
+            return await call_next(request)
+
+        api_key = request.headers.get("X-API-Key", "")
+        expected_key = settings.api_key
+
+        if not expected_key:
+            logger.warning("API_KEY not configured — skipping auth")
+            return await call_next(request)
+
+        if not api_key or api_key != expected_key:
+            logger.warning("Invalid or missing API key", extra={
+                "path": request.url.path,
+                "ip": request.client.host if request.client else "unknown",
+            })
+            return Response(
+                status_code=401,
+                content='{"status":"error","message":"Invalid or missing API key"}',
+                media_type="application/json",
+                headers={"WWW-Authenticate": "APIKey"},
+            )
+
+        request.state.authenticated = True
+        return await call_next(request)
+
+
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
         response = await call_next(request)
