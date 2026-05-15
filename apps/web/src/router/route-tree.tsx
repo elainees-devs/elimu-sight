@@ -74,31 +74,31 @@ const overviewRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: '',
   id: 'overview',
-  component: wrapWithRole(OverviewPage, ['ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT']),
+  component: wrapWithRole(OverviewPage, ['SUPER_ADMIN', 'ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT']),
 })
 
 const analyticsRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'analytics',
-  component: wrapWithRole(AnalyticsPage, ['ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT']),
+  component: wrapWithRole(AnalyticsPage, ['SUPER_ADMIN', 'ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT']),
 })
 
 const settingsRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'settings',
-  component: wrapWithRole(SettingsPage, ['ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT']),
+  component: wrapWithRole(SettingsPage, ['SUPER_ADMIN', 'ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT']),
 })
 
 const schoolsListRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'schools',
-  component: wrapWithRole(SchoolListPage, ['ADMIN']),
+  component: wrapWithRole(SchoolListPage, ['SUPER_ADMIN', 'ADMIN']),
 })
 
 const schoolDetailRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'schools/$schoolId',
-  component: wrapWithRole(SchoolDetailPage, ['ADMIN']),
+  component: wrapWithRole(SchoolDetailPage, ['SUPER_ADMIN', 'ADMIN']),
 })
 
 const classesListRoute = new Route({

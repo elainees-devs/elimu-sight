@@ -20,7 +20,7 @@ export async function validateSchoolAccess(
     }
 
     const hasAccess =
-      user.role === "ADMIN" || user.school_id === schoolId;
+      user.role === "SUPER_ADMIN" || user.role === "ADMIN" || user.school_id === schoolId;
 
     if (!hasAccess) {
       throw new ApiError(

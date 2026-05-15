@@ -7,19 +7,22 @@ import { Modal } from '@shared/components/ui/modal'
 import { ConfirmDialog } from '@shared/components/feedback/confirm-dialog'
 import { Spinner } from '@shared/components/ui/spinner'
 import { EmptyState } from '@shared/components/data-display/empty-state'
+import { Pagination } from '@shared/components/ui/pagination'
 import { ROUTES } from '@shared/config/routes'
 
 export function SchoolListPage() {
   const navigate = useNavigate()
-  const { data: schools, isLoading } = useSchools()
+  const { data, isLoading, page, totalPages, setPage } = useSchools()
   const createSchool = useCreateSchool()
   const deleteSchool = useDeleteSchool()
 
   const [createOpen, setCreateOpen] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
 
+  const schools = data?.schools ?? []
+
   return (
-    <div>
+    <div className="space-y-6">
       <PageHeader
         title="Schools"
         subtitle="Manage all schools in the system"
@@ -32,28 +35,31 @@ export function SchoolListPage() {
         <div className="flex justify-center py-12">
           <Spinner size="lg" />
         </div>
-      ) : schools && schools.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {schools.map((school) => (
-            <div key={school.id} className="group relative">
-              <SchoolCard
-                school={school}
-                onClick={() => navigate({ to: ROUTES.SCHOOL_DETAIL(school.id) })}
-              />
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setDeleteTarget(school.id)
-                }}
-                className="absolute right-2 top-2 hidden rounded-lg p-1 text-gray-400 hover:bg-red-50 hover:text-red-600 group-hover:block"
-              >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </button>
-            </div>
-          ))}
-        </div>
+      ) : schools.length > 0 ? (
+        <>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {schools.map((school) => (
+              <div key={school.id} className="group relative">
+                <SchoolCard
+                  school={school}
+                  onClick={() => navigate({ to: ROUTES.SCHOOL_DETAIL(school.id) })}
+                />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setDeleteTarget(school.id)
+                  }}
+                  className="absolute right-2 top-2 hidden rounded-lg p-1 text-gray-400 hover:bg-red-50 hover:text-red-600 group-hover:block"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            ))}
+          </div>
+          <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+        </>
       ) : (
         <EmptyState
           title="No schools found"

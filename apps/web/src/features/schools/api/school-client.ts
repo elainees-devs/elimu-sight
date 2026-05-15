@@ -1,9 +1,11 @@
 import { apiClient } from '@shared/lib/axios'
-import type { ApiResponse } from '@shared/types/api'
+import type { ApiPaginatedResponse, ApiResponse } from '@shared/types/api'
 import type { School } from '@shared/types/common'
+import type { PaginationMeta } from '@shared/types/pagination'
 
 export const schoolClient = {
-  list: () => apiClient.get<ApiResponse<School[]>>('/schools'),
+  list: (params?: { page?: number; limit?: number; search?: string }) =>
+    apiClient.get<ApiPaginatedResponse<School>>('/schools', { params }),
 
   get: (id: string) => apiClient.get<ApiResponse<School>>(`/schools/${id}`),
 

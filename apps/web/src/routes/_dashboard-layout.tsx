@@ -13,16 +13,16 @@ interface NavItemConfig {
 }
 
 const navItems: NavItemConfig[] = [
-  { label: 'Overview', to: ROUTES.DASHBOARD, roles: ['ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT'] },
-  { label: 'Analytics', to: ROUTES.ANALYTICS, roles: ['ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT'] },
+  { label: 'Overview', to: ROUTES.DASHBOARD, roles: ['SUPER_ADMIN', 'ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT'] },
+  { label: 'Analytics', to: ROUTES.ANALYTICS, roles: ['SUPER_ADMIN', 'ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT'] },
   { label: 'Students', to: ROUTES.STUDENTS, roles: ['ADMIN', 'HEADTEACHER', 'TEACHER'] },
   { label: 'Assessments', to: ROUTES.ASSESSMENTS, roles: ['ADMIN', 'HEADTEACHER', 'TEACHER'] },
-  { label: 'Insights', to: ROUTES.INSIGHTS, roles: ['ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT'] },
+  { label: 'Insights', to: ROUTES.INSIGHTS, roles: ['SUPER_ADMIN', 'ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT'] },
   { label: 'Classes', to: ROUTES.CLASSES, roles: ['ADMIN', 'HEADTEACHER', 'TEACHER'] },
   { label: 'Subjects', to: ROUTES.SUBJECTS, roles: ['ADMIN', 'HEADTEACHER', 'TEACHER'] },
   { label: 'Teachers', to: ROUTES.TEACHERS, roles: ['ADMIN', 'HEADTEACHER'] },
-  { label: 'Schools', to: ROUTES.SCHOOLS, roles: ['ADMIN'] },
-  { label: 'Settings', to: ROUTES.SETTINGS, roles: ['ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT'] },
+  { label: 'Schools', to: ROUTES.SCHOOLS, roles: ['SUPER_ADMIN', 'ADMIN'] },
+  { label: 'Settings', to: ROUTES.SETTINGS, roles: ['SUPER_ADMIN', 'ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT'] },
 ]
 
 export function DashboardLayout() {

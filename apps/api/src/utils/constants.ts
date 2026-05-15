@@ -2,7 +2,7 @@
 export const subscriptionPlans = ["FREE", "BASIC", "PREMIUM"] as const;
 
 // User roles
-export const Roles = ["ADMIN", "TEACHER", "HEADTEACHER", "ACCOUNTANT"] as const;
+export const Roles = ["SUPER_ADMIN", "ADMIN", "TEACHER", "HEADTEACHER", "ACCOUNTANT"] as const;
 
 export const RoleValues = [...Roles];
 

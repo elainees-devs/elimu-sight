@@ -1,6 +1,7 @@
-export const ROLES = ['ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT'] as const
+export const ROLES = ['SUPER_ADMIN', 'ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT'] as const
 
 export const ROLE_LABELS: Record<(typeof ROLES)[number], string> = {
+  SUPER_ADMIN: 'Super Admin',
   ADMIN: 'Admin',
   HEADTEACHER: 'Head Teacher',
   TEACHER: 'Teacher',

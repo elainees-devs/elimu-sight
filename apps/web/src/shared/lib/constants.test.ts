@@ -3,7 +3,7 @@ import { ROLES, ROLE_LABELS, EXAM_TYPES, EXAM_TYPE_LABELS, GENDERS, SUBSCRIPTION
 
 describe('constants', () => {
   it('ROLES contains correct roles', () => {
-    expect(ROLES).toEqual(['ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT'])
+    expect(ROLES).toEqual(['SUPER_ADMIN', 'ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT'])
   })
 
   it('ROLE_LABELS has entry for every role', () => {
