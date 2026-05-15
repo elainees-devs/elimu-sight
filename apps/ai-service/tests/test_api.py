@@ -118,14 +118,3 @@ class TestBulkEndpoint:
         assert response.status_code == 422
 
 
-class TestOldAnalyzeEndpoint:
-    async def test_deprecated_endpoint(self, client):
-        payload = {
-            "id": "s1",
-            "school_id": "sch1",
-            "class_id": "c1",
-            "full_name": "Test",
-            "assessments": [{"exam_type": "midterm", "term": "1", "score": 80, "total_marks": 100}],
-        }
-        response = await client.post("/api/v1/analyze", json=payload)
-        assert response.status_code == 200

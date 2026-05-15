@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse, PlainTextResponse
-from app.schemas.student import StudentRequest
+
 from app.schemas.ai import (
     StudentInsightRequest,
     ClassInsightRequest,
@@ -67,13 +67,6 @@ async def health():
         },
         status_code=status_code,
     )
-
-
-@router.post("/analyze")
-async def analyze(data: StudentRequest):
-    logger.warning("DEPRECATED: /analyze is deprecated, use /insights/student instead")
-    result = analyze_student(data)
-    return result
 
 
 # =========================================
