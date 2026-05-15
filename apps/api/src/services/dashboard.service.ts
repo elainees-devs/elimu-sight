@@ -82,12 +82,18 @@ export class DashboardService {
 
   async getRecentActivity(
     schoolId: string,
-    _role?: string,
-    _classId?: string
+    role?: string,
+    classId?: string
   ): Promise<RecentActivityItem[]> {
     try {
+      const where: Prisma.assessmentsWhereInput = { school_id: schoolId };
+
+      if (role === "TEACHER" && classId) {
+        where.class_id = classId;
+      }
+
       const recent = await prisma.assessments.findMany({
-        where: { school_id: schoolId },
+        where,
         orderBy: { created_at: "desc" },
         take: 10,
         include: {
