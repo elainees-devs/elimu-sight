@@ -27,18 +27,33 @@ export class InsightCrudService {
   // ===============================
   // GET ALL INSIGHTS BY SCHOOL LOGIC
   // ===============================
-  async getAllInsightsBySchool(schoolId: string) {
+  async getAllInsightsBySchool(
+    schoolId: string,
+    params?: { page?: number; limit?: number }
+  ) {
     try {
-      const insights = await prisma.insights.findMany({
-        where: {
-          school_id: schoolId,
-        },
-        orderBy: {
-          created_at: "desc",
-        },
-      });
+      const page = params?.page ?? 1;
+      const limit = params?.limit ?? 20;
+      const skip = (page - 1) * limit;
 
-      return insights;
+      const [insights, total] = await Promise.all([
+        prisma.insights.findMany({
+          where: { school_id: schoolId },
+          orderBy: { created_at: "desc" },
+          skip,
+          take: limit,
+        }),
+        prisma.insights.count({ where: { school_id: schoolId } }),
+      ]);
+
+      return {
+        schoolId,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+        insights,
+      };
     } catch {
       throw new ApiError(500, "Failed to fetch insights");
     }
