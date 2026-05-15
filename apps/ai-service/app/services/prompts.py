@@ -23,6 +23,20 @@ Generate a JSON response with three personas:
 - student: Motivational feedback with focus areas"""
 
 
+def build_subject_prompt(name: str, average: float, risk_score: float, assessment_count: int) -> str:
+    return f"""Analyze the following subject performance data.
+
+Subject: {name}
+Average Score: {average:.1f}%
+Risk Level: {'High' if risk_score >= 0.7 else 'Moderate' if risk_score >= 0.4 else 'Low'}
+Assessments Analyzed: {assessment_count}
+
+Generate a JSON response with three personas:
+- teacher: Subject-specific pedagogical analysis and curriculum recommendations
+- parent: Overview of subject performance and ways to support learning
+- student: Motivational feedback with subject-specific focus areas"""
+
+
 def build_class_prompt(class_name: str, level: str, stream: str | None, student_count: int, subject_count: int) -> str:
     stream_info = f" - {stream}" if stream else ""
     return f"""Analyze the following class performance data.

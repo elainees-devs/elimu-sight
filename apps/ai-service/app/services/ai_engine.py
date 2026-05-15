@@ -10,6 +10,7 @@ from app.services.prompts import (
     SUBJECT_INSIGHT_SYSTEM_PROMPT,
     build_student_prompt,
     build_class_prompt,
+    build_subject_prompt,
     FEEDBACK_INSTRUCTION,
 )
 from app.schemas.ai import ClassContext, SubjectContext
@@ -136,6 +137,17 @@ def analyze_subject(subject_context: SubjectContext):
     risk_score = _calculate_risk_score(average) if scores else 1.0
     conf_score = calculate_confidence_score(scores) if scores else 0.0
 
+    insight = _try_llm_insight(
+        service_fn=lambda: llm_service.generate_insight(
+            system_prompt=SUBJECT_INSIGHT_SYSTEM_PROMPT,
+            user_prompt=build_subject_prompt(name, average, risk_score, len(scores))
+            + "\n\n"
+            + FEEDBACK_INSTRUCTION,
+        ),
+        fallback=_generate_insight(name, average, risk_score, []),
+        context=f"subject:{subject_context.id}",
+    )
+
     return _build_insight_response(
         title="Subject Performance Analysis",
         summary=f"Analysis for {name}: {len(scores)} assessments recorded, average {average:.1f}%.",
@@ -146,6 +158,7 @@ def analyze_subject(subject_context: SubjectContext):
             "average": round(average, 2),
             "risk_score": risk_score,
             "assessment_count": len(scores),
+            "insight": insight,
         },
         confidence_score=conf_score,
     )
