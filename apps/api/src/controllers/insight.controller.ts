@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import { InsightService } from "@services/index";
+import { InsightService } from "../services/index";
 import {
   toInsightId,
   toSchoolId,
   toClassId,
   toStudentId,
   toSubjectId,
-} from "mappers";
+} from "../mappers";
 
 import {
   InsightIdParam,
@@ -14,9 +14,9 @@ import {
   ClassIdParam,
   StudentIdParam,
   SubjectIdParam,
-} from "schemas";
-import { InsightAnalyticsService } from "@services/insights/insight.analytics.service";
-import { InsightCrudService, InsightQueryService } from "@services/insights";
+} from "../schemas";
+import { InsightAnalyticsService } from "../services/insights/insight.analytics.service";
+import { InsightCrudService, InsightQueryService } from "../services/insights";
 
 export class InsightController {
   private insightService = new InsightService(

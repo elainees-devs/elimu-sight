@@ -1,17 +1,17 @@
 import { Request, Response, NextFunction } from "express";
-import { StudentService } from "@services/index";
+import { StudentService } from "../services/index";
 
 import {
   toSchoolId,
   toClassId,
   toStudentId,
-} from "mappers";
+} from "../mappers";
 
 import {
   SchoolIdParam,
   ClassIdParam,
   StudentIdParam,
-} from "schemas";
+} from "../schemas";
 
 export class StudentController {
   private studentService = new StudentService();

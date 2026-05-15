@@ -1,5 +1,5 @@
 import { Response, NextFunction } from "express";
-import { DashboardService } from "@services/index";
+import { DashboardService } from "../services/index";
 import { AuthRequest } from "../types/express";
 
 export class DashboardController {

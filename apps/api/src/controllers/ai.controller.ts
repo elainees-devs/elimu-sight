@@ -1,15 +1,15 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../types/express";
-import { InsightAIService } from "@services/insights/insight.ai.service";
-import { AIService } from "ai/ai.service";
+import { InsightAIService } from "../services/insights/insight.ai.service";
+import { AIService } from "../ai/ai.service";
 import {
   GenerateClassInsightInput,
   GenerateStudentInsightInput,
   GenerateSubjectInsightInput,
   RefreshInsightInput,
   BulkGenerateInsightsInput,
-} from "schemas/ai.schema";
-import { sendSuccess, sendCreated } from "@utils/response";
+} from "../schemas/ai.schema";
+import { sendSuccess, sendCreated } from "../utils/response";
 
 export class AIController {
   private insightAIService = new InsightAIService();

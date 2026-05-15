@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthRequest } from "../types/express";
-import { UserService } from "@services/index";
+import { UserService } from "../services/index";
 
-import { toUserId, toSchoolId } from "mappers";
-import { UserIdParam, SchoolIdParam } from "schemas";
+import { toUserId, toSchoolId } from "../mappers";
+import { UserIdParam, SchoolIdParam } from "../schemas";
 
 const userService = new UserService();
 

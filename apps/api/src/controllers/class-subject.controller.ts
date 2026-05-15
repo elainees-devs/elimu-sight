@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { ClassSubjectService } from "@services/index";
-import { toClassSubjectId } from "mappers";
-import { ClassSubjectIdParam } from "schemas";
+import { ClassSubjectService } from "../services/index";
+import { toClassSubjectId } from "../mappers";
+import { ClassSubjectIdParam } from "../schemas";
 
 const classSubjectService = new ClassSubjectService();
 

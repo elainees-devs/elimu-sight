@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { SchoolService } from "@services/index";
-import { toSchoolId } from "mappers";
-import { SchoolIdParam } from "schemas";
+import { SchoolService } from "../services/index";
+import { toSchoolId } from "../mappers";
+import { SchoolIdParam } from "../schemas";
 
 const schoolService = new SchoolService();
 
