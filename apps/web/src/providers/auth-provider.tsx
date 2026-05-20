@@ -10,6 +10,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const { token, setAuth, setLoading, clearAuth } = useAuthStore()
 
   useEffect(() => {
+    const currentRefreshToken = useAuthStore.getState().refreshToken
+
     if (!token) {
       setLoading(false)
       return
@@ -19,8 +21,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       .get('/auth/me')
       .then((res) => {
         const user = res.data.data
-        const refreshToken = useAuthStore.getState().refreshToken ?? ''
-        setAuth(token, refreshToken, user)
+        setAuth(token, currentRefreshToken ?? '', user)
       })
       .catch(() => {
         clearAuth()
