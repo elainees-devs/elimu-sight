@@ -76,7 +76,7 @@ export class ClassSubjectController {
   // =====================================
   async getClassSubjectCount(req: Request, res: Response, next: NextFunction) {
     try {
-      const classId = toClassSubjectId({ id: req.params.classId } as ClassSubjectIdParam);
+      const classId = toClassSubjectId({ id: req.params.id } as ClassSubjectIdParam);
 
       const count = await classSubjectService.getClassSubjectCount(classId);
 

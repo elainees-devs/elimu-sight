@@ -35,7 +35,7 @@ const classSubjectController = new ClassSubjectController();
  *         description: List of subjects for the class
  */
 router.get(
-  "/class/:classId/subjects",
+  "/class/:id/subjects",
   authenticateMiddleware,
   validate(classIdParamSchema, "params"),
   (req, res, next) =>
@@ -115,7 +115,7 @@ router.get(
  *         description: Class subject count
  */
 router.get(
-  "/class/:classId/count",
+  "/class/:id/count",
   authenticateMiddleware,
   validate(classIdParamSchema, "params"),
   (req, res, next) =>
@@ -271,7 +271,7 @@ router.patch(
  *         description: Subjects replaced
  */
 router.put(
-  "/class/:classId/replace",
+  "/class/:id/replace",
   authenticateMiddleware,
   authorize("ADMIN", "HEADTEACHER"),
   validate(classIdParamSchema, "params"),
@@ -298,7 +298,7 @@ router.put(
  *         description: Subjects synced
  */
 router.patch(
-  "/class/:classId/sync",
+  "/class/:id/sync",
   authenticateMiddleware,
   authorize("ADMIN", "HEADTEACHER"),
   validate(classIdParamSchema, "params"),
@@ -325,7 +325,7 @@ router.patch(
  *         description: Subjects archived
  */
 router.patch(
-  "/class/:classId/archive",
+  "/class/:id/archive",
   authenticateMiddleware,
   authorize("ADMIN", "HEADTEACHER"),
   validate(classIdParamSchema, "params"),
