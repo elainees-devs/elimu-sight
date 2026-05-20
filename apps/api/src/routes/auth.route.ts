@@ -102,6 +102,7 @@ router.post(
  */
 router.post(
   "/refresh",
+  authRateLimiter,
   (req, res, next) => authController.refresh(req, res, next)
 );
 
