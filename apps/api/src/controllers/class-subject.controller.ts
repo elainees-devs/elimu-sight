@@ -178,7 +178,7 @@ export class ClassSubjectController {
   // =====================================
   // REMOVE TEACHER
   // =====================================
-  async removeTeacherFromClassSubject(req: Request, res: Response, next: NextFunction) {
+  async reassignTeacher(req: Request, res: Response, next: NextFunction) {
     try {
       const classSubjectId = toClassSubjectId({ id: req.params.id } as ClassSubjectIdParam);
       const { newTeacherId } = req.body;
@@ -188,7 +188,7 @@ export class ClassSubjectController {
       }
 
       const classSubject =
-        await classSubjectService.removeTeacherFromClassSubject(classSubjectId, newTeacherId);
+        await classSubjectService.reassignTeacher(classSubjectId, newTeacherId);
 
       return res.status(200).json({
         success: true,

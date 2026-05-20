@@ -245,9 +245,9 @@ export class ClassSubjectService {
   }
 
   // ===================================
-  // REMOVE TEACHER
+  // REASSIGN TEACHER
   // ===================================
-  async removeTeacherFromClassSubject(
+  async reassignTeacher(
   classSubjectId: string,
   newTeacherId: string
 ) {

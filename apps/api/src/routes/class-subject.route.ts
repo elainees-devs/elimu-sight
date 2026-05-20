@@ -238,7 +238,7 @@ router.patch(
   authorize("ADMIN", "HEADTEACHER"),
   validate(classSubjectIdParamSchema, "params"),
   (req, res, next) =>
-    classSubjectController.removeTeacherFromClassSubject(req, res, next)
+    classSubjectController.reassignTeacher(req, res, next)
 );
 
 /**
