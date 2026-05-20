@@ -10,7 +10,7 @@ export {
 } from "./constants";
 
 // jwt
-export { generateToken, verifyToken, refreshToken } from "./jwt";
+export { generateToken, verifyToken } from "./jwt";
 
 // prisma
 export { prisma } from "./prisma";

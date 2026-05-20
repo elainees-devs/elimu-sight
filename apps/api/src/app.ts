@@ -28,6 +28,7 @@ import {
   dashboardRouter,
   adminRouter,
   teacherRouter,
+  analyticsRouter,
 } from "@routes/index";
 
 import {
@@ -164,6 +165,9 @@ app.use("/api/v1/insights/analytics", insightAnalyticsRoute);
 
 // Teachers
 app.use("/api/v1/teachers", teacherRouter);
+
+// Analytics (wired to frontend analytics page)
+app.use("/api/v1/analytics", analyticsRouter);
 
 // Super Admin
 app.use("/api/v1/admin", adminRouter);

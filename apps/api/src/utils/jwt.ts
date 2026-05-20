@@ -11,14 +11,13 @@ export interface JwtPayload {
 }
 
 const JWT_SECRET = env.JWT_SECRET;
-const JWT_EXPIRES_IN: SignOptions["expiresIn"] = env.JWT_EXPIRES_IN;
 
 /**
  * Generate JWT token
  */
 export const generateToken = (payload: JwtPayload): string => {
   return jwt.sign(payload, JWT_SECRET, {
-    expiresIn: JWT_EXPIRES_IN,
+    expiresIn: env.JWT_EXPIRES_IN as SignOptions["expiresIn"],
   });
 };
 
