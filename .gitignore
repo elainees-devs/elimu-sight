@@ -1,1 +1,124 @@
+# ========================
+# ENVIRONMENT FILES
+# ========================
+.env
+.env.*
+!.env.example
+!.env.template
+
+# ========================
+# DEPENDENCIES
+# ========================
+node_modules/
+.pnp
+.pnp.js
+
+# ========================
+# BUILD OUTPUT
+# ========================
+dist/
+build/
+out/
+.next/
+
+# ========================
+# LOGS
+# ========================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ========================
+# OS FILES
+# ========================
+.DS_Store
+Thumbs.db
+
+# ========================
+# EDITOR FILES
+# ========================
 .vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ========================
+# CACHE / TEMP
+# ========================
+.cache/
+tmp/
+temp/
+*.tsbuildinfo
+
+# ========================
+# DATABASE
+# ========================
+*.sqlite
+*.db
+*.db-journal
+
+# ========================
+# COVERAGE
+# ========================
+coverage/
+.nyc_output/
+
+# ========================
+# PYTHON (AI Service)
+# ========================
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+.pytest_cache/
+*.egg-info/
+.tox/
+
+# ========================
+# TERRAFORM
+# ========================
+.terraform/
+*.tfstate*
+*.tfplan
+crash.log
+
+# ========================
+# KEYS / CERTS
+# ========================
+*.pem
+*.key
+*.crt
+*.cer
+
+# ========================
+# DOCKER
+# ========================
+docker-compose.override.yml
+
+# ========================
+# TEST OUTPUTS
+# ========================
+test-results/
+playwright-report/
+
+# ========================
+# MONOREPO PLACEHOLDER
+# ========================
+.plans/
+
+# ========================
+# DEPRECATED DOCS LOCATIONS (will be removed)
+# ========================
+apps/api/docs/
+apps/ai-service/docs/
+apps/web/workflow/
+
+# ========================
+# PRODUCTION ASSETS
+# ========================
+*.pdf
