@@ -1,0 +1,28 @@
+# ElimuSight — Terraform Scaffolding
+# Uncomment and configure for your cloud provider
+
+# terraform {
+#   required_providers {
+#     aws = {
+#       source  = "hashicorp/aws"
+#       version = "~> 5.0"
+#     }
+#   }
+# }
+#
+# provider "aws" {
+#   region = var.aws_region
+# }
+#
+# variable "aws_region" {
+#   description = "AWS region"
+#   default     = "us-east-1"
+# }
+#
+# variable "app_name" {
+#   default = "elimu-sight"
+# }
+#
+# variable "environment" {
+#   default = "production"
+# }
