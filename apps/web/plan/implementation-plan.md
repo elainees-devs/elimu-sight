@@ -195,6 +195,103 @@ features/{domain}/
 
 ---
 
+## Phase 7 — Super Admin Dashboard (~30 files)
+
+### 7.1 Backend (apps/api)
+
+#### Database Models (Prisma)
+- `audit_logs` — `id`, `school_id?`, `user_id?`, `action`, `resource`, `resource_id?`, `details?`, `ip_address?`, `user_agent?`, `created_at`
+- `announcements` — `id`, `title`, `body`, `priority` (enum), `status` (enum), `created_by`, `published_at?`, `created_at`, `updated_at`
+- `support_tickets` — `id`, `school_id`, `subject`, `description`, `status` (enum), `priority` (enum), `assigned_to?`, `created_by`, `resolved_at?`, `created_at`, `updated_at`
+
+#### Enums
+- `announcement_priority`: `LOW`, `MEDIUM`, `HIGH`, `URGENT`
+- `announcement_status`: `DRAFT`, `PUBLISHED`, `ARCHIVED`
+- `ticket_status`: `OPEN`, `IN_PROGRESS`, `RESOLVED`, `CLOSED`
+- `ticket_priority`: `LOW`, `MEDIUM`, `HIGH`, `URGENT`
+
+#### API Endpoints (all gated by `SUPER_ADMIN`)
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| GET | `/admin/overview` | Platform KPIs |
+| GET | `/admin/health` | DB, memory, uptime |
+| GET | `/admin/schools` | Paginated tenant list |
+| GET | `/admin/schools/:id` | Tenant detail |
+| POST | `/admin/schools` | Create school |
+| PATCH | `/admin/schools/:id` | Update school |
+| DELETE | `/admin/schools/:id` | Soft delete |
+| GET | `/admin/users` | Platform-wide user list |
+| GET | `/admin/users/:id` | User detail |
+| POST | `/admin/users` | Create user for any school |
+| PATCH | `/admin/users/:id` | Update user |
+| DELETE | `/admin/users/:id` | Deactivate |
+| GET | `/admin/analytics/ai-usage` | AI usage stats |
+| GET | `/admin/analytics/ai-usage/trends` | AI usage trends |
+| GET | `/admin/analytics/insights` | Insight stats |
+| GET | `/admin/audit-logs` | Audit trail |
+| GET | `/admin/audit-logs/stats` | Audit summary |
+| GET | `/admin/security/overview` | Failed logins, role changes |
+| GET | `/admin/billing/overview` | Plan distribution |
+| PATCH | `/admin/billing/schools/:id/plan` | Change plan |
+| GET | `/admin/announcements` | List announcements |
+| POST | `/admin/announcements` | Create announcement |
+| PATCH | `/admin/announcements/:id` | Update announcement |
+| DELETE | `/admin/announcements/:id` | Delete announcement |
+| GET | `/admin/support-tickets` | List tickets |
+| GET | `/admin/support-tickets/:id` | Ticket detail |
+| PATCH | `/admin/support-tickets/:id` | Update ticket |
+
+#### Utilities
+- `logAudit(action, resource, details)` — reusable audit logging middleware/utility
+- Wired into admin controllers and existing CRUD controllers (auth, school, user, class, student)
+
+### 7.2 Frontend (apps/web)
+
+#### Admin Feature Module
+```
+features/admin/
+├── types/index.ts           — AdminOverview, SystemHealth, SchoolWithStats, etc.
+├── api/admin-client.ts      — Axios methods for all admin endpoints
+├── hooks/use-admin.ts       — 20 TanStack Query hooks (13 queries + 7 mutations)
+├── components/
+│   ├── MetricCard           — KPI card with trend arrow, icon, value
+│   ├── StatusBadge          — Color-coded status badge
+│   ├── HealthIndicator      — Green/yellow/red status dot
+│   ├── SubscriptionBadge    — Plan-specific colors
+│   └── AuditLogTable        — Audit trail with action coloring + expandable rows
+├── index.ts                 — barrel exports
+```
+
+#### Routes (all under `/dashboard/admin/*`, SUPER_ADMIN only)
+
+| Route | Component | Description |
+|-------|-----------|-------------|
+| `/dashboard/admin` | AdminOverviewPage | Platform KPIs, charts, health status |
+| `/dashboard/admin/tenants` | TenantListPage | Schools data table with CRUD |
+| `/dashboard/admin/tenants/:schoolId` | TenantDetailPage | Single school stats & management |
+| `/dashboard/admin/users` | AdminUserListPage | Platform-wide user management |
+| `/dashboard/admin/ai` | AIAnalyticsPage | AI usage trends & per-school breakdown |
+| `/dashboard/admin/health` | SystemHealthPage | Service status, uptime, response times |
+| `/dashboard/admin/security` | SecurityAuditPage | Audit log table with filters & stats |
+| `/dashboard/admin/billing` | BillingPage | Subscription plans & revenue overview |
+| `/dashboard/admin/announcements` | AnnouncementsPage | Platform announcement CRUD |
+| `/dashboard/admin/support` | SupportTicketsPage | Support ticket management |
+
+#### Shared Admin Components
+- `MetricCard` — KPI display card with trend arrow, icon, value
+- `StatusBadge` — Color-coded status for services/plans/tickets
+- `HealthIndicator` — Green/yellow/red status dot
+- `SubscriptionBadge` — Plan-specific colors
+- `AuditLogTable` — Specialized with action-type coloring + expandable details
+
+#### Sidebar Navigation
+- Visual separator before admin items
+- Items visible only to SUPER_ADMIN role
+- Links: Admin Overview, Tenants, Users, AI Analytics, System Health, Security, Billing, Announcements, Support
+
+---
+
 ## API Contract Reference
 
 All Express API endpoints at `/api/v1/`:
@@ -230,6 +327,13 @@ All Express API endpoints at `/api/v1/`:
 | POST | /insights/crud | Create insight |
 | GET | /insights/crud/:id | Get insight by ID |
 | POST | /insights/query/bulk-generate | Bulk generate |
+| GET | /admin/overview | Platform KPIs (SUPER_ADMIN) |
+| GET | /admin/schools | Paginated tenant list (SUPER_ADMIN) |
+| GET | /admin/users | Platform-wide users (SUPER_ADMIN) |
+| GET | /admin/audit-logs | Audit trail (SUPER_ADMIN) |
+| GET | /admin/billing/overview | Plan distribution (SUPER_ADMIN) |
+| GET | /admin/announcements | List announcements (SUPER_ADMIN) |
+| GET | /admin/support-tickets | List support tickets (SUPER_ADMIN) |
 
 **Standard response shape:**
 ```typescript
@@ -252,4 +356,4 @@ All Express API endpoints at `/api/v1/`:
 - Assessment: id, schoolId, classId, studentId, subjectId, createdBy, term, examType, score, totalMarks, grade, remarks, createdAt
 - Insight: id, schoolId, classId, studentId, subjectId, type?, title?, summary?, data?, confidenceScore?, generatedBy?, period?, createdAt, updatedAt
 
-**User roles:** `ADMIN`, `HEADTEACHER`, `TEACHER`, `ACCOUNTANT`
+**User roles:** `SUPER_ADMIN`, `ADMIN`, `HEADTEACHER`, `TEACHER`, `ACCOUNTANT`

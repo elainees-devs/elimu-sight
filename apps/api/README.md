@@ -65,14 +65,17 @@ apps/api/
 │   ├── config/                 # Application configuration
 │   │
 │   ├── controllers/            # Request handlers
+│   │   ├── admin.controller.ts    # Super admin dashboard
 │   │
 │   ├── mappers/                # DTO transformation layer
 │   │
 │   ├── middlewares/            # Express middlewares
 │   │
 │   ├── routes/                 # API routes
+│   │   ├── admin.route.ts        # /api/v1/admin/* endpoints
 │   │
 │   ├── schemas/                # Joi validation schemas
+│   │   ├── admin.schema.ts       # Super admin request validation
 │   │
 │   ├── services/               # Business logic layer
 │   │   ├── assessment.service.ts
@@ -84,10 +87,12 @@ apps/api/
 │   │   ├── student.service.ts
 │   │   ├── subject.service.ts
 │   │   ├── user.service.ts
+│   │   ├── admin.service.ts      # Super admin business logic
 │   │   └── index.ts
 │   │
-│   ├── tests/                  # Tests
-│   │
+│   ├── tests/                  # Unit tests
+│   │   ├── unit/                 # Test files
+│   │   └── helpers/              # Test utilities
 │   ├── types/
 │   │   └── express.d.ts
 │   │
@@ -100,6 +105,7 @@ apps/api/
 │   │   ├── logger.ts
 │   │   ├── prisma.ts
 │   │   ├── response.ts
+│   │   ├── audit.ts              # Audit logging utility
 │   │   └── index.ts
 │   │
 │   ├── app.ts
@@ -176,6 +182,9 @@ This ensures secure school-level data separation.
 | insights | AI-generated insights |
 | ai_logs | AI request and response logs |
 | refresh_tokens | JWT refresh token rotation |
+| audit_logs | Admin action audit trail |
+| announcements | Platform-wide communications |
+| support_tickets | School support requests |
 
 ---
 
@@ -290,6 +299,7 @@ npm run seed:sql
 
 | Email | Password | Role |
 |---|---|---|
+| `superadmin@example.com` | `super123` | SUPER_ADMIN |
 | `admin@elimuheights.school` | `admin123` | ADMIN |
 | `headteacher@elimuheights.school` | `headteacher123` | HEADTEACHER |
 | `teacher1@elimuheights.school` | `teacher123` | TEACHER |
@@ -429,6 +439,74 @@ http://localhost:5000/api/v1/schools
 
 ---
 
+# 🛡️ Super Admin Dashboard
+
+Manages platform-wide operations. All endpoints gated by `SUPER_ADMIN` role.
+
+### Tenant Management
+
+```http
+GET    /api/v1/admin/overview
+GET    /api/v1/admin/health
+GET    /api/v1/admin/schools
+GET    /api/v1/admin/schools/:id
+POST   /api/v1/admin/schools
+PATCH  /api/v1/admin/schools/:id
+DELETE /api/v1/admin/schools/:id
+```
+
+### User Management
+
+```http
+GET    /api/v1/admin/users
+GET    /api/v1/admin/users/:id
+POST   /api/v1/admin/users
+PATCH  /api/v1/admin/users/:id
+DELETE /api/v1/admin/users/:id
+```
+
+### AI Analytics
+
+```http
+GET    /api/v1/admin/analytics/ai-usage
+GET    /api/v1/admin/analytics/ai-usage/trends
+GET    /api/v1/admin/analytics/insights
+```
+
+### Security & Audit
+
+```http
+GET    /api/v1/admin/audit-logs
+GET    /api/v1/admin/audit-logs/stats
+GET    /api/v1/admin/security/overview
+```
+
+### Billing
+
+```http
+GET    /api/v1/admin/billing/overview
+PATCH  /api/v1/admin/billing/schools/:id/plan
+```
+
+### Announcements
+
+```http
+GET    /api/v1/admin/announcements
+POST   /api/v1/admin/announcements
+PATCH  /api/v1/admin/announcements/:id
+DELETE /api/v1/admin/announcements/:id
+```
+
+### Support Tickets
+
+```http
+GET    /api/v1/admin/support-tickets
+GET    /api/v1/admin/support-tickets/:id
+PATCH  /api/v1/admin/support-tickets/:id
+```
+
+---
+
 # 🔌 Core Modules
 
 ## 🔐 Authentication
@@ -552,6 +630,13 @@ GET    /api/v1/insights/analytics/period/:period
 | POST | `/api/v1/assessments` | Yes | ADMIN, HEADTEACHER, TEACHER |
 | POST | `/api/v1/ai/generate/class` | Yes | ADMIN, HEADTEACHER, TEACHER |
 | GET | `/api/v1/ai/health` | Yes | ADMIN |
+| GET | `/api/v1/admin/overview` | Yes | SUPER_ADMIN |
+| GET | `/api/v1/admin/schools` | Yes | SUPER_ADMIN |
+| GET | `/api/v1/admin/users` | Yes | SUPER_ADMIN |
+| GET | `/api/v1/admin/audit-logs` | Yes | SUPER_ADMIN |
+| GET | `/api/v1/admin/billing/overview` | Yes | SUPER_ADMIN |
+| GET | `/api/v1/admin/announcements` | Yes | SUPER_ADMIN |
+| GET | `/api/v1/admin/support-tickets` | Yes | SUPER_ADMIN |
 | GET | `/health` | No | — |
 
 ---
@@ -646,10 +731,11 @@ npm run test:watch
 # 🚦 Rate Limiting
 
 | Tier | Limit |
-|---|---|
+|---|---|---|
 | Global | 100 requests / 15 min |
 | Auth | 10 requests / 15 min |
 | AI | 20 requests / 15 min |
+| Admin | 100 requests / 15 min |
 
 ---
 

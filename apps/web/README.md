@@ -33,7 +33,8 @@ src/
 │   ├── schools/               # School CRUD
 │   ├── students/              # Student CRUD, transfer, activate
 │   ├── subjects/              # Subject list, create
-│   └── teachers/              # Teacher list, create
+│   ├── teachers/              # Teacher list, create
+│   └── admin/                 # Super admin: overview, tenants, users, AI, health, security, billing, announcements, support
 ├── providers/                 # React context providers
 │   ├── app-providers.tsx      # Composition root
 │   ├── auth-provider.tsx      # Bootstraps auth on mount
@@ -56,6 +57,7 @@ src/
 │   ├── students/              # list, detail
 │   ├── assessments/           # list, create, detail
 │   ├── insights/              # list, detail
+│   ├── dashboard/admin/       # Super admin pages: overview, tenants, users, AI, health, security, billing, announcements, support
 │   └── errors/                # not-found, error
 ├── shared/
 │   ├── components/
@@ -104,17 +106,17 @@ npm run test       # Run tests with Vitest
 
 The web application uses [Vitest](https://vitest.dev/) for unit and component testing.
 
-### Current Test Results (May 14, 2026)
+### Current Test Results (May 20, 2026)
 
 ```text
  RUN  v1.6.1 /home/elaine/Desktop/elimu-sight/apps/web
 
  Test Files  29 passed (29)
-      Tests  138 passed (138)
+      Tests  140 passed (140)
    Duration  30.26s
 ```
 
-All 138 tests across 29 files are currently passing.
+All 140 tests across 29 files are currently passing.
 npm run format     # Prettier
 npm run test       # Vitest (watch mode)
 npm run test:run   # Vitest (single run)
