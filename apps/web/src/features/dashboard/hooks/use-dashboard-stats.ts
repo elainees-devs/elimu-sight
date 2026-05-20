@@ -20,3 +20,14 @@ export function useRecentActivity(classId?: string) {
     },
   })
 }
+
+export function useClassPerformance(classId: string) {
+  return useQuery({
+    queryKey: ['dashboard', 'class-performance', classId],
+    queryFn: async () => {
+      const res = await dashboardClient.classPerformance(classId)
+      return res.data.data
+    },
+    enabled: !!classId,
+  })
+}

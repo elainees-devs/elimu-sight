@@ -10,8 +10,10 @@ import { ROUTES } from '@shared/config/routes'
 
 export function AssessmentListPage() {
   const navigate = useNavigate()
-  const schoolId = useAuthStore((s) => s.user?.schoolId) ?? ''
-  const { data, isLoading } = useAssessments(schoolId)
+  const user = useAuthStore((s) => s.user)
+  const schoolId = user?.schoolId ?? ''
+  const classId = user?.role === 'TEACHER' ? user?.assignedClassId : undefined
+  const { data, isLoading } = useAssessments(schoolId, { classId })
 
   const assessments = (data as { data?: Assessment[] } | undefined)?.data ?? []
 

@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
 import { useSchoolStore } from '@stores/school-store'
+import { useAuthStore } from '@stores/auth-store'
 import { useSchoolInsights, useGenerateInsight, InsightList, InsightGenerator } from '@features/insights'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -7,10 +8,12 @@ export function InsightListPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const schoolId = useSchoolStore((s) => s.schoolId) ?? ''
+  const user = useAuthStore((s) => s.user)
   const { data, isLoading } = useSchoolInsights(schoolId)
   const generateInsight = useGenerateInsight()
 
   const insights = data?.insights ?? []
+  const defaultClassId = user?.role === 'TEACHER' ? user?.assignedClassId : undefined
 
   const handleGenerate = (params: { type: string; classId?: string; studentId?: string; subjectId?: string }) => {
     generateInsight.mutate(params, {
@@ -27,7 +30,7 @@ export function InsightListPage() {
         <p className="mt-1 text-gray-600">AI-generated performance insights and recommendations</p>
       </div>
 
-      <InsightGenerator onGenerate={handleGenerate} isLoading={generateInsight.isPending} />
+      <InsightGenerator onGenerate={handleGenerate} isLoading={generateInsight.isPending} defaultClassId={defaultClassId} />
 
       <InsightList
         insights={insights}

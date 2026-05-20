@@ -49,4 +49,26 @@ router.get("/recent-activity", authenticateMiddleware, authorize("SUPER_ADMIN", 
   dashboardController.getRecentActivity(req, res, next)
 );
 
+/**
+ * @openapi
+ * /api/v1/dashboard/class-performance/{classId}:
+ *   get:
+ *     tags: [Dashboard]
+ *     summary: Get class performance breakdown
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: classId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Class performance data
+ */
+router.get("/class-performance/:classId", authenticateMiddleware, authorize("ADMIN", "HEADTEACHER", "TEACHER"), (req, res, next) =>
+  dashboardController.getClassPerformance(req, res, next)
+);
+
 export default router;

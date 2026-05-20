@@ -7,7 +7,7 @@ import {
   toUpdateUserDB,
   UserDB,
 } from "mappers/user.mapper";
-import { UpdateUserInput, UserIdParam } from "schemas/user.schema";
+import { UpdateUserInput, UpdateMyProfileInput, UserIdParam } from "schemas/user.schema";
 
 type GetUserParams = {
   page?: number;
@@ -196,6 +196,45 @@ export class UserService {
       if (error instanceof ApiError) throw error;
       logger.error("Failed to delete user", { error });
       throw new ApiError(500, "Failed to delete user");
+    }
+  }
+
+  // ===================================
+  // UPDATE MY PROFILE
+  // ===================================
+  async updateMyProfile(userId: string, input: UpdateMyProfileInput) {
+    try {
+      const user = await prisma.users.findFirst({
+        where: { id: userId, is_active: true },
+      });
+
+      if (!user) {
+        throw new ApiError(404, "User not found");
+      }
+
+      if (input.email && input.email !== user.email) {
+        const existing = await prisma.users.findUnique({
+          where: { email: input.email },
+        });
+        if (existing) {
+          throw new ApiError(400, "Email already in use");
+        }
+      }
+
+      const updateData: Prisma.usersUpdateInput = {};
+      if (input.fullName) updateData.full_name = input.fullName;
+      if (input.email) updateData.email = input.email;
+
+      const updated = await prisma.users.update({
+        where: { id: userId },
+        data: updateData,
+      });
+
+      return toUserResponse(updated as UserDB);
+    } catch (error) {
+      if (error instanceof ApiError) throw error;
+      logger.error("Failed to update profile", { error });
+      throw new ApiError(500, "Failed to update profile");
     }
   }
 

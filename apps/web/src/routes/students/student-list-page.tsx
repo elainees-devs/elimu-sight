@@ -12,8 +12,10 @@ import { ROUTES } from '@shared/config/routes'
 
 export function StudentListPage() {
   const navigate = useNavigate()
-  const schoolId = useAuthStore((s) => s.user?.schoolId) ?? ''
-  const { data, isLoading } = useStudents({ schoolId })
+  const user = useAuthStore((s) => s.user)
+  const schoolId = user?.schoolId ?? ''
+  const classId = user?.role === 'TEACHER' ? user?.assignedClassId : undefined
+  const { data, isLoading } = useStudents({ schoolId, classId })
   const createStudent = useCreateStudent(schoolId, '')
 
   const [createOpen, setCreateOpen] = useState(false)

@@ -85,9 +85,23 @@ export const userIdParamSchema = Joi.object({
   id: Joi.string().uuid().required(),
 });
 
+/**
+ * =========================
+ * UPDATE MY PROFILE SCHEMA
+ * (PATCH /users/me)
+ * =========================
+ * - only fullName and email
+ * - at least one required
+ */
+export const updateMyProfileSchema = Joi.object({
+  fullName: userBase.fullName.optional(),
+  email: userBase.email.optional(),
+}).min(1);
+
 export type InferSchema<T> = T extends Joi.ObjectSchema<infer U> ? U : never;
 export type User = InferSchema<typeof userSchema>;
 export type CreateUserInput = InferSchema<typeof createUserSchema>;
 export type UpdateUserInput = InferSchema<typeof updateUserSchema>;
+export type UpdateMyProfileInput = InferSchema<typeof updateMyProfileSchema>;
 export type AuthenticateUserInput = InferSchema<typeof loginSchema>;
 export type UserIdParam = InferSchema<typeof userIdParamSchema>;

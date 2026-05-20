@@ -13,3 +13,18 @@ export interface RecentActivity {
   description: string
   timestamp: string
 }
+
+export interface StudentPerformanceItem {
+  id: string
+  fullName: string
+  averageScore: number
+  assessmentCount: number
+}
+
+export interface ClassPerformance {
+  classId: string
+  className: string
+  totalStudents: number
+  topPerformers: StudentPerformanceItem[]
+  bottomPerformers: StudentPerformanceItem[]
+}

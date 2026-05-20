@@ -1,12 +1,18 @@
 import { useNavigate } from '@tanstack/react-router'
 import { Card, CardBody, CardHeader } from '@shared/components/ui/card'
 import { ROUTES } from '@shared/config/routes'
+import type { User } from '@shared/types/common'
 
 interface QuickActionsProps {
-  role?: string
+  user?: User | null
 }
 
-const roleActions: Record<string, { label: string; to: string }[]> = {
+interface Action {
+  label: string
+  to: string | ((user: User) => string)
+}
+
+const roleActions: Record<string, Action[]> = {
   HEADTEACHER: [
     { label: 'Add Student', to: ROUTES.STUDENTS },
     { label: 'New Assessment', to: ROUTES.ASSESSMENT_CREATE },
@@ -25,7 +31,7 @@ const roleActions: Record<string, { label: string; to: string }[]> = {
   TEACHER: [
     { label: 'New Assessment', to: ROUTES.ASSESSMENT_CREATE },
     { label: 'View Insights', to: ROUTES.INSIGHTS },
-    { label: 'View My Class', to: ROUTES.CLASSES },
+    { label: 'View My Class', to: ROUTES.MY_CLASS },
   ],
   ACCOUNTANT: [
     { label: 'View Reports', to: ROUTES.ANALYTICS },
@@ -33,9 +39,15 @@ const roleActions: Record<string, { label: string; to: string }[]> = {
   ],
 }
 
-export function QuickActions({ role }: QuickActionsProps) {
+export function QuickActions({ user }: QuickActionsProps) {
   const navigate = useNavigate()
+  const role = user?.role
   const actions = (role && roleActions[role]) || roleActions.HEADTEACHER
+
+  const handleNavigate = (action: Action) => {
+    const to = typeof action.to === 'function' ? action.to(user!) : action.to
+    navigate({ to })
+  }
 
   return (
     <Card>
@@ -47,7 +59,7 @@ export function QuickActions({ role }: QuickActionsProps) {
           {actions.map((action) => (
             <button
               key={action.label}
-              onClick={() => navigate({ to: action.to })}
+              onClick={() => handleNavigate(action)}
               className="rounded-lg border p-4 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
             >
               {action.label}

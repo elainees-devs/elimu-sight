@@ -7,6 +7,7 @@ import { LoginPage } from '@routes/auth/login-page'
 import { RegisterPage } from '@routes/auth/register-page'
 import { DashboardLayout } from '@routes/_dashboard-layout'
 import { OverviewPage } from '@routes/dashboard/overview-page'
+import { MyClassPage } from '@routes/dashboard/my-class-page'
 import { AnalyticsPage } from '@routes/dashboard/analytics-page'
 import { SettingsPage } from '@routes/dashboard/settings-page'
 import { SchoolListPage } from '@routes/schools/school-list-page'
@@ -99,6 +100,12 @@ const settingsRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'settings',
   component: wrapWithRole(SettingsPage, ['SUPER_ADMIN', 'ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT']),
+})
+
+const myClassRoute = new Route({
+  getParentRoute: () => dashboardRoute,
+  path: 'my-class',
+  component: wrapWithRole(MyClassPage, ['TEACHER']),
 })
 
 const schoolsListRoute = new Route({
@@ -258,6 +265,7 @@ export const routeTree = rootRoute.addChildren([
     overviewRoute,
     analyticsRoute,
     settingsRoute,
+    myClassRoute,
     schoolsListRoute,
     schoolDetailRoute,
     classesListRoute,

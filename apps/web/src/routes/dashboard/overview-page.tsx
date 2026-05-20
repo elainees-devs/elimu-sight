@@ -13,15 +13,17 @@ export function OverviewPage() {
 
   const role = user?.role
 
+  const scope = role === 'TEACHER' ? 'Class' : 'School'
+
   const alerts = [
     ...(stats && stats.atRiskCount > 0
       ? [{ type: 'warning' as const, message: `${stats.atRiskCount} student(s) at risk of low performance` }]
       : []),
     ...(stats && stats.averageScore < 50
-      ? [{ type: 'error' as const, message: `School average score is ${stats.averageScore}% — below target` }]
+      ? [{ type: 'error' as const, message: `${scope} average score is ${stats.averageScore}% — below target` }]
       : []),
     ...(stats && stats.averageScore >= 50
-      ? [{ type: 'info' as const, message: `Overall average score is ${stats.averageScore}%` }]
+      ? [{ type: 'info' as const, message: `Overall ${scope.toLowerCase()} average score is ${stats.averageScore}%` }]
       : []),
     ...(role === 'ADMIN' && stats && stats.totalTeachers === 0
       ? [{ type: 'warning' as const, message: 'No teachers added yet — set up your teaching staff' }]
@@ -42,10 +44,10 @@ export function OverviewPage() {
         </p>
       </div>
 
-      <StatsGrid stats={stats ?? null} isLoading={statsLoading} />
+      <StatsGrid stats={stats ?? null} isLoading={statsLoading} role={user?.role} />
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <QuickActions role={user?.role} />
+        <QuickActions user={user} />
         <AlertsWidget alerts={alerts} isLoading={statsLoading} />
       </div>
 

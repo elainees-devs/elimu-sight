@@ -1,5 +1,6 @@
 import { Card, CardBody } from '@shared/components/ui/card'
 import { Badge } from '@shared/components/ui/badge'
+import { ROLE_LABELS } from '@shared/lib/constants'
 import type { User } from '@shared/types/common'
 
 interface TeacherDetailCardProps {
@@ -18,7 +19,7 @@ export function TeacherDetailCard({ teacher, className }: TeacherDetailCardProps
               <p className="text-sm text-gray-600">{teacher.email}</p>
             </div>
             <div className="flex items-center gap-3 text-sm text-gray-600">
-              <span>Role: Head Teacher</span>
+              <span>Role: {ROLE_LABELS[teacher.role] || teacher.role}</span>
               <span>|</span>
               <Badge variant={teacher.isActive ? 'success' : 'danger'}>
                 {teacher.isActive ? 'Active' : 'Inactive'}

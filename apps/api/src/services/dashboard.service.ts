@@ -17,6 +17,21 @@ export interface RecentActivityItem {
   timestamp: string;
 }
 
+export interface StudentPerformance {
+  id: string;
+  fullName: string;
+  averageScore: number;
+  assessmentCount: number;
+}
+
+export interface ClassPerformance {
+  classId: string;
+  className: string;
+  totalStudents: number;
+  topPerformers: StudentPerformance[];
+  bottomPerformers: StudentPerformance[];
+}
+
 export class DashboardService {
   async getSchoolStats(
     schoolId: string,
@@ -112,6 +127,71 @@ export class DashboardService {
     } catch {
       logger.error("Failed to fetch recent activity");
       throw new ApiError(500, "Failed to fetch recent activity");
+    }
+  }
+
+  async getClassPerformance(classId: string): Promise<ClassPerformance> {
+    try {
+      const classData = await prisma.classes.findUnique({
+        where: { id: classId },
+        select: { id: true, name: true },
+      });
+
+      if (!classData) {
+        throw new ApiError(404, "Class not found");
+      }
+
+      const students = await prisma.students.findMany({
+        where: { class_id: classId, is_active: true },
+        select: { id: true, full_name: true },
+      });
+
+      const studentIds = students.map((s) => s.id);
+
+      const scoreAggs = await prisma.assessments.groupBy({
+        by: ["student_id"],
+        where: { student_id: { in: studentIds } },
+        _avg: { score: true },
+        _count: { score: true },
+      });
+
+      const scoreMap = new Map(
+        scoreAggs.map((s) => [
+          s.student_id,
+          {
+            averageScore: s._avg.score ? Math.round(Number(s._avg.score) * 100) / 100 : 0,
+            assessmentCount: s._count.score,
+          },
+        ])
+      );
+
+      const performances: StudentPerformance[] = students.map((s) => {
+        const stats = scoreMap.get(s.id);
+        return {
+          id: s.id,
+          fullName: s.full_name,
+          averageScore: stats?.averageScore ?? 0,
+          assessmentCount: stats?.assessmentCount ?? 0,
+        };
+      });
+
+      const sorted = [...performances].sort((a, b) => b.averageScore - a.averageScore);
+      const topPerformers = sorted.slice(0, 5).filter((s) => s.assessmentCount > 0);
+      const bottomPerformers = sorted
+        .filter((s) => s.assessmentCount > 0)
+        .slice(-5)
+        .reverse();
+
+      return {
+        classId,
+        className: classData.name,
+        totalStudents: students.length,
+        topPerformers,
+        bottomPerformers,
+      };
+    } catch {
+      logger.error("Failed to fetch class performance");
+      throw new ApiError(500, "Failed to fetch class performance");
     }
   }
 }

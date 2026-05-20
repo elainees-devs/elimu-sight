@@ -13,12 +13,15 @@ import { ROUTES } from '@shared/config/routes'
 
 export function AssessmentCreatePage() {
   const navigate = useNavigate()
-  const schoolId = useAuthStore((s) => s.user?.schoolId) ?? ''
+  const user = useAuthStore((s) => s.user)
+  const schoolId = user?.schoolId ?? ''
+  const classId = user?.role === 'TEACHER' ? user?.assignedClassId : undefined
   const createAssessment = useCreateAssessment(schoolId)
-  const { data: studentsData, isLoading: studentsLoading } = useStudents({ schoolId })
+  const { data: studentsData, isLoading: studentsLoading } = useStudents({ schoolId, classId })
   const { data: subjects, isLoading: subjectsLoading } = useSubjects()
 
   const students = ((studentsData as { data?: Student[] } | undefined)?.data ?? []) as Student[]
+  const studentClassMap = new Map(students.map((s) => [s.id, s.classId]))
   const subjectList = (subjects ?? []) as Subject[]
 
   if (studentsLoading || subjectsLoading) {
@@ -55,7 +58,7 @@ export function AssessmentCreatePage() {
         <AssessmentForm
           onSubmit={(data) => {
             createAssessment.mutate(
-              { ...data, schoolId },
+              { ...data, schoolId, classId: studentClassMap.get(data.studentId) ?? classId ?? '' },
               { onSuccess: () => navigate({ to: ROUTES.ASSESSMENTS }) },
             )
           }}

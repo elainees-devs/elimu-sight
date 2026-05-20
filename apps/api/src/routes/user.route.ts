@@ -9,6 +9,7 @@ import {
 
 import {
   updateUserSchema,
+  updateMyProfileSchema,
   userIdParamSchema,
 } from "../schemas/index";
 
@@ -70,6 +71,37 @@ router.get("/email/:email", authenticateMiddleware, (req, res, next) =>
  */
 router.get("/count", authenticateMiddleware, (req, res, next) =>
   userController.getUserCount(req, res, next),
+);
+
+/**
+ * @openapi
+ * /api/v1/users/me:
+ *   patch:
+ *     tags: [Users]
+ *     summary: Update own profile
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               fullName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Profile updated
+ */
+router.patch(
+  "/me",
+  authenticateMiddleware,
+  validate(updateMyProfileSchema, "body"),
+  (req, res, next) =>
+    userController.updateMyProfile(req, res, next),
 );
 
 /**

@@ -8,11 +8,12 @@ interface InsightGeneratorProps {
   isLoading?: boolean
   classes?: { value: string; label: string }[]
   subjects?: { value: string; label: string }[]
+  defaultClassId?: string
 }
 
-export function InsightGenerator({ onGenerate, isLoading, classes = [], subjects = [] }: InsightGeneratorProps) {
+export function InsightGenerator({ onGenerate, isLoading, classes = [], subjects = [], defaultClassId }: InsightGeneratorProps) {
   const [type, setType] = useState('')
-  const [classId, setClassId] = useState('')
+  const [classId, setClassId] = useState(defaultClassId ?? '')
   const [subjectId, setSubjectId] = useState('')
 
   const handleGenerate = () => {

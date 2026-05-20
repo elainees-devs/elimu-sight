@@ -14,6 +14,7 @@ interface NavItemConfig {
 
 const navItems: NavItemConfig[] = [
   { label: 'Overview', to: ROUTES.DASHBOARD, roles: ['SUPER_ADMIN', 'ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT'] },
+  { label: 'My Class', to: ROUTES.MY_CLASS, roles: ['TEACHER'] },
   { label: 'Analytics', to: ROUTES.ANALYTICS, roles: ['SUPER_ADMIN', 'ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT'] },
   { label: 'Students', to: ROUTES.STUDENTS, roles: ['ADMIN', 'HEADTEACHER', 'TEACHER'] },
   { label: 'Assessments', to: ROUTES.ASSESSMENTS, roles: ['ADMIN', 'HEADTEACHER', 'TEACHER'] },

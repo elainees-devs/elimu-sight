@@ -77,10 +77,12 @@ export {
   loginSchema,
   createUserSchema,
   updateUserSchema,
+  updateMyProfileSchema,
   userIdParamSchema,
     User,
     CreateUserInput,
     UpdateUserInput,
+    UpdateMyProfileInput,
     AuthenticateUserInput,
     UserIdParam,
 } from "./user.schema";

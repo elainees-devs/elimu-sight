@@ -7,13 +7,28 @@ interface StatsGridProps {
   role?: string
 }
 
-export function StatsGrid({ stats, isLoading }: StatsGridProps) {
+export function StatsGrid({ stats, isLoading, role }: StatsGridProps) {
   if (isLoading || !stats) {
     return (
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="h-32 animate-pulse rounded-xl bg-gray-100" />
         ))}
+      </div>
+    )
+  }
+
+  if (role === 'TEACHER') {
+    return (
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <StatCard label="My Students" value={stats.totalStudents} />
+        <StatCard label="Class Assessments" value={stats.totalAssessments} />
+        <StatCard label="Class Average" value={`${stats.averageScore}%`} />
+        <StatCard
+          label="At Risk"
+          value={stats.atRiskCount}
+          trend={{ value: stats.atRiskCount, isPositive: false }}
+        />
       </div>
     )
   }

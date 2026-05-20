@@ -47,12 +47,39 @@ export class UserController {
 
       const user = await userService.getUserByEmail(
         email,
-        authUser?.role === "ADMIN" ? undefined : authUser?.schoolId
+        authUser?.role === "ADMIN" || authUser?.role === "SUPER_ADMIN" ? undefined : authUser?.schoolId
       );
 
       return res.status(200).json({
         success: true,
         message: "User fetched successfully",
+        data: user,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  // ===================================
+  // UPDATE MY PROFILE
+  // ===================================
+  async updateMyProfile(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user!.id;
+
+      const user = await userService.updateMyProfile(userId, req.body);
+      await logAudit({
+        action: "PROFILE_UPDATED",
+        resource: "users",
+        resourceId: user.id,
+        schoolId: user.schoolId,
+        userId,
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
+      return res.status(200).json({
+        success: true,
+        message: "Profile updated successfully",
         data: user,
       });
     } catch (error) {

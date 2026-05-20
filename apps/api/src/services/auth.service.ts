@@ -54,6 +54,12 @@ export class AuthService {
         },
       });
 
+      if (input.role === "TEACHER") {
+        await prisma.teachers.create({
+          data: { user_id: newUser.id },
+        });
+      }
+
       return toUserResponse(newUser as UserDB);
     } catch (error: unknown) {
       if ((error as { code?: string })?.code === "P2002") {

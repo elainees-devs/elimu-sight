@@ -30,4 +30,5 @@ export const ROUTES = {
   ADMIN_BILLING: '/dashboard/admin/billing',
   ADMIN_ANNOUNCEMENTS: '/dashboard/admin/announcements',
   ADMIN_SUPPORT: '/dashboard/admin/support',
+  MY_CLASS: '/dashboard/my-class',
 } as const
