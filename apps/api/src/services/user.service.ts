@@ -146,6 +146,10 @@ export class UserService {
         throw new ApiError(404, "User not found");
       }
 
+      if (updateData.role === "SUPER_ADMIN") {
+        throw new ApiError(403, "Cannot promote user to SUPER_ADMIN");
+      }
+
       const dbUpdate = toUpdateUserDB(updateData);
 
       const updated = await prisma.users.update({

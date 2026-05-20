@@ -92,6 +92,7 @@ router.get("/email/:email", authenticateMiddleware, (req, res, next) =>
 router.post(
   "/",
   authenticateMiddleware,
+  authorize("SUPER_ADMIN"),
   validate(createSchoolSchema, "body"),
   (req, res, next) => schoolController.createSchool(req, res, next),
 );
@@ -160,6 +161,7 @@ router.delete(
   "/:id",
   validate(schoolIdParamSchema, "params"),
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validateSchoolAccess,
   (req, res, next) => schoolController.deleteSchool(req, res, next),
 );

@@ -51,10 +51,14 @@ export const createUserSchema = Joi.object({
  * - all optional
  * - at least one field required
  */
+const updateUserRoles = [...RoleValues].filter((r) => r !== "SUPER_ADMIN");
+
 export const updateUserSchema = Joi.object({
   fullName: userBase.fullName.optional(),
   email: userBase.email.optional(),
-  role: userBase.role.optional(),
+  role: Joi.string()
+    .valid(...updateUserRoles)
+    .optional(),
   isActive: userBase.isActive.optional(),
   updatedAt: Joi.date().optional(),
 }).min(1);

@@ -14,7 +14,7 @@ import {
 const router = Router();
 const teacherController = new TeacherController();
 
-router.get("/", authenticateMiddleware, (req, res, next) =>
+router.get("/", authenticateMiddleware, authorize("ADMIN", "HEADTEACHER"), (req, res, next) =>
   teacherController.listTeachers(req, res, next)
 );
 

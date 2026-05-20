@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import { AuthRequest } from "../types/express";
 import { UserService } from "../services/index";
 
-import { toUserId, toSchoolId } from "../mappers";
-import { UserIdParam, SchoolIdParam } from "../schemas";
+import { toUserId } from "../mappers";
+import { UserIdParam } from "../schemas";
 import { logAudit } from "@utils/index";
 
 const userService = new UserService();
@@ -12,11 +12,12 @@ export class UserController {
   // ===================================
   // GET ALL USERS BY SCHOOL
   // ===================================
-  async getAllUsersBySchool(req: Request, res: Response, next: NextFunction) {
+  async getAllUsersBySchool(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const schoolId = toSchoolId({
-        id: req.params.schoolId,
-      } as SchoolIdParam);
+      const schoolId = req.user?.schoolId;
+      if (!schoolId) {
+        return res.status(400).json({ success: false, message: "School ID required" });
+      }
 
       const result = await userService.getAllUsersBySchool(schoolId, {
         page: req.query.page ? Number(req.query.page) : undefined,

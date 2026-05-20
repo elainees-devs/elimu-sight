@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { DashboardController } from "@controllers/index";
-import { authenticateMiddleware } from "@middlewares/index";
+import { authenticateMiddleware, authorize } from "@middlewares/index";
 
 const router = Router();
 const dashboardController = new DashboardController();
@@ -23,7 +23,7 @@ const dashboardController = new DashboardController();
  *       200:
  *         description: Dashboard stats
  */
-router.get("/stats", authenticateMiddleware, (req, res, next) =>
+router.get("/stats", authenticateMiddleware, authorize("SUPER_ADMIN", "ADMIN", "HEADTEACHER", "TEACHER", "ACCOUNTANT"), (req, res, next) =>
   dashboardController.getStats(req, res, next)
 );
 
@@ -45,7 +45,7 @@ router.get("/stats", authenticateMiddleware, (req, res, next) =>
  *       200:
  *         description: Recent activity data
  */
-router.get("/recent-activity", authenticateMiddleware, (req, res, next) =>
+router.get("/recent-activity", authenticateMiddleware, authorize("SUPER_ADMIN", "ADMIN", "HEADTEACHER", "TEACHER", "ACCOUNTANT"), (req, res, next) =>
   dashboardController.getRecentActivity(req, res, next)
 );
 

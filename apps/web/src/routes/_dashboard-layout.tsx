@@ -21,6 +21,7 @@ const navItems: NavItemConfig[] = [
   { label: 'Classes', to: ROUTES.CLASSES, roles: ['ADMIN', 'HEADTEACHER', 'TEACHER'] },
   { label: 'Subjects', to: ROUTES.SUBJECTS, roles: ['ADMIN', 'HEADTEACHER', 'TEACHER'] },
   { label: 'Teachers', to: ROUTES.TEACHERS, roles: ['ADMIN', 'HEADTEACHER'] },
+  { label: 'Users', to: ROUTES.USERS, roles: ['ADMIN'] },
   { label: 'Schools', to: ROUTES.SCHOOLS, roles: ['SUPER_ADMIN', 'ADMIN'] },
   { label: 'Settings', to: ROUTES.SETTINGS, roles: ['SUPER_ADMIN', 'ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT'] },
   { label: '---', to: '', roles: ['SUPER_ADMIN'] },

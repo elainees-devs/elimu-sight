@@ -11,6 +11,8 @@ export function OverviewPage() {
   const { data: stats, isLoading: statsLoading } = useDashboardStats(classId)
   const { data: activities, isLoading: activityLoading } = useRecentActivity(classId)
 
+  const role = user?.role
+
   const alerts = [
     ...(stats && stats.atRiskCount > 0
       ? [{ type: 'warning' as const, message: `${stats.atRiskCount} student(s) at risk of low performance` }]
@@ -21,13 +23,19 @@ export function OverviewPage() {
     ...(stats && stats.averageScore >= 50
       ? [{ type: 'info' as const, message: `Overall average score is ${stats.averageScore}%` }]
       : []),
+    ...(role === 'ADMIN' && stats && stats.totalTeachers === 0
+      ? [{ type: 'warning' as const, message: 'No teachers added yet — set up your teaching staff' }]
+      : []),
+    ...(role === 'ADMIN' && stats && stats.totalClasses === 0
+      ? [{ type: 'warning' as const, message: 'No classes created yet — start by adding classes' }]
+      : []),
   ]
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">
-          {user?.role === 'TEACHER' ? 'My Class Overview' : 'Dashboard Overview'}
+          {user?.role === 'TEACHER' ? 'My Class Overview' : user?.role === 'ADMIN' ? 'School Administration' : 'Dashboard Overview'}
         </h1>
         <p className="mt-1 text-gray-600">
           Welcome back, {user?.fullName?.split(' ')[0] ?? 'User'}

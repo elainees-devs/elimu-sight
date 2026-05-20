@@ -16,6 +16,7 @@ import { ClassDetailPage } from '@routes/classes/class-detail-page'
 import { SubjectListPage } from '@routes/subjects/subject-list-page'
 import { TeacherListPage } from '@routes/teachers/teacher-list-page'
 import { TeacherDetailPage } from '@routes/teachers/teacher-detail-page'
+import { UserListPage } from '@routes/users/user-list-page'
 import { StudentListPage } from '@routes/students/student-list-page'
 import { StudentDetailPage } from '@routes/students/student-detail-page'
 import { AssessmentListPage } from '@routes/assessments/assessment-list-page'
@@ -128,6 +129,12 @@ const subjectsListRoute = new Route({
   getParentRoute: () => dashboardRoute,
   path: 'subjects',
   component: wrapWithRole(SubjectListPage, ['ADMIN', 'HEADTEACHER', 'TEACHER']),
+})
+
+const usersListRoute = new Route({
+  getParentRoute: () => dashboardRoute,
+  path: 'users',
+  component: wrapWithRole(UserListPage, ['ADMIN']),
 })
 
 const teachersListRoute = new Route({
@@ -256,6 +263,7 @@ export const routeTree = rootRoute.addChildren([
     classesListRoute,
     classDetailRoute,
     subjectsListRoute,
+    usersListRoute,
     teachersListRoute,
     teacherDetailRoute,
     studentsListRoute,

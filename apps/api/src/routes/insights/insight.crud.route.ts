@@ -2,6 +2,7 @@ import { Router } from "express";
 import { InsightController } from "@controllers/index";
 import {
   authenticateMiddleware,
+  authorize,
   validate,
   validateSchoolAccess,
 } from "@middlewares/index";
@@ -40,6 +41,7 @@ const controller = new InsightController();
 router.post(
   "/",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validate(createInsightSchema, "body"),
   validateSchoolAccess,
   (req, res, next) =>
@@ -99,7 +101,7 @@ router.get("/:id", authenticateMiddleware, (req, res, next) =>
  *       200:
  *         description: Insight updated
  */
-router.patch("/:id", authenticateMiddleware, (req, res, next) =>
+router.patch("/:id", authenticateMiddleware, authorize("ADMIN", "HEADTEACHER"), (req, res, next) =>
   controller.updateInsight(req, res, next),
 );
 
@@ -121,7 +123,7 @@ router.patch("/:id", authenticateMiddleware, (req, res, next) =>
  *       200:
  *         description: Insight deleted
  */
-router.delete("/:id", authenticateMiddleware, (req, res, next) =>
+router.delete("/:id", authenticateMiddleware, authorize("ADMIN", "HEADTEACHER"), (req, res, next) =>
   controller.deleteInsight(req, res, next),
 );
 

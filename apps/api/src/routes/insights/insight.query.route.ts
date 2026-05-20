@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { InsightController } from "@controllers/index";
-import { authenticateMiddleware, validateSchoolAccess } from "@middlewares/index";
+import { authenticateMiddleware, authorize, validateSchoolAccess } from "@middlewares/index";
 
 const router = Router();
 const controller = new InsightController();
@@ -20,6 +20,7 @@ const controller = new InsightController();
 router.post(
   "/bulk-generate",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validateSchoolAccess,
   (req, res, next) =>
     controller.bulkGenerateInsights(req, res, next),
@@ -40,6 +41,7 @@ router.post(
 router.post(
   "/archive",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   (req, res, next) =>
     controller.archiveInsights(req, res, next),
 );
