@@ -10,3 +10,4 @@ export {InsightController} from "./insight.controller";
 export {AIController} from "./ai.controller";
 export {DashboardController} from "./dashboard.controller";
 export {AdminController} from "./admin.controller";
+export {TeacherController} from "./teacher.controller";

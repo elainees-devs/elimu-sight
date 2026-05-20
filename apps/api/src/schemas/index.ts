@@ -85,6 +85,16 @@ export {
     UserIdParam,
 } from "./user.schema";
 
+// teacher schemas
+export {
+  teacherIdParamSchema,
+  updateTeacherSchema,
+  assignClassSchema,
+  TeacherIdParam,
+  UpdateTeacherInput,
+  AssignClassInput,
+} from "./teacher.schema";
+
 // insight schemas
 export {
   insightSchema,

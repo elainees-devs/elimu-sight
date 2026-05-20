@@ -9,4 +9,5 @@ export {default as assessmentRouter} from "./assessment.route";
 export {default as aiRouter} from "./ai.route";
 export {default as dashboardRouter} from "./dashboard.route";
 export {default as adminRouter} from "./admin.route";
+export {default as teacherRouter} from "./teacher.route";
 

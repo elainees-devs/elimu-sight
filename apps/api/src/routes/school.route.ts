@@ -133,6 +133,7 @@ router.patch(
   "/:id",
   validate(schoolIdParamSchema, "params"),
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validate(updateSchoolSchema, "body"),
   (req, res, next) => schoolController.updateSchool(req, res, next),
 );

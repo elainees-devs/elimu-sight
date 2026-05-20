@@ -31,6 +31,15 @@ export class AuthService {
       throw new ApiError(400, "School ID is required for this role");
     }
 
+    if (input.role === "HEADTEACHER") {
+      const existingHeadteacher = await prisma.users.findFirst({
+        where: { school_id: input.schoolId!, role: "HEADTEACHER", is_active: true },
+      });
+      if (existingHeadteacher) {
+        throw new ApiError(400, "This school already has a HEADTEACHER");
+      }
+    }
+
     const passwordHash = await hashPassword(input.password);
 
     try {

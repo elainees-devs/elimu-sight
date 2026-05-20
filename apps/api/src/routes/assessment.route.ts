@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { AssessmentController } from "@controllers/index";
-import { authenticateMiddleware, validate, validateSchoolAccess } from "@middlewares/index";
+import { authenticateMiddleware, authorize, validate, validateSchoolAccess } from "@middlewares/index";
 import {
   schoolIdParamSchema,
   assessmentSchoolAndIdParamSchema,
@@ -126,6 +126,7 @@ router.get(
 router.post(
   "/",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER", "TEACHER"),
   validateSchoolAccess,
   validate(createAssessmentSchema, "body"),
   (req, res, next) =>
@@ -169,6 +170,7 @@ router.post(
 router.patch(
   "/school/:schoolId/:id",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER", "TEACHER"),
   validateSchoolAccess,
   validate(assessmentSchoolAndIdParamSchema, "params"),
   validate(updateAssessmentSchema, "body"),
@@ -202,6 +204,7 @@ router.patch(
 router.delete(
   "/school/:schoolId/:id",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER", "TEACHER"),
   validateSchoolAccess,
   validate(assessmentSchoolAndIdParamSchema, "params"),
   (req, res, next) =>

@@ -4,6 +4,7 @@ import type { DashboardStats } from '../types'
 interface StatsGridProps {
   stats: DashboardStats | null
   isLoading?: boolean
+  role?: string
 }
 
 export function StatsGrid({ stats, isLoading }: StatsGridProps) {

@@ -2,6 +2,7 @@ import { Router } from "express";
 import { SubjectController } from "@controllers/index";
 import {
   authenticateMiddleware,
+  authorize,
   validate,
   validateSchoolAccess,
 } from "@middlewares/index";
@@ -85,6 +86,7 @@ router.get(
 router.post(
   "/",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validateSchoolAccess,
   validate(createSubjectSchema, "body"),
   (req, res, next) =>
@@ -121,6 +123,7 @@ router.post(
 router.patch(
   "/:id",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validate(subjectIdParamSchema, "params"),
   validate(updateSubjectSchema, "body"),
   (req, res, next) =>
@@ -148,6 +151,7 @@ router.patch(
 router.delete(
   "/:id",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validate(subjectIdParamSchema, "params"),
   validateSchoolAccess,
   (req, res, next) =>

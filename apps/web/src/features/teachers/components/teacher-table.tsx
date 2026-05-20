@@ -1,6 +1,8 @@
+import { useNavigate } from '@tanstack/react-router'
 import { DataTable, type Column } from '@shared/components/data-display/data-table'
 import { Badge } from '@shared/components/ui/badge'
 import type { User } from '@shared/types/common'
+import { ROUTES } from '@shared/config/routes'
 
 const columns: Column<User>[] = [
   { key: 'fullName', header: 'Name', sortable: true },
@@ -22,5 +24,14 @@ interface TeacherTableProps {
 }
 
 export function TeacherTable({ data, isLoading }: TeacherTableProps) {
-  return <DataTable columns={columns} data={data} isLoading={isLoading} />
+  const navigate = useNavigate()
+
+  return (
+    <DataTable
+      columns={columns}
+      data={data}
+      isLoading={isLoading}
+      onRowClick={(teacher) => navigate({ to: ROUTES.TEACHER_DETAIL(teacher.id) })}
+    />
+  )
 }

@@ -2,15 +2,40 @@ import { useNavigate } from '@tanstack/react-router'
 import { Card, CardBody, CardHeader } from '@shared/components/ui/card'
 import { ROUTES } from '@shared/config/routes'
 
-const actions = [
-  { label: 'Add Student', to: ROUTES.STUDENTS },
-  { label: 'New Assessment', to: ROUTES.ASSESSMENT_CREATE },
-  { label: 'View Insights', to: ROUTES.INSIGHTS },
-  { label: 'Manage Classes', to: ROUTES.CLASSES },
-]
+interface QuickActionsProps {
+  role?: string
+}
 
-export function QuickActions() {
+const roleActions: Record<string, { label: string; to: string }[]> = {
+  HEADTEACHER: [
+    { label: 'Add Student', to: ROUTES.STUDENTS },
+    { label: 'New Assessment', to: ROUTES.ASSESSMENT_CREATE },
+    { label: 'View Insights', to: ROUTES.INSIGHTS },
+    { label: 'Manage Classes', to: ROUTES.CLASSES },
+    { label: 'Manage Teachers', to: ROUTES.TEACHERS },
+  ],
+  ADMIN: [
+    { label: 'Add Student', to: ROUTES.STUDENTS },
+    { label: 'New Assessment', to: ROUTES.ASSESSMENT_CREATE },
+    { label: 'View Insights', to: ROUTES.INSIGHTS },
+    { label: 'Manage Classes', to: ROUTES.CLASSES },
+    { label: 'Manage Teachers', to: ROUTES.TEACHERS },
+    { label: 'School Settings', to: ROUTES.SETTINGS },
+  ],
+  TEACHER: [
+    { label: 'New Assessment', to: ROUTES.ASSESSMENT_CREATE },
+    { label: 'View Insights', to: ROUTES.INSIGHTS },
+    { label: 'View My Class', to: ROUTES.CLASSES },
+  ],
+  ACCOUNTANT: [
+    { label: 'View Reports', to: ROUTES.ANALYTICS },
+    { label: 'Export Data', to: ROUTES.ANALYTICS },
+  ],
+}
+
+export function QuickActions({ role }: QuickActionsProps) {
   const navigate = useNavigate()
+  const actions = (role && roleActions[role]) || roleActions.HEADTEACHER
 
   return (
     <Card>

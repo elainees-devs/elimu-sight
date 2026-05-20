@@ -27,6 +27,7 @@ import {
   aiRouter,
   dashboardRouter,
   adminRouter,
+  teacherRouter,
 } from "@routes/index";
 
 import {
@@ -160,6 +161,9 @@ app.use("/api/v1/ai", aiRouter);
 app.use("/api/v1/insights/crud", insightCrudRoute);
 app.use("/api/v1/insights/query", insightQueryRoute);
 app.use("/api/v1/insights/analytics", insightAnalyticsRoute);
+
+// Teachers
+app.use("/api/v1/teachers", teacherRouter);
 
 // Super Admin
 app.use("/api/v1/admin", adminRouter);

@@ -2,6 +2,7 @@ import { Router } from "express";
 import { ClassController } from "@controllers/index";
 import {
   authenticateMiddleware,
+  authorize,
   validate,
   validateSchoolAccess,
 } from "@middlewares/index";
@@ -98,6 +99,7 @@ router.get(
 router.post(
   "/",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validate(createClassSchema, "body"),
   (req, res, next) => classController.createClass(req, res, next)
 );
@@ -132,6 +134,7 @@ router.post(
 router.patch(
   "/:id",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validate(classIdParamSchema, "params"),
   validate(updateClassSchema, "body"),
   (req, res, next) => classController.updateClass(req, res, next)
@@ -158,6 +161,7 @@ router.patch(
 router.delete(
   "/:id",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validate(classIdParamSchema, "params"),
   validateSchoolAccess,
   (req, res, next) => classController.deleteClass(req, res, next)

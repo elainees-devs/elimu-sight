@@ -2,6 +2,7 @@ import { Router } from "express";
 import { StudentController } from "@controllers/index";
 import {
   authenticateMiddleware,
+  authorize,
   validate,
   validateSchoolAccess,
 } from "@middlewares/index";
@@ -119,6 +120,7 @@ router.get(
 router.post(
   "/",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validateSchoolAccess,
   validate(createStudentSchema, "body"),
   (req, res, next) =>
@@ -159,6 +161,7 @@ router.post(
 router.patch(
   "/:id",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validate(studentIdParamSchema, "params"),
   validate(updateStudentSchema, "body"),
   (req, res, next) =>
@@ -186,6 +189,7 @@ router.patch(
 router.delete(
   "/:id",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validate(studentIdParamSchema, "params"),
   validateSchoolAccess,
   (req, res, next) =>
@@ -213,6 +217,7 @@ router.delete(
 router.patch(
   "/:id/activate",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validate(studentIdParamSchema, "params"),
   (req, res, next) =>
     studentController.activateStudent(req, res, next),
@@ -239,6 +244,7 @@ router.patch(
 router.patch(
   "/:id/deactivate",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validate(studentIdParamSchema, "params"),
   (req, res, next) =>
     studentController.deactivateStudent(req, res, next),
@@ -275,6 +281,7 @@ router.patch(
 router.patch(
   "/:id/transfer",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validate(studentIdParamSchema, "params"),
   (req, res, next) =>
     studentController.transferStudentClass(req, res, next),

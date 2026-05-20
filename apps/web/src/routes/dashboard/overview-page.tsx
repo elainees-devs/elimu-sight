@@ -37,7 +37,7 @@ export function OverviewPage() {
       <StatsGrid stats={stats ?? null} isLoading={statsLoading} />
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <QuickActions />
+        <QuickActions role={user?.role} />
         <AlertsWidget alerts={alerts} isLoading={statsLoading} />
       </div>
 

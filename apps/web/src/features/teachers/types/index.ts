@@ -3,3 +3,12 @@ export type TeacherFormData = {
   email: string
   password: string
 }
+
+export type TeacherUpdateInput = {
+  fullName?: string
+  email?: string
+}
+
+export type ClassAssignment = {
+  classId: string
+}

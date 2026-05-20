@@ -2,6 +2,7 @@ import { Router } from "express";
 import { UserController } from "@controllers/index";
 import {
   authenticateMiddleware,
+  authorize,
   validate,
   validateSchoolAccess,
 } from "@middlewares/index";
@@ -103,6 +104,7 @@ router.get("/count", authenticateMiddleware, (req, res, next) =>
 router.patch(
   "/:id",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validate(userIdParamSchema, "params"),
   validate(updateUserSchema, "body"),
   (req, res, next) =>
@@ -130,6 +132,7 @@ router.patch(
 router.delete(
   "/:id",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validate(userIdParamSchema, "params"),
   validateSchoolAccess,
   (req, res, next) =>

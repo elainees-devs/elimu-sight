@@ -3,6 +3,7 @@ import { ClassSubjectController } from "@controllers/index";
 import {
   validate,
   authenticateMiddleware,
+  authorize,
   validateSchoolAccess,
 } from "@middlewares/index";
 import {
@@ -148,6 +149,7 @@ router.get(
 router.post(
   "/",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validate(createClassSubjectSchema, "body"),
   (req, res, next) =>
     classSubjectController.createClassSubject(req, res, next)
@@ -174,6 +176,7 @@ router.post(
 router.delete(
   "/:id",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validate(classSubjectIdParamSchema, "params"),
   validateSchoolAccess,
   (req, res, next) =>
@@ -206,6 +209,7 @@ router.delete(
 router.post(
   "/assign-teacher",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   (req, res, next) =>
     classSubjectController.assignTeacherToClassSubject(req, res, next)
 );
@@ -231,6 +235,7 @@ router.post(
 router.patch(
   "/:id/remove-teacher",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validate(classSubjectIdParamSchema, "params"),
   (req, res, next) =>
     classSubjectController.removeTeacherFromClassSubject(req, res, next)
@@ -268,6 +273,7 @@ router.patch(
 router.put(
   "/class/:classId/replace",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validate(classIdParamSchema, "params"),
   (req, res, next) =>
     classSubjectController.replaceSubjectsForClass(req, res, next)
@@ -294,6 +300,7 @@ router.put(
 router.patch(
   "/class/:classId/sync",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validate(classIdParamSchema, "params"),
   (req, res, next) =>
     classSubjectController.syncSubjectsForClass(req, res, next)
@@ -320,6 +327,7 @@ router.patch(
 router.patch(
   "/class/:classId/archive",
   authenticateMiddleware,
+  authorize("ADMIN", "HEADTEACHER"),
   validate(classIdParamSchema, "params"),
   (req, res, next) =>
     classSubjectController.archiveAllSubjectsForClass(req, res, next)
