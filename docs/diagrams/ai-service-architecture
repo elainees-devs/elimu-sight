@@ -1,0 +1,9 @@
+Frontend / Backend (Node/Django)
+            ↓
+      FastAPI AI Service
+   ┌────────┼───────────┐
+   ▼        ▼           ▼
+Rule Engine  ML Service  LLM Service
+(Python)     (Python)    (API/OpenAI)
+            ↓
+        Response (Insights)

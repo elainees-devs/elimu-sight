@@ -11,18 +11,23 @@ A multi-tenant SaaS platform that transforms raw school data into actionable int
 │   ├── web/              # React + TanStack Router frontend
 │   ├── api/              # Express.js + Prisma + PostgreSQL backend
 │   └── ai-service/       # Python FastAPI AI microservice
-├── packages/             # Shared packages (monorepo scaffolding)
+├── packages/             # Shared packages (UI, config, utils)
+├── shared/               # Shared types
 ├── infra/                # Docker, nginx, Terraform configs
+├── scripts/              # Build and deploy scripts
+├── docs/                 # Engineering knowledge hub
+├── tests/                # Integration and E2E tests
 └── .github/workflows/    # CI/CD pipelines
 ```
 
 ## Repo Overview
 
-| App | Stack | Description |
-|-----|-------|-------------|
+| Component | Stack | Description |
+|-----------|-------|-------------|
 | `apps/web` | React 18, TanStack Router, TanStack Query, Tailwind CSS | School dashboard, analytics, admin panel |
 | `apps/api` | Express.js, Prisma, PostgreSQL, JWT | REST API, auth, role-based access, audit logging |
 | `apps/ai-service` | FastAPI, OpenAI, scikit-learn | Rule engine, ML trends, LLM-powered insight generation |
+| `docs/` | — | Single source of truth for engineering knowledge |
 
 ## Quick Start
 
@@ -36,6 +41,7 @@ See each app's README for detailed setup:
 - [Web Frontend](apps/web/README.md)
 - [API Backend](apps/api/README.md)
 - [AI Service](apps/ai-service/README.md)
+- [Engineering Docs](docs/README.md)
 
 ## Roles
 

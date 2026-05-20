@@ -1,0 +1,16 @@
+Node Backend
+   ↓
+Fetch from Prisma (students + assessments)
+   ↓
+FastAPI AI Service
+   ├─ Rule Engine
+   ├─ ML Model
+   ├─ LLM Engine
+   ↓
+Generate Insight
+   ↓
+Return to Node
+   ↓
+Node stores:
+   ├─ insights table
+   └─ ai_logs table

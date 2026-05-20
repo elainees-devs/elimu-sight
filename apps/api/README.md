@@ -46,7 +46,7 @@ ElimuSight bridges that gap by combining educational analytics with AI-powered i
 
 ## 🏗️ System Design
 
-[View System Design Analysis](docs/system_design.md)
+[View System Design Analysis](../../docs/architecture/system-design.md)
 
 ---
 
@@ -750,7 +750,7 @@ npm run test:watch
 
 # ⚖️ Architectural Trade-Offs
 
-[View Architectural Trade-Offs](docs/architectural_trade_offs.md)
+[View Architectural Trade-Offs](../../docs/architecture/architectural-trade-offs.md)
 
 ---
 
