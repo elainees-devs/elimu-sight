@@ -1,7 +1,5 @@
-import dotenv from "dotenv";
-
-dotenv.config();
 import jwt, { SignOptions } from "jsonwebtoken";
+import { env } from "@config/env";
 import { Roles } from "./constants";
 
 export interface JwtPayload {
@@ -12,13 +10,8 @@ export interface JwtPayload {
   schoolId?: string;
 }
 
-const JWT_SECRET = process.env.JWT_SECRET;
-
-if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET is not defined in environment variables");
-}
-
-const JWT_EXPIRES_IN: SignOptions["expiresIn"] = "1d";
+const JWT_SECRET = env.JWT_SECRET;
+const JWT_EXPIRES_IN: SignOptions["expiresIn"] = env.JWT_EXPIRES_IN;
 
 /**
  * Generate JWT token
@@ -40,23 +33,3 @@ export const verifyToken = (token: string): JwtPayload | null => {
   }
 };
 
-/**
- * Refresh token
- */
-export const refreshToken = (token: string): string | null => {
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET, {
-      ignoreExpiration: true,
-    }) as JwtPayload;
-
-    return generateToken({
-      id: decoded.id,
-      email: decoded.email,
-      name: decoded.name,
-      role: decoded.role,
-      schoolId: decoded.schoolId,
-    });
-  } catch {
-    return null;
-  }
-};
