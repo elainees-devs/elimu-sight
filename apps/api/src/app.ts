@@ -26,6 +26,7 @@ import {
   assessmentRouter,
   aiRouter,
   dashboardRouter,
+  adminRouter,
 } from "@routes/index";
 
 import {
@@ -159,6 +160,9 @@ app.use("/api/v1/ai", aiRouter);
 app.use("/api/v1/insights/crud", insightCrudRoute);
 app.use("/api/v1/insights/query", insightQueryRoute);
 app.use("/api/v1/insights/analytics", insightAnalyticsRoute);
+
+// Super Admin
+app.use("/api/v1/admin", adminRouter);
 
 // =========================================
 // ERROR HANDLER (LAST)

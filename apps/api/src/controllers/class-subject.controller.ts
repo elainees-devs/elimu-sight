@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from "express";
+import { AuthRequest } from "../types/express";
 import { ClassSubjectService } from "../services/index";
 import { toClassSubjectId } from "../mappers";
 import { ClassSubjectIdParam } from "../schemas";
+import { logAudit } from "@utils/index";
 
 const classSubjectService = new ClassSubjectService();
 
@@ -91,9 +93,19 @@ export class ClassSubjectController {
   // ===================================
   // CREATE CLASS SUBJECT
   // ===================================
-  async createClassSubject(req: Request, res: Response, next: NextFunction) {
+  async createClassSubject(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const classSubject = await classSubjectService.createClassSubject(req.body);
+
+      await logAudit({
+        action: "CLASS_SUBJECT_CREATED",
+        resource: "class_subjects",
+        resourceId: classSubject.id,
+        userId: req.user?.id,
+        details: { classId: classSubject.classId, subjectId: classSubject.subjectId },
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
 
       return res.status(201).json({
         success: true,
@@ -108,11 +120,20 @@ export class ClassSubjectController {
   // ===================================
   // DELETE CLASS SUBJECT
   // ===================================
-  async deleteClassSubject(req: Request, res: Response, next: NextFunction) {
+  async deleteClassSubject(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const id = toClassSubjectId({ id: req.params.id } as ClassSubjectIdParam);
 
       const classSubject = await classSubjectService.deleteClassSubject({ id });
+
+      await logAudit({
+        action: "CLASS_SUBJECT_DELETED",
+        resource: "class_subjects",
+        resourceId: classSubject.id,
+        userId: req.user?.id,
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
 
       return res.status(200).json({
         success: true,
@@ -127,12 +148,22 @@ export class ClassSubjectController {
   // =====================================
   // ASSIGN TEACHER
   // =====================================
-  async assignTeacherToClassSubject(req: Request, res: Response, next: NextFunction) {
+  async assignTeacherToClassSubject(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { classSubjectId, teacherId } = req.body;
 
       const classSubject =
         await classSubjectService.assignTeacherToClassSubject(classSubjectId, teacherId);
+
+      await logAudit({
+        action: "TEACHER_ASSIGNED",
+        resource: "class_subjects",
+        resourceId: classSubject.id,
+        userId: req.user?.id,
+        details: { teacherId },
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
 
       return res.status(200).json({
         success: true,

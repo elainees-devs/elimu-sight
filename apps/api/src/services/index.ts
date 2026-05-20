@@ -8,4 +8,5 @@ export {AssessmentService} from "./assessment.service";
 export {StudentService} from "./student.service";
 export {InsightService} from "./insight.service";
 export {DashboardService} from "./dashboard.service";
+export {AdminService} from "./admin.service";
 

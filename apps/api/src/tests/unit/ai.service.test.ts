@@ -57,6 +57,8 @@ describe("AIService", () => {
     });
 
     it("retries on server error then throws", async () => {
+      jest.spyOn(AIService.prototype as any, "delay").mockResolvedValue(undefined);
+
       mockPost.mockRejectedValue({
         response: { status: 500, data: { message: "Server error" } },
       });

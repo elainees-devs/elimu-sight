@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from "express";
+import { AuthRequest } from "../types/express";
 import { SchoolService } from "../services/index";
 import { toSchoolId } from "../mappers";
 import { SchoolIdParam } from "../schemas";
+import { logAudit } from "@utils/index";
 
 const schoolService = new SchoolService();
 
@@ -72,10 +74,19 @@ export class SchoolController {
   // ===================================
   // CREATE SCHOOL
   // ===================================
-  async createSchool(req: Request, res: Response, next: NextFunction) {
+  async createSchool(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const school = await schoolService.createSchool(req.body);
-
+      await logAudit({
+        action: "SCHOOL_CREATED",
+        resource: "schools",
+        resourceId: school.id,
+        schoolId: school.id,
+        userId: req.user?.id,
+        details: { name: req.body.name, email: req.body.email },
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
       return res.status(201).json({
         success: true,
         message: "School created successfully",
@@ -89,7 +100,7 @@ export class SchoolController {
   // ===================================
   // UPDATE SCHOOL
   // ===================================
-  async updateSchool(req: Request, res: Response, next: NextFunction) {
+  async updateSchool(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const input = {
         ...req.body,
@@ -97,7 +108,16 @@ export class SchoolController {
       };
 
       const school = await schoolService.updateSchool(input);
-
+      await logAudit({
+        action: "SCHOOL_UPDATED",
+        resource: "schools",
+        resourceId: school.id,
+        schoolId: school.id,
+        userId: req.user?.id,
+        details: req.body,
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
       return res.status(200).json({
         success: true,
         message: "School updated successfully",
@@ -111,14 +131,22 @@ export class SchoolController {
   // ===================================
   // DELETE SCHOOL
   // ===================================
-  async deleteSchool(req: Request, res: Response, next: NextFunction) {
+  async deleteSchool(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const id = toSchoolId({
         id: req.params.id,
       } as SchoolIdParam);
 
       const school = await schoolService.deleteSchool({ id });
-
+      await logAudit({
+        action: "SCHOOL_DELETED",
+        resource: "schools",
+        resourceId: school.id,
+        schoolId: school.id,
+        userId: req.user?.id,
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
       return res.status(200).json({
         success: true,
         message: "School deleted successfully",

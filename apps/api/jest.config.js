@@ -24,4 +24,5 @@ module.exports = {
     "!src/tests/**",
     "!src/types/**",
   ],
+  setupFiles: ["<rootDir>/src/tests/setup.ts"],
 };

@@ -8,6 +8,117 @@ datasource db {
 }
 
 /// =========================
+/// ENUMS
+/// =========================
+enum announcement_priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum announcement_status {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ticket_status {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum ticket_priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+/// =========================
+/// AUDIT LOGS
+/// =========================
+model audit_logs {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  school_id String? @db.Uuid
+  user_id   String? @db.Uuid
+  action    String  @db.VarChar(100)
+  resource  String  @db.VarChar(100)
+
+  resource_id String? @db.Uuid
+  details     Json?
+  ip_address  String? @db.VarChar(50)
+  user_agent  String?
+
+  created_at DateTime @default(now()) @db.Timestamp(6)
+
+  schools schools? @relation(fields: [school_id], references: [id])
+  users   users?   @relation(fields: [user_id], references: [id])
+
+  @@index([school_id])
+  @@index([user_id])
+  @@index([action])
+  @@index([resource])
+  @@index([created_at])
+}
+
+/// =========================
+/// ANNOUNCEMENTS
+/// =========================
+model announcements {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  title     String              @db.VarChar(255)
+  body      String
+  priority  announcement_priority
+  status    announcement_status
+
+  created_by   String   @db.Uuid
+  published_at DateTime?
+
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @updatedAt @db.Timestamp(6)
+
+  creator users @relation("AnnouncementCreator", fields: [created_by], references: [id], map: "announcements_created_by_fkey")
+
+  @@index([status])
+  @@index([created_by])
+}
+
+/// =========================
+/// SUPPORT TICKETS
+/// =========================
+model support_tickets {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  school_id   String @db.Uuid
+  subject     String @db.VarChar(255)
+  description String
+
+  status   ticket_status
+  priority ticket_priority
+
+  assigned_to String? @db.Uuid
+  created_by  String  @db.Uuid
+
+  resolved_at DateTime?
+
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @updatedAt @db.Timestamp(6)
+
+  school        schools   @relation(fields: [school_id], references: [id])
+  assigned_to_user users?  @relation("TicketAssignee", fields: [assigned_to], references: [id], map: "tickets_assigned_to_fkey")
+  creator         users    @relation("TicketCreator", fields: [created_by], references: [id], map: "tickets_created_by_fkey")
+
+  @@index([school_id])
+  @@index([status])
+  @@index([assigned_to])
+}
+
+/// =========================
 /// REFRESH TOKENS
 /// =========================
 model refresh_tokens {
@@ -61,13 +172,15 @@ model schools {
   updated_at DateTime  @updatedAt @db.Timestamp(6)
   deleted_at DateTime?
 
-  ai_logs     ai_logs[]
-  assessments assessments[]
-  classes     classes[]
-  insights    insights[]
-  students    students[]
-  subjects    subjects[]
-  users       users[]
+  ai_logs         ai_logs[]
+  assessments     assessments[]
+  classes         classes[]
+  insights        insights[]
+  students        students[]
+  subjects        subjects[]
+  users           users[]
+  audit_logs      audit_logs[]
+  support_tickets support_tickets[]
 
   @@index([email])
 }
@@ -92,10 +205,15 @@ model users {
   created_at DateTime @default(now()) @db.Timestamp(6)
   updated_at DateTime @updatedAt @db.Timestamp(6)
 
-  assessments    assessments[]
-  class_subjects class_subjects[]
-  classes        classes[]
-  refresh_tokens refresh_tokens[]
+  assessments        assessments[]
+  class_subjects     class_subjects[]
+  classes            classes[]
+  refresh_tokens     refresh_tokens[]
+
+  audit_logs         audit_logs[]
+  created_announcements announcements[]    @relation("AnnouncementCreator")
+  tickets_created    support_tickets[]     @relation("TicketCreator")
+  tickets_assigned   support_tickets[]     @relation("TicketAssignee")
 
   schools schools? @relation(fields: [school_id], references: [id], onDelete: Cascade)
 

@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { AuthRequest } from "../types/express";
 import { StudentService } from "../services/index";
 
 import {
@@ -12,6 +13,7 @@ import {
   ClassIdParam,
   StudentIdParam,
 } from "../schemas";
+import { logAudit } from "@utils/index";
 
 export class StudentController {
   private studentService = new StudentService();
@@ -20,10 +22,19 @@ export class StudentController {
   // CRUD OPERATIONS
   // =========================================
 
-  async createStudent(req: Request, res: Response, next: NextFunction) {
+  async createStudent(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const result = await this.studentService.createStudent(req.body);
-
+      await logAudit({
+        action: "STUDENT_CREATED",
+        resource: "students",
+        resourceId: result.id,
+        schoolId: result.schoolId,
+        userId: req.user?.id,
+        details: { fullName: result.fullName },
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
       return res.status(201).json({
         success: true,
         data: result,
@@ -52,13 +63,22 @@ export class StudentController {
     }
   }
 
-  async updateStudent(req: Request, res: Response, next: NextFunction) {
+  async updateStudent(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const result = await this.studentService.updateStudentDetails({
         ...req.body,
         id: req.params.id,
       });
-
+      await logAudit({
+        action: "STUDENT_UPDATED",
+        resource: "students",
+        resourceId: result.id,
+        schoolId: result.schoolId,
+        userId: req.user?.id,
+        details: req.body,
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
       return res.status(200).json({
         success: true,
         data: result,
@@ -68,12 +88,20 @@ export class StudentController {
     }
   }
 
-  async deleteStudent(req: Request, res: Response, next: NextFunction) {
+  async deleteStudent(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const result = await this.studentService.deleteStudent({
         id: req.params.id,
       } as StudentIdParam);
-
+      await logAudit({
+        action: "STUDENT_DELETED",
+        resource: "students",
+        resourceId: result.id,
+        schoolId: result.schoolId,
+        userId: req.user?.id,
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
       return res.status(200).json({
         success: true,
         data: result,
@@ -178,12 +206,20 @@ export class StudentController {
   // STATUS OPERATIONS
   // =========================================
 
-  async activateStudent(req: Request, res: Response, next: NextFunction) {
+  async activateStudent(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const result = await this.studentService.activateStudent({
         id: req.params.id,
       } as StudentIdParam);
-
+      await logAudit({
+        action: "STUDENT_ACTIVATED",
+        resource: "students",
+        resourceId: result.id,
+        schoolId: result.schoolId,
+        userId: req.user?.id,
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
       return res.status(200).json({
         success: true,
         data: result,
@@ -193,12 +229,20 @@ export class StudentController {
     }
   }
 
-  async deactivateStudent(req: Request, res: Response, next: NextFunction) {
+  async deactivateStudent(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const result = await this.studentService.deactivateStudent({
         id: req.params.id,
       } as StudentIdParam);
-
+      await logAudit({
+        action: "STUDENT_DEACTIVATED",
+        resource: "students",
+        resourceId: result.id,
+        schoolId: result.schoolId,
+        userId: req.user?.id,
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
       return res.status(200).json({
         success: true,
         data: result,
@@ -213,7 +257,7 @@ export class StudentController {
   // =========================================
 
   async transferStudentClass(
-    req: Request,
+    req: AuthRequest,
     res: Response,
     next: NextFunction
   ) {
@@ -222,7 +266,16 @@ export class StudentController {
         { id: req.params.id } as StudentIdParam,
         req.body.newClassId
       );
-
+      await logAudit({
+        action: "STUDENT_CLASS_TRANSFERRED",
+        resource: "students",
+        resourceId: result.id,
+        schoolId: result.schoolId,
+        userId: req.user?.id,
+        details: { newClassId: req.body.newClassId },
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
       return res.status(200).json({
         success: true,
         data: result,

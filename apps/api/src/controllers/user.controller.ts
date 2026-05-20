@@ -4,6 +4,7 @@ import { UserService } from "../services/index";
 
 import { toUserId, toSchoolId } from "../mappers";
 import { UserIdParam, SchoolIdParam } from "../schemas";
+import { logAudit } from "@utils/index";
 
 const userService = new UserService();
 
@@ -61,7 +62,7 @@ export class UserController {
   // ===================================
   // UPDATE USER DETAILS
   // ===================================
-  async updateUserDetails(req: Request, res: Response, next: NextFunction) {
+  async updateUserDetails(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const id = toUserId({
         id: req.params.id,
@@ -73,7 +74,16 @@ export class UserController {
       };
 
       const user = await userService.updateUserDetails(input);
-
+      await logAudit({
+        action: "USER_UPDATED",
+        resource: "users",
+        resourceId: user.id,
+        schoolId: user.school_id,
+        userId: req.user?.id,
+        details: req.body,
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
       return res.status(200).json({
         success: true,
         message: "User updated successfully",
@@ -87,14 +97,22 @@ export class UserController {
   // ===================================
   // DELETE USER
   // ===================================
-  async deleteUser(req: Request, res: Response, next: NextFunction) {
+  async deleteUser(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const id = toUserId({
         id: req.params.id,
       } as UserIdParam);
 
       const user = await userService.deleteUser({ id });
-
+      await logAudit({
+        action: "USER_DELETED",
+        resource: "users",
+        resourceId: user.id,
+        schoolId: user.school_id,
+        userId: req.user?.id,
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
       return res.status(200).json({
         success: true,
         message: "User deleted successfully",

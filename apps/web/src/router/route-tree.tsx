@@ -25,6 +25,16 @@ import { InsightDetailPage } from '@routes/insights/insight-detail-page'
 import { NotFoundPage } from '@routes/errors/not-found-page'
 import { ErrorPage } from '@routes/errors/error-page'
 import { RoleRoute } from './role-route'
+import { AdminOverviewPage } from '@routes/dashboard/admin/overview-page'
+import { TenantListPage } from '@routes/dashboard/admin/tenants-page'
+import { TenantDetailPage } from '@routes/dashboard/admin/tenant-detail-page'
+import { AdminUserListPage } from '@routes/dashboard/admin/users-page'
+import { AIAnalyticsPage } from '@routes/dashboard/admin/ai-page'
+import { SystemHealthPage } from '@routes/dashboard/admin/health-page'
+import { SecurityAuditPage } from '@routes/dashboard/admin/security-page'
+import { BillingPage } from '@routes/dashboard/admin/billing-page'
+import { AnnouncementsPage } from '@routes/dashboard/admin/announcements-page'
+import { SupportTicketsPage } from '@routes/dashboard/admin/support-page'
 
 function wrapWithRole(Component: () => JSX.Element, allowedRoles: Role[]) {
   return () => (
@@ -167,6 +177,66 @@ const insightDetailRoute = new Route({
   component: wrapWithRole(InsightDetailPage, ['ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT']),
 })
 
+const adminOverviewRoute = new Route({
+  getParentRoute: () => dashboardRoute,
+  path: 'admin',
+  component: wrapWithRole(AdminOverviewPage, ['SUPER_ADMIN']),
+})
+
+const adminTenantsRoute = new Route({
+  getParentRoute: () => dashboardRoute,
+  path: 'admin/tenants',
+  component: wrapWithRole(TenantListPage, ['SUPER_ADMIN']),
+})
+
+const adminTenantDetailRoute = new Route({
+  getParentRoute: () => dashboardRoute,
+  path: 'admin/tenants/$schoolId',
+  component: wrapWithRole(TenantDetailPage, ['SUPER_ADMIN']),
+})
+
+const adminUsersRoute = new Route({
+  getParentRoute: () => dashboardRoute,
+  path: 'admin/users',
+  component: wrapWithRole(AdminUserListPage, ['SUPER_ADMIN']),
+})
+
+const adminAIRoute = new Route({
+  getParentRoute: () => dashboardRoute,
+  path: 'admin/ai',
+  component: wrapWithRole(AIAnalyticsPage, ['SUPER_ADMIN']),
+})
+
+const adminHealthRoute = new Route({
+  getParentRoute: () => dashboardRoute,
+  path: 'admin/health',
+  component: wrapWithRole(SystemHealthPage, ['SUPER_ADMIN']),
+})
+
+const adminSecurityRoute = new Route({
+  getParentRoute: () => dashboardRoute,
+  path: 'admin/security',
+  component: wrapWithRole(SecurityAuditPage, ['SUPER_ADMIN']),
+})
+
+const adminBillingRoute = new Route({
+  getParentRoute: () => dashboardRoute,
+  path: 'admin/billing',
+  component: wrapWithRole(BillingPage, ['SUPER_ADMIN']),
+})
+
+const adminAnnouncementsRoute = new Route({
+  getParentRoute: () => dashboardRoute,
+  path: 'admin/announcements',
+  component: wrapWithRole(AnnouncementsPage, ['SUPER_ADMIN']),
+})
+
+const adminSupportRoute = new Route({
+  getParentRoute: () => dashboardRoute,
+  path: 'admin/support',
+  component: wrapWithRole(SupportTicketsPage, ['SUPER_ADMIN']),
+})
+
 export const routeTree = rootRoute.addChildren([
   indexRoute,
   authLayout.addChildren([loginRoute, registerRoute]),
@@ -187,5 +257,15 @@ export const routeTree = rootRoute.addChildren([
     assessmentDetailRoute,
     insightsListRoute,
     insightDetailRoute,
+    adminOverviewRoute,
+    adminTenantsRoute,
+    adminTenantDetailRoute,
+    adminUsersRoute,
+    adminAIRoute,
+    adminHealthRoute,
+    adminSecurityRoute,
+    adminBillingRoute,
+    adminAnnouncementsRoute,
+    adminSupportRoute,
   ]),
 ])

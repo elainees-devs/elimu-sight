@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from "express";
+import { AuthRequest } from "../types/express";
 import { ClassService } from "../services/index";
 import { toClassId, toSchoolId } from "../mappers";
 import { ClassIdParam, SchoolIdParam } from "../schemas";
+import { logAudit } from "@utils/index";
 
 const classService = new ClassService();
 
@@ -57,9 +59,20 @@ export class ClassController {
   // ===================================
   // CREATE CLASS
   // ===================================
-  async createClass(req: Request, res: Response, next: NextFunction) {
+  async createClass(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const classData = await classService.createClass(req.body);
+
+      await logAudit({
+        action: "CLASS_CREATED",
+        resource: "classes",
+        resourceId: classData.id,
+        schoolId: classData.schoolId,
+        userId: req.user?.id,
+        details: { name: classData.name, level: classData.level },
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
 
       return res.status(201).json({
         success: true,
@@ -74,7 +87,7 @@ export class ClassController {
   // ===================================
   // UPDATE CLASS
   // ===================================
-  async updateClass(req: Request, res: Response, next: NextFunction) {
+  async updateClass(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const input = {
         ...req.body,
@@ -82,6 +95,17 @@ export class ClassController {
       };
 
       const updatedClass = await classService.updateClassDetails(input);
+
+      await logAudit({
+        action: "CLASS_UPDATED",
+        resource: "classes",
+        resourceId: updatedClass.id,
+        schoolId: updatedClass.schoolId,
+        userId: req.user?.id,
+        details: req.body,
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
 
       return res.status(200).json({
         success: true,
@@ -96,13 +120,23 @@ export class ClassController {
   // ===================================
   // DELETE CLASS
   // ===================================
-  async deleteClass(req: Request, res: Response, next: NextFunction) {
+  async deleteClass(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const id = toClassId({
         id: req.params.id,
       } as ClassIdParam);
 
       const deletedClass = await classService.deleteClass({ id });
+
+      await logAudit({
+        action: "CLASS_DELETED",
+        resource: "classes",
+        resourceId: deletedClass.id,
+        schoolId: deletedClass.schoolId,
+        userId: req.user?.id,
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
 
       return res.status(200).json({
         success: true,

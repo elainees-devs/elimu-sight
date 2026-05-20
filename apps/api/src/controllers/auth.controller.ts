@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthRequest } from "../types/express";
 import { AuthService } from "../services/auth.service";
+import { logAudit } from "@utils/index";
 
 export class AuthController {
   private authService = new AuthService();
@@ -10,25 +11,33 @@ export class AuthController {
   // ===============================
   async login(req: Request, res: Response, next: NextFunction) {
     try {
-      // =========================
-      // EXTRACT PAYLOAD
-      // =========================
       const { email, password } = req.body;
 
-      // =========================
-      // CALL SERVICE
-      // =========================
       const result = await this.authService.loginUser(email, password);
 
-      // =========================
-      // RESPONSE
-      // =========================
+      await logAudit({
+        action: "USER_LOGIN",
+        resource: "auth",
+        userId: result.user.id,
+        schoolId: result.user.school_id,
+        details: { email },
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
+
       return res.status(200).json({
         success: true,
         message: "Login successful",
         data: result,
       });
     } catch (error) {
+      logAudit({
+        action: "LOGIN_FAILED",
+        resource: "auth",
+        details: { email: (req as any).body?.email },
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      }).catch(() => {});
       return next(error);
     }
   }
@@ -39,6 +48,16 @@ export class AuthController {
   async register(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await this.authService.registerUser(req.body);
+
+      await logAudit({
+        action: "USER_REGISTERED",
+        resource: "users",
+        resourceId: result.id,
+        schoolId: result.school_id,
+        details: { email: result.email, role: result.role },
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
 
       return res.status(201).json({
         success: true,
@@ -84,6 +103,15 @@ export class AuthController {
       const userId = req.user!.id;
 
       await this.authService.logoutUser(userId);
+
+      await logAudit({
+        action: "USER_LOGOUT",
+        resource: "auth",
+        userId,
+        schoolId: req.user!.school_id,
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
 
       return res.status(200).json({
         success: true,

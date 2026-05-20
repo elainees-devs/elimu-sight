@@ -1,7 +1,8 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
 import Joi from "joi";
-import { ApiError, env } from "@utils/index";
-import { logger } from "@utils/logger";
+import { ApiError } from "../utils/app-error";
+import { env } from "../config/env";
+import { logger } from "../utils/logger";
 
 // =========================================
 // CIRCUIT BREAKER STATE
@@ -106,10 +107,6 @@ function validateAIResponse(response: unknown): AIResponseValidation {
 // =========================================
 // EXPONENTIAL BACKOFF
 // =========================================
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 function backoffDelay(attempt: number): number {
   const base = 1000;
   const max = 8000;
@@ -191,7 +188,14 @@ export class AIService {
   }
 
   // =========================================
-  // AI SERVICE HEALTH CHECK
+  // DELAY (overridable for testing)
+  // =========================================
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  // =========================================
+  // HEALTH CHECK
   // =========================================
   async healthCheck() {
     try {
@@ -231,7 +235,7 @@ export class AIService {
               retries,
               waitMs: Math.round(wait),
             });
-            await delay(wait);
+            await this.delay(wait);
             continue;
           }
 

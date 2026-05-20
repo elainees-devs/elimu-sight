@@ -33,3 +33,6 @@ export { env } from "../config/env";
 // analytics
 export { createAnalyticsEvent } from "./analytics";
 
+// audit
+export { logAudit } from "./audit";
+

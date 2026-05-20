@@ -23,6 +23,16 @@ const navItems: NavItemConfig[] = [
   { label: 'Teachers', to: ROUTES.TEACHERS, roles: ['ADMIN', 'HEADTEACHER'] },
   { label: 'Schools', to: ROUTES.SCHOOLS, roles: ['SUPER_ADMIN', 'ADMIN'] },
   { label: 'Settings', to: ROUTES.SETTINGS, roles: ['SUPER_ADMIN', 'ADMIN', 'HEADTEACHER', 'TEACHER', 'ACCOUNTANT'] },
+  { label: '---', to: '', roles: ['SUPER_ADMIN'] },
+  { label: 'Admin Overview', to: ROUTES.ADMIN, roles: ['SUPER_ADMIN'] },
+  { label: 'Tenants', to: ROUTES.ADMIN_TENANTS, roles: ['SUPER_ADMIN'] },
+  { label: 'Users', to: ROUTES.ADMIN_USERS, roles: ['SUPER_ADMIN'] },
+  { label: 'AI Analytics', to: ROUTES.ADMIN_AI, roles: ['SUPER_ADMIN'] },
+  { label: 'System Health', to: ROUTES.ADMIN_HEALTH, roles: ['SUPER_ADMIN'] },
+  { label: 'Security', to: ROUTES.ADMIN_SECURITY, roles: ['SUPER_ADMIN'] },
+  { label: 'Billing', to: ROUTES.ADMIN_BILLING, roles: ['SUPER_ADMIN'] },
+  { label: 'Announcements', to: ROUTES.ADMIN_ANNOUNCEMENTS, roles: ['SUPER_ADMIN'] },
+  { label: 'Support', to: ROUTES.ADMIN_SUPPORT, roles: ['SUPER_ADMIN'] },
 ]
 
 export function DashboardLayout() {
@@ -48,15 +58,19 @@ export function DashboardLayout() {
             <span className="text-lg font-bold text-gray-900">ElimuSight</span>
           </div>
           <nav className="mt-4 space-y-1 px-3">
-            {visibleItems.map((item) => (
-              <button
-                key={item.to}
-                onClick={() => navigate({ to: item.to })}
-                className="flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
-              >
-                {item.label}
-              </button>
-            ))}
+            {visibleItems.map((item) =>
+              item.label === '---' ? (
+                <div key="admin-sep" className="my-2 border-t border-gray-200" />
+              ) : (
+                <button
+                  key={item.to}
+                  onClick={() => navigate({ to: item.to })}
+                  className="flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                >
+                  {item.label}
+                </button>
+              )
+            )}
           </nav>
         </aside>
 
