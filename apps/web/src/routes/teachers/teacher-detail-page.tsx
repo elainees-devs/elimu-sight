@@ -3,11 +3,10 @@ import { useAuthStore } from '@stores/auth-store'
 import { useTeacher, useUpdateTeacher, useAssignClass, TeacherDetailCard, TeacherAssignClass } from '@features/teachers'
 import { useClasses } from '@features/classes'
 import { PageHeader } from '@shared/components/data-display/page-header'
-import { Button } from '@shared/components/ui/button'
-import { Spinner } from '@shared/components/ui/spinner'
+import { Button, Spinner } from "@elimu-sight/ui"
 import { EmptyState } from '@shared/components/data-display/empty-state'
-import { Input } from '@shared/components/ui/input'
-import type { Class } from '@shared/types/common'
+import { Input } from "@elimu-sight/ui"
+import type { Class } from "@elimu-sight/types"
 import { ROUTES } from '@shared/config/routes'
 import { useState } from 'react'
 

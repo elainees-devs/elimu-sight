@@ -7,8 +7,8 @@ import {
   TableHead,
   TableCell,
   SortableHeader,
-} from '@shared/components/ui/table'
-import { Spinner } from '@shared/components/ui/spinner'
+  Spinner,
+} from '@elimu-sight/ui'
 
 export interface Column<T> {
   key: string

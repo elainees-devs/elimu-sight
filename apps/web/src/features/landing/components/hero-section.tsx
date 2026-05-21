@@ -1,6 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
-import { Button } from '@shared/components/ui/button'
+import { Button } from "@elimu-sight/ui"
 
 const containerVariants = {
   hidden: { opacity: 0 },

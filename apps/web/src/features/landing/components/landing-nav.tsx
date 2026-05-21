@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button } from '@shared/components/ui/button'
+import { Button } from "@elimu-sight/ui"
 import { navLinks } from '../data/navigation'
 
 export function LandingNav() {

@@ -1,5 +1,4 @@
-import { Card, CardBody, CardHeader } from '@shared/components/ui/card'
-import { Badge } from '@shared/components/ui/badge'
+import { Card, CardBody, CardHeader, Badge } from "@elimu-sight/ui"
 import type { RiskData } from '../types'
 
 interface RiskMatrixProps {

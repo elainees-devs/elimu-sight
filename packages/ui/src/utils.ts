@@ -1,0 +1,8 @@
+export function generateInitials(name: string): string {
+  return name
+    .split(' ')
+    .map((n) => n.charAt(0))
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+}

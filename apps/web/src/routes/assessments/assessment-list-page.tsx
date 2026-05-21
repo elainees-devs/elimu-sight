@@ -1,10 +1,9 @@
 import { useNavigate } from '@tanstack/react-router'
 import { useAuthStore } from '@stores/auth-store'
 import { useAssessments, AssessmentTable } from '@features/assessments'
-import type { Assessment } from '@shared/types/common'
+import type { Assessment } from "@elimu-sight/types"
 import { PageHeader } from '@shared/components/data-display/page-header'
-import { Button } from '@shared/components/ui/button'
-import { Spinner } from '@shared/components/ui/spinner'
+import { Button, Spinner } from "@elimu-sight/ui"
 import { EmptyState } from '@shared/components/data-display/empty-state'
 import { ROUTES } from '@shared/config/routes'
 

@@ -1,5 +1,5 @@
 import { type ReactNode, createContext, useContext, useState } from 'react'
-import { cn } from '@shared/lib/cn'
+import { cn } from './cn'
 
 interface TabsContextType {
   activeTab: string

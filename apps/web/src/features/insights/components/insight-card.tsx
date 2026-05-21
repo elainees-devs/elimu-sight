@@ -1,6 +1,5 @@
-import { Card, CardBody } from '@shared/components/ui/card'
-import { Badge } from '@shared/components/ui/badge'
-import type { Insight } from '@shared/types/common'
+import { Card, CardBody, Badge } from "@elimu-sight/ui"
+import type { Insight } from "@elimu-sight/types"
 import { formatDate } from '@shared/lib/formatters'
 
 interface InsightCardProps {

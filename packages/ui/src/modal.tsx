@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect, useCallback } from 'react'
-import { cn } from '@shared/lib/cn'
+import { cn } from './cn'
 
 interface ModalProps {
   open: boolean

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { User } from '@shared/types/common'
+import type { User } from "@elimu-sight/types"
 
 interface AuthState {
   token: string | null

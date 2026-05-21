@@ -1,6 +1,6 @@
 import { DataTable, type Column } from '@shared/components/data-display/data-table'
-import { Badge } from '@shared/components/ui/badge'
-import type { Student } from '@shared/types/common'
+import { Badge } from "@elimu-sight/ui"
+import type { Student } from "@elimu-sight/types"
 
 const columns: Column<Student>[] = [
   { key: 'fullName', header: 'Name', sortable: true },

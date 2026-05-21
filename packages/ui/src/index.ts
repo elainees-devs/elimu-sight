@@ -1,11 +1,15 @@
-// Shared UI components will be extracted here incrementally.
-// Currently, all UI components live in apps/web/src/shared/components/ui/
-// and are consumed via the @shared/components path alias.
-//
-// Migration path:
-// 1. Move a component from apps/web/src/shared/components/ui/Button.tsx
-//    to packages/ui/src/Button/Button.tsx
-// 2. Update apps/web to import from @elimu-sight/ui instead
-// 3. Add barrel exports here
-
-export {};
+export { Button } from './button'
+export { Input } from './input'
+export { Textarea } from './textarea'
+export { Select } from './select'
+export { Label } from './label'
+export { Badge } from './badge'
+export { Card, CardHeader, CardBody, CardFooter } from './card'
+export { Modal } from './modal'
+export { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, SortableHeader } from './table'
+export { Spinner } from './spinner'
+export { Avatar } from './avatar'
+export { Dropdown } from './dropdown'
+export { Pagination } from './pagination'
+export { Tabs, TabsList, TabsTrigger, TabsPanel } from './tabs'
+export { SectionHeading } from './section-heading'

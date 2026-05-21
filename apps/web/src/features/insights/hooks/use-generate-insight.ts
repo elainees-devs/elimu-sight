@@ -2,8 +2,7 @@ import { useMutation } from '@tanstack/react-query'
 import { apiClient } from '@shared/lib/axios'
 import { useAuthStore } from '@stores/auth-store'
 import { useSchoolStore } from '@stores/school-store'
-import type { ApiResponse } from '@shared/types/api'
-import type { Insight } from '@shared/types/common'
+import type { ApiResponse, Insight } from "@elimu-sight/types"
 
 export function useGenerateInsight() {
   const schoolId = useSchoolStore((s) => s.schoolId)

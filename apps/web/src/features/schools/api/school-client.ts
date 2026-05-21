@@ -1,7 +1,5 @@
 import { apiClient } from '@shared/lib/axios'
-import type { ApiPaginatedResponse, ApiResponse } from '@shared/types/api'
-import type { School } from '@shared/types/common'
-import type { PaginationMeta } from '@shared/types/pagination'
+import type { ApiPaginatedResponse, ApiResponse, School, PaginationMeta } from "@elimu-sight/types"
 
 export const schoolClient = {
   list: (params?: { page?: number; limit?: number; search?: string }) =>

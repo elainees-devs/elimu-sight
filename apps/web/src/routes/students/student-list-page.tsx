@@ -2,11 +2,9 @@ import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useAuthStore } from '@stores/auth-store'
 import { useStudents, useCreateStudent, StudentTable, StudentForm } from '@features/students'
-import type { Student } from '@shared/types/common'
+import type { Student } from "@elimu-sight/types"
 import { PageHeader } from '@shared/components/data-display/page-header'
-import { Button } from '@shared/components/ui/button'
-import { Modal } from '@shared/components/ui/modal'
-import { Spinner } from '@shared/components/ui/spinner'
+import { Button, Modal, Spinner } from "@elimu-sight/ui"
 import { EmptyState } from '@shared/components/data-display/empty-state'
 import { ROUTES } from '@shared/config/routes'
 

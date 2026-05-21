@@ -1,4 +1,4 @@
-import { Input } from '@shared/components/ui/input'
+import { Input } from "@elimu-sight/ui"
 
 interface ScoreInputProps {
   score: number

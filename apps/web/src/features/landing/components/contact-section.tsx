@@ -1,9 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Button } from '@shared/components/ui/button'
-import { Input } from '@shared/components/ui/input'
-import { Textarea } from '@shared/components/ui/textarea'
-import { SectionHeading } from '@shared/components/ui/section-heading'
+import { Button, Input, Textarea, SectionHeading } from "@elimu-sight/ui"
 import { BookingModal } from './booking-modal'
 
 const containerVariants = {

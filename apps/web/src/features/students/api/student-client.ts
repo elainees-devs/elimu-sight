@@ -1,6 +1,5 @@
 import { apiClient } from '@shared/lib/axios'
-import type { ApiResponse } from '@shared/types/api'
-import type { Student } from '@shared/types/common'
+import type { ApiResponse, Student } from "@elimu-sight/types"
 
 export const studentClient = {
   list: (params?: { schoolId?: string; classId?: string; page?: number; limit?: number }) =>

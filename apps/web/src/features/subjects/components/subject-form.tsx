@@ -1,9 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { subjectSchema, type SubjectFormData } from '../schemas/subject-schema'
-import { Input } from '@shared/components/ui/input'
-import { Textarea } from '@shared/components/ui/textarea'
-import { Button } from '@shared/components/ui/button'
+import { Input, Textarea, Button } from "@elimu-sight/ui"
 
 interface SubjectFormProps {
   onSubmit: (data: SubjectFormData) => void

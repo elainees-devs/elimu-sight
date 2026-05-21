@@ -1,5 +1,5 @@
 import { Component, type ReactNode, type ErrorInfo } from 'react'
-import { Button } from '@shared/components/ui/button'
+import { Button } from "@elimu-sight/ui"
 
 interface ErrorBoundaryProps {
   children: ReactNode

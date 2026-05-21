@@ -1,8 +1,7 @@
 import { useParams, useNavigate } from '@tanstack/react-router'
 import { useSchool, useUpdateSchool, SchoolCard, SchoolForm } from '@features/schools'
 import { PageHeader } from '@shared/components/data-display/page-header'
-import { Button } from '@shared/components/ui/button'
-import { Spinner } from '@shared/components/ui/spinner'
+import { Button, Spinner } from "@elimu-sight/ui"
 import { EmptyState } from '@shared/components/data-display/empty-state'
 import { ROUTES } from '@shared/config/routes'
 

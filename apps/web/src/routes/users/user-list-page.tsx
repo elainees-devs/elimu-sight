@@ -3,12 +3,11 @@ import { useAuthStore } from '@stores/auth-store'
 import { useUsers, useCreateUser, useUpdateUser, useDeleteUser, UserTable, createUserSchema } from '@features/users'
 import type { CreateUserInput } from '@features/users'
 import { PageHeader } from '@shared/components/data-display/page-header'
-import { Button } from '@shared/components/ui/button'
-import { Modal } from '@shared/components/ui/modal'
+import { Button, Modal } from "@elimu-sight/ui"
 import { ConfirmDialog } from '@shared/components/feedback/confirm-dialog'
-import { Spinner } from '@shared/components/ui/spinner'
+import { Spinner } from "@elimu-sight/ui"
 import { EmptyState } from '@shared/components/data-display/empty-state'
-import { Input } from '@shared/components/ui/input'
+import { Input } from "@elimu-sight/ui"
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 

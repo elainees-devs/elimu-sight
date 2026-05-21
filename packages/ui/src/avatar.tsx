@@ -1,5 +1,5 @@
-import { cn } from '@shared/lib/cn'
-import { generateInitials } from '@shared/lib/utils'
+import { cn } from './cn'
+import { generateInitials } from './utils'
 
 interface AvatarProps {
   name: string

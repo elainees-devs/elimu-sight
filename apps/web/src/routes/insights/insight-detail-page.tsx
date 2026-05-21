@@ -1,11 +1,10 @@
 import { useParams, useNavigate } from '@tanstack/react-router'
 import { useInsight, useRefreshInsight } from '@features/insights'
 import { InsightCard } from '@features/insights'
-import { Button } from '@shared/components/ui/button'
-import { Spinner } from '@shared/components/ui/spinner'
+import { Button, Spinner } from "@elimu-sight/ui"
 import { useQueryClient } from '@tanstack/react-query'
 import { formatDate } from '@shared/lib/formatters'
-import { Badge } from '@shared/components/ui/badge'
+import { Badge } from "@elimu-sight/ui"
 
 export function InsightDetailPage() {
   const navigate = useNavigate()

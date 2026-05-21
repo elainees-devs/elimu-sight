@@ -1,7 +1,7 @@
 import { useNavigate } from '@tanstack/react-router'
-import { Card, CardBody, CardHeader } from '@shared/components/ui/card'
+import { Card, CardBody, CardHeader } from "@elimu-sight/ui"
 import { ROUTES } from '@shared/config/routes'
-import type { User } from '@shared/types/common'
+import type { User } from "@elimu-sight/types"
 
 interface QuickActionsProps {
   user?: User | null

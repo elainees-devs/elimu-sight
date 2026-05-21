@@ -1,4 +1,4 @@
-import type { User } from '@shared/types/common'
+import type { User } from "@elimu-sight/types"
 
 export interface LoginResponse {
   token: string

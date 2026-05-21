@@ -1,6 +1,6 @@
 import { DataTable, type Column } from '@shared/components/data-display/data-table'
-import { Badge } from '@shared/components/ui/badge'
-import type { User } from '@shared/types/common'
+import { Badge } from "@elimu-sight/ui"
+import type { User } from "@elimu-sight/types"
 import { ROLE_LABELS } from '@shared/lib/constants'
 
 const columns: Column<User>[] = [

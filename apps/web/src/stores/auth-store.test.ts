@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { useAuthStore } from './auth-store'
-import type { User } from '@shared/types/common'
+import type { User } from "@elimu-sight/types"
 
 const mockUser: User = {
   id: '1',

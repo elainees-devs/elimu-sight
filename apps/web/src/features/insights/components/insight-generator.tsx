@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { Button } from '@shared/components/ui/button'
-import { Select } from '@shared/components/ui/select'
+import { Button, Select } from "@elimu-sight/ui"
 import { INSIGHT_TYPES } from '@shared/lib/constants'
 
 interface InsightGeneratorProps {

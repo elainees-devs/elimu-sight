@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { generateInitials, capitalize, truncate, pluralize } from './utils'
+import { generateInitials, capitalize, truncate, pluralize } from '@elimu-sight/utils'
 
 describe('generateInitials', () => {
   it('returns first two initials', () => {

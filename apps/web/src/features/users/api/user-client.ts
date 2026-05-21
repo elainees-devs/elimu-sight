@@ -1,6 +1,5 @@
 import { apiClient } from '@shared/lib/axios'
-import type { ApiResponse } from '@shared/types/api'
-import type { User } from '@shared/types/common'
+import type { ApiResponse, User } from "@elimu-sight/types"
 
 export const userClient = {
   list: () => apiClient.get<{ success: boolean; message: string; data: User[]; meta: { page: number; limit: number; total: number; totalPages: number } }>('/users'),

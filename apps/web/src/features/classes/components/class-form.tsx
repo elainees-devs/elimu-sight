@@ -1,8 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { classSchema, type ClassFormData } from '../schemas/class-schema'
-import { Input } from '@shared/components/ui/input'
-import { Button } from '@shared/components/ui/button'
+import { Input, Button } from "@elimu-sight/ui"
 
 interface ClassFormProps {
   onSubmit: (data: ClassFormData) => void

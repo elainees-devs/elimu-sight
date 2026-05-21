@@ -1,25 +1,16 @@
-// Subscription plans
-export const subscriptionPlans = ["FREE", "BASIC", "PREMIUM"] as const;
+import {
+  ROLES,
+  SUBSCRIPTION_PLANS,
+  INSIGHT_TYPES,
+  GENERATED_BY,
+  GENDERS,
+  EXAM_TYPES,
+} from "@elimu-sight/types";
 
-// User roles
-export const Roles = ["SUPER_ADMIN", "ADMIN", "TEACHER", "HEADTEACHER", "ACCOUNTANT"] as const;
-
-export const RoleValues = [...Roles];
-
-// Insight types
-export const insightTypes = [
-  "STUDENT_PERFORMANCE",
-  "CLASS_PERFORMANCE",
-  "SUBJECT_TREND",
-  "TERM_ANALYSIS",
-  "PREDICTION",
-  "RECOMMENDATION",
-] as const;
-
-export const generatedBy = ["SYSTEM", "AI", "USER"] as const;
-
-// Genders
-export const genders = ["Male", "Female"] as const;
-
-// Assessment types
-export const examTypes = ["QUIZ", "CAT", "EXAM", "ASSIGNMENT"] as const;
+export const subscriptionPlans = SUBSCRIPTION_PLANS;
+export const Roles = ROLES;
+export const RoleValues = [...ROLES];
+export const insightTypes = INSIGHT_TYPES;
+export const generatedBy = GENERATED_BY;
+export const genders = GENDERS;
+export const examTypes = EXAM_TYPES;

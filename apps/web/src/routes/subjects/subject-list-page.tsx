@@ -1,9 +1,7 @@
 import { useState } from 'react'
 import { useSubjects, useCreateSubject, SubjectCard, SubjectForm } from '@features/subjects'
 import { PageHeader } from '@shared/components/data-display/page-header'
-import { Button } from '@shared/components/ui/button'
-import { Modal } from '@shared/components/ui/modal'
-import { Spinner } from '@shared/components/ui/spinner'
+import { Button, Modal, Spinner } from "@elimu-sight/ui"
 import { EmptyState } from '@shared/components/data-display/empty-state'
 
 export function SubjectListPage() {

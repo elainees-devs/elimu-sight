@@ -1,6 +1,6 @@
 import { DataTable, type Column } from '@shared/components/data-display/data-table'
-import { Badge } from '@shared/components/ui/badge'
-import type { Assessment } from '@shared/types/common'
+import { Badge } from "@elimu-sight/ui"
+import type { Assessment } from "@elimu-sight/types"
 import { formatDate } from '@shared/lib/formatters'
 
 const columns: Column<Assessment>[] = [

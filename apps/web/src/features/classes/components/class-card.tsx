@@ -1,5 +1,5 @@
-import { Card, CardBody } from '@shared/components/ui/card'
-import type { Class } from '@shared/types/common'
+import { Card, CardBody } from "@elimu-sight/ui"
+import type { Class } from "@elimu-sight/types"
 
 interface ClassCardProps {
   classItem: Class

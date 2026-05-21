@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { useAuthStore } from '@stores/auth-store'
-import type { Role } from '@shared/types/common'
+import type { Role } from "@elimu-sight/types"
 
 interface RoleRouteProps {
   children: ReactNode

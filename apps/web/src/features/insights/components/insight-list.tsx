@@ -1,7 +1,7 @@
 import { InsightCard } from './insight-card'
 import { EmptyState } from '@shared/components/data-display/empty-state'
-import { Spinner } from '@shared/components/ui/spinner'
-import type { Insight } from '@shared/types/common'
+import { Spinner } from "@elimu-sight/ui"
+import type { Insight } from "@elimu-sight/types"
 
 interface InsightListProps {
   insights: Insight[]

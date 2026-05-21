@@ -1,5 +1,5 @@
 import { DataTable, type Column } from '@shared/components/data-display/data-table'
-import type { Class } from '@shared/types/common'
+import type { Class } from "@elimu-sight/types"
 
 const columns: Column<Class>[] = [
   { key: 'name', header: 'Name', sortable: true },

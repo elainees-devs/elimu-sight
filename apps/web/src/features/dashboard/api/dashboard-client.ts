@@ -1,5 +1,5 @@
 import { apiClient } from '@shared/lib/axios'
-import type { ApiResponse } from '@shared/types/api'
+import type { ApiResponse } from "@elimu-sight/types"
 import type { DashboardStats, RecentActivity, ClassPerformance } from '../types'
 
 export const dashboardClient = {

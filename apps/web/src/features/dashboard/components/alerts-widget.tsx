@@ -1,4 +1,4 @@
-import { Card, CardBody, CardHeader } from '@shared/components/ui/card'
+import { Card, CardBody, CardHeader } from "@elimu-sight/ui"
 import { Alert } from '@shared/components/feedback/alert'
 
 interface AlertWidgetItem {

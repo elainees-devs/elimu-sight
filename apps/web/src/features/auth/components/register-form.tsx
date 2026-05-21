@@ -7,8 +7,7 @@ import { registerSchema, type RegisterFormData } from '../schemas/auth-schema'
 import { useRegister } from '../hooks/use-register'
 import { ROLES, ROLE_LABELS } from '@shared/lib/constants'
 import { apiClient } from '@shared/lib/axios'
-import type { ApiResponse } from '@shared/types/api'
-import type { School } from '@shared/types/common'
+import type { ApiResponse, School } from "@elimu-sight/types"
 
 export function RegisterForm() {
   const navigate = useNavigate()

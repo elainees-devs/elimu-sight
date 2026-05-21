@@ -1,6 +1,5 @@
 import { apiClient } from '@shared/lib/axios'
-import type { ApiResponse } from '@shared/types/api'
-import type { User } from '@shared/types/common'
+import type { ApiResponse, User } from "@elimu-sight/types"
 
 export const teacherClient = {
   list: () => apiClient.get<ApiResponse<User[]>>('/teachers'),

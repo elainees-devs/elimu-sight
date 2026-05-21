@@ -1,6 +1,4 @@
-import { Card, CardBody, CardHeader } from '@shared/components/ui/card'
-import { Spinner } from '@shared/components/ui/spinner'
-import { Badge } from '@shared/components/ui/badge'
+import { Card, CardBody, CardHeader, Spinner, Badge } from "@elimu-sight/ui"
 import type { ClassPerformance } from '../types'
 
 interface ClassPerformanceCardProps {

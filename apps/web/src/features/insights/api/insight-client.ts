@@ -1,6 +1,5 @@
 import { apiClient } from '@shared/lib/axios'
-import type { ApiResponse } from '@shared/types/api'
-import type { Insight } from '@shared/types/common'
+import type { ApiResponse, Insight } from "@elimu-sight/types"
 
 export const insightClient = {
   get: (id: string) => apiClient.get<ApiResponse<Insight>>(`/insights/crud/${id}`),

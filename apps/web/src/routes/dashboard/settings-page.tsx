@@ -3,13 +3,9 @@ import { useMutation } from '@tanstack/react-query'
 import { useAuthStore } from '@stores/auth-store'
 import { useSchoolStore } from '@stores/school-store'
 import { apiClient } from '@shared/lib/axios'
-import { Card, CardBody, CardHeader } from '@shared/components/ui/card'
-import { Badge } from '@shared/components/ui/badge'
-import { Button } from '@shared/components/ui/button'
-import { Input } from '@shared/components/ui/input'
+import { Card, CardBody, CardHeader, Badge, Button, Input } from "@elimu-sight/ui"
 import { PageHeader } from '@shared/components/data-display/page-header'
-import type { ApiResponse } from '@shared/types/api'
-import type { User } from '@shared/types/common'
+import type { ApiResponse, User } from "@elimu-sight/types"
 
 export function SettingsPage() {
   const user = useAuthStore((s) => s.user)

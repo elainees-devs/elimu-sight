@@ -1,5 +1,5 @@
 import { RootRoute, Route } from '@tanstack/react-router'
-import type { Role } from '@shared/types/common'
+import type { Role } from "@elimu-sight/types"
 import { RootLayout } from '@routes/__root'
 import { LandingPage } from '@routes/home'
 import { AuthLayout } from '@routes/_auth-layout'

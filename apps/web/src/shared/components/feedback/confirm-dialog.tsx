@@ -1,5 +1,4 @@
-import { Modal } from '@shared/components/ui/modal'
-import { Button } from '@shared/components/ui/button'
+import { Modal, Button } from "@elimu-sight/ui"
 
 interface ConfirmDialogProps {
   open: boolean

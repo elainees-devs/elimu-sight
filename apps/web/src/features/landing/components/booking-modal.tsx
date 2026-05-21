@@ -1,7 +1,5 @@
 import { useState } from 'react'
-import { Modal } from '@shared/components/ui/modal'
-import { Button } from '@shared/components/ui/button'
-import { Input } from '@shared/components/ui/input'
+import { Modal, Button, Input } from "@elimu-sight/ui"
 
 interface BookingModalProps {
   open: boolean

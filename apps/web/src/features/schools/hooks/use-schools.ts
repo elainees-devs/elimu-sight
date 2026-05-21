@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { schoolClient } from '../api/school-client'
-import type { PaginationMeta } from '@shared/types/pagination'
+import type { PaginationMeta } from "@elimu-sight/types"
 
 export function useSchools() {
   const [page, setPage] = useState(1)

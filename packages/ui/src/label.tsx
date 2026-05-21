@@ -1,5 +1,5 @@
 import { type LabelHTMLAttributes, forwardRef } from 'react'
-import { cn } from '@shared/lib/cn'
+import { cn } from './cn'
 
 export const Label = forwardRef<HTMLLabelElement, LabelHTMLAttributes<HTMLLabelElement>>(
   ({ className, ...props }, ref) => {

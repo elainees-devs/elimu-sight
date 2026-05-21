@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchema, type LoginFormData } from '../schemas/auth-schema'
 import { useLogin } from '../hooks/use-login'
 import { useAuthStore } from '@stores/auth-store'
-import type { ApiError } from '@shared/types/api'
+import type { ApiError } from "@elimu-sight/types"
 
 export function LoginForm() {
   const isLoading = useAuthStore((s) => s.isLoading)

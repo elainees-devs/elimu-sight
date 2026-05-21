@@ -1,6 +1,5 @@
-import { Card, CardBody, CardHeader } from '@shared/components/ui/card'
-import { Button } from '@shared/components/ui/button'
-import type { Class } from '@shared/types/common'
+import { Card, CardBody, CardHeader, Button } from "@elimu-sight/ui"
+import type { Class } from "@elimu-sight/types"
 
 interface TeacherAssignClassProps {
   currentClassId?: string

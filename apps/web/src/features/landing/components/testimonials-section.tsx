@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { SectionHeading } from '@shared/components/ui/section-heading'
+import { SectionHeading } from "@elimu-sight/ui"
 import { testimonials } from '../data/testimonials'
 
 const containerVariants = {

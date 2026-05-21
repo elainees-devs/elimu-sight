@@ -3,13 +3,11 @@ import { useAuthStore } from '@stores/auth-store'
 import { useTeachers, useCreateTeacher, TeacherTable, teacherSchema } from '@features/teachers'
 import type { TeacherFormData } from '@features/teachers'
 import { PageHeader } from '@shared/components/data-display/page-header'
-import { Button } from '@shared/components/ui/button'
-import { Modal } from '@shared/components/ui/modal'
-import { Spinner } from '@shared/components/ui/spinner'
+import { Button, Modal, Spinner } from "@elimu-sight/ui"
 import { EmptyState } from '@shared/components/data-display/empty-state'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Input } from '@shared/components/ui/input'
+import { Input } from "@elimu-sight/ui"
 
 export function TeacherListPage() {
   const schoolId = useAuthStore((s) => s.user?.schoolId) ?? ''

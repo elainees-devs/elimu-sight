@@ -4,7 +4,7 @@ import { useAuthStore } from '@stores/auth-store'
 import { useUIStore } from '@stores/ui-store'
 import { useLogout } from '@features/auth'
 import { ROUTES } from '@shared/config/routes'
-import type { Role } from '@shared/types/common'
+import type { Role } from "@elimu-sight/types"
 
 interface NavItemConfig {
   label: string

@@ -1,6 +1,5 @@
-import { Card, CardBody } from '@shared/components/ui/card'
-import { Badge } from '@shared/components/ui/badge'
-import type { User } from '@shared/types/common'
+import { Card, CardBody, Badge } from "@elimu-sight/ui"
+import type { User } from "@elimu-sight/types"
 
 interface TeacherCardProps {
   teacher: User

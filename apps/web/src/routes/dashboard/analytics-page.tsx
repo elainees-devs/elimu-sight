@@ -1,7 +1,7 @@
 import { useAuthStore } from '@stores/auth-store'
 import { usePerformanceAnalytics, useRiskAnalysis, useTrends, PerformanceChart, TrendChart, RiskMatrix } from '@features/analytics'
 import { PageHeader } from '@shared/components/data-display/page-header'
-import { Spinner } from '@shared/components/ui/spinner'
+import { Spinner } from "@elimu-sight/ui"
 
 export function AnalyticsPage() {
   const schoolId = useAuthStore((s) => s.user?.schoolId) ?? ''
