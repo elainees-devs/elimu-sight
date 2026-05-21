@@ -80,12 +80,12 @@ export {
   updateUserSchema,
   updateMyProfileSchema,
   userIdParamSchema,
-    User,
-    CreateUserInput,
-    UpdateUserInput,
-    UpdateMyProfileInput,
-    AuthenticateUserInput,
-    UserIdParam,
+  User,
+  CreateUserInput,
+  UpdateUserInput,
+  UpdateMyProfileInput,
+  AuthenticateUserInput,
+  UserIdParam,
 } from "./user.schema";
 
 // teacher schemas
@@ -109,3 +109,21 @@ export {
   UpdateInsightInput,
   InsightIdParam,
 } from "./insight.schema";
+
+// admin schemas
+export {
+  paginationSchema,
+  adminCreateSchoolSchema,
+  adminUpdateSchoolSchema,
+  adminCreateUserSchema,
+  adminUpdateUserSchema,
+  auditLogFilterSchema,
+  createAnnouncementSchema,
+  updateAnnouncementSchema,
+  announcementIdParamSchema,
+  announcementFilterSchema,
+  updateTicketSchema,
+  ticketIdParamSchema,
+  ticketFilterSchema,
+  changePlanSchema,
+} from "./admin.schema";

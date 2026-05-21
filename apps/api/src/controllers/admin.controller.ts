@@ -13,6 +13,11 @@ function qs(val: unknown): string | undefined {
 export class AdminController {
   private adminService = new AdminService();
 
+  private getUserId(req: AuthRequest): string {
+    if (!req.user) throw new Error("Authentication required");
+    return req.user.id;
+  }
+
   async getOverview(_req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const data = await this.adminService.getOverview();
@@ -63,7 +68,7 @@ export class AdminController {
         resource: "schools",
         resourceId: data.id,
         schoolId: data.id,
-        userId: req.user!.id,
+        userId: this.getUserId(req),
         details: { name: req.body.name, email: req.body.email },
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],
@@ -82,7 +87,7 @@ export class AdminController {
         resource: "schools",
         resourceId: data.id,
         schoolId: data.id,
-        userId: req.user!.id,
+        userId: this.getUserId(req),
         details: req.body,
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],
@@ -101,7 +106,7 @@ export class AdminController {
         resource: "schools",
         resourceId: data.id,
         schoolId: data.id,
-        userId: req.user!.id,
+        userId: this.getUserId(req),
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],
       });
@@ -147,7 +152,7 @@ export class AdminController {
         resource: "users",
         resourceId: data.id,
         schoolId: data.school_id ?? undefined,
-        userId: req.user!.id,
+        userId: this.getUserId(req),
         details: { role: data.role, email: data.email },
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],
@@ -166,7 +171,7 @@ export class AdminController {
         resource: "users",
         resourceId: data.id,
         schoolId: data.school_id ?? undefined,
-        userId: req.user!.id,
+        userId: this.getUserId(req),
         details: req.body,
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],
@@ -185,7 +190,7 @@ export class AdminController {
         resource: "users",
         resourceId: data.id,
         schoolId: data.school_id ?? undefined,
-        userId: req.user!.id,
+        userId: this.getUserId(req),
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],
       });
@@ -276,7 +281,7 @@ export class AdminController {
         resource: "subscriptions",
         resourceId: data.id,
         schoolId: data.id,
-        userId: req.user!.id,
+        userId: this.getUserId(req),
         details: { new_plan: req.body.plan },
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],
@@ -304,13 +309,13 @@ export class AdminController {
     try {
       const data = await this.adminService.createAnnouncement({
         ...req.body,
-        createdBy: req.user!.id,
+        createdBy: this.getUserId(req),
       });
       await logAudit({
         action: "ANNOUNCEMENT_CREATED",
         resource: "announcements",
         resourceId: data.id,
-        userId: req.user!.id,
+        userId: this.getUserId(req),
         details: { title: data.title, priority: data.priority },
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],
@@ -328,7 +333,7 @@ export class AdminController {
         action: "ANNOUNCEMENT_UPDATED",
         resource: "announcements",
         resourceId: data.id,
-        userId: req.user!.id,
+        userId: this.getUserId(req),
         details: req.body,
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],
@@ -346,7 +351,7 @@ export class AdminController {
         action: "ANNOUNCEMENT_DELETED",
         resource: "announcements",
         resourceId: data.id,
-        userId: req.user!.id,
+        userId: this.getUserId(req),
         details: { title: data.title },
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],
@@ -388,7 +393,7 @@ export class AdminController {
         resource: "support_tickets",
         resourceId: data.id,
         schoolId: data.school_id ?? undefined,
-        userId: req.user!.id,
+        userId: this.getUserId(req),
         details: req.body,
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],

@@ -21,17 +21,17 @@ export class InsightAIService {
       },
     });
 
-    this.validateAIInput(classData, "Class not found");
+    this.assertExists(classData, "Class not found");
 
     const aiResponse = await this.aiService.generateClassInsight({
       type: "CLASS",
       context: {
-        id: classData!.id,
-        name: classData!.name,
-        level: classData!.level,
-        stream: classData!.stream,
-        studentCount: classData!._count.students,
-        subjectCount: classData!._count.subjects,
+        id: classData.id,
+        name: classData.name,
+        level: classData.level,
+        stream: classData.stream,
+        studentCount: classData._count.students,
+        subjectCount: classData._count.subjects,
       },
     });
 
@@ -55,7 +55,7 @@ export class InsightAIService {
       },
     });
 
-    this.validateAIInput(student, "Student not found");
+    this.assertExists(student, "Student not found");
 
     const aiResponse = await this.aiService.generateStudentInsight({
       type: "STUDENT",
@@ -64,7 +64,7 @@ export class InsightAIService {
 
     return this.persistGeneratedInsights({
       schoolId,
-      classId: student!.class_id,
+      classId: student.class_id,
       studentId,
       type: "STUDENT_PERFORMANCE",
       aiResponse,
@@ -82,7 +82,7 @@ export class InsightAIService {
       },
     });
 
-    this.validateAIInput(subject, "Subject not found");
+    this.assertExists(subject, "Subject not found");
 
     const aiResponse = await this.aiService.generateSubjectInsight({
       type: "SUBJECT",
@@ -105,11 +105,11 @@ export class InsightAIService {
       where: { id: insightId },
     });
 
-    this.validateAIInput(existing, "Insight not found");
+    this.assertExists(existing, "Insight not found");
 
     const aiResponse = await this.aiService.refreshInsights({
-      type: existing!.type,
-      context: existing!.data,
+      type: existing.type,
+      context: existing.data,
     });
 
     return this.insightCrudService.updateInsight(insightId, {
@@ -168,7 +168,7 @@ export class InsightAIService {
   // =========================================
   // VALIDATION
   // =========================================
-  private validateAIInput(data: unknown, message: string) {
+  private assertExists<T>(data: T, message: string): asserts data is NonNullable<T> {
     if (!data) {
       throw new ApiError(404, message);
     }

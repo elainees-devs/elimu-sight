@@ -100,7 +100,8 @@ export class AuthController {
   // ===============================
   async logout(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const userId = req.user!.id;
+      const authUser = req.user as NonNullable<typeof req.user>;
+      const userId = authUser.id;
 
       await this.authService.logoutUser(userId);
 
@@ -108,7 +109,7 @@ export class AuthController {
         action: "USER_LOGOUT",
         resource: "auth",
         userId,
-        schoolId: req.user!.schoolId,
+        schoolId: authUser.schoolId,
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],
       });
@@ -127,7 +128,7 @@ export class AuthController {
   // ===============================
   async me(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const userId = req.user!.id;
+      const userId = (req.user as NonNullable<typeof req.user>).id;
 
       const user = await this.authService.getCurrentUser(userId);
 

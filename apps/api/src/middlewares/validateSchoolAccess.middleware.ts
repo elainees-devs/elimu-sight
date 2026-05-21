@@ -8,7 +8,10 @@ export async function validateSchoolAccess(
   next: NextFunction
 ) {
   try {
-    const userId = req.user!.id;
+    if (!req.user) {
+      throw new ApiError(401, "Authentication required");
+    }
+    const userId = req.user.id;
     const schoolId = req.params.schoolId || req.body.schoolId;
 
     const user = await prisma.users.findUnique({

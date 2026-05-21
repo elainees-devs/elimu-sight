@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { InsightController } from "@controllers/index";
-import { authenticateMiddleware, authorize, validateSchoolAccess } from "@middlewares/index";
+import { authenticateMiddleware, authorize, validate, validateSchoolAccess } from "@middlewares/index";
+import { bulkGenerateInsightsSchema } from "schemas/ai.schema";
 
 const router = Router();
 const controller = new InsightController();
@@ -22,6 +23,7 @@ router.post(
   authenticateMiddleware,
   authorize("ADMIN", "HEADTEACHER"),
   validateSchoolAccess,
+  validate(bulkGenerateInsightsSchema, "body"),
   (req, res, next) =>
     controller.bulkGenerateInsights(req, res, next),
 );

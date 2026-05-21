@@ -26,42 +26,6 @@ export class InsightCrudService {
   }
 
   // ===============================
-  // GET ALL INSIGHTS BY SCHOOL LOGIC
-  // ===============================
-  async getAllInsightsBySchool(
-    schoolId: string,
-    params?: { page?: number; limit?: number }
-  ) {
-    try {
-      const page = params?.page ?? 1;
-      const limit = params?.limit ?? 20;
-      const skip = (page - 1) * limit;
-
-      const [insights, total] = await Promise.all([
-        prisma.insights.findMany({
-          where: { school_id: schoolId },
-          orderBy: { created_at: "desc" },
-          skip,
-          take: limit,
-        }),
-        prisma.insights.count({ where: { school_id: schoolId } }),
-      ]);
-
-      return {
-        schoolId,
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-        insights,
-      };
-    } catch {
-      logger.error("Failed to fetch insights");
-      throw new ApiError(500, "Failed to fetch insights");
-    }
-  }
-
-  // ===============================
   // GET INSIGHT BY ID LOGIC
   // ===============================
   async getInsightById(id: string) {

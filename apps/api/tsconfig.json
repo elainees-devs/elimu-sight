@@ -26,8 +26,6 @@
        STRICTNESS
     ======================== */
     "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
 
      /* =========================
        MODULE RESOLUTION

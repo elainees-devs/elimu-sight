@@ -42,8 +42,8 @@ export class UserController {
   // ===================================
   async getUserByEmail(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const email = req.params.email as string;
-      const authUser = req.user!;
+      const email = String(req.params.email ?? "");
+      const authUser = req.user;
 
       const user = await userService.getUserByEmail(
         email,
@@ -65,7 +65,7 @@ export class UserController {
   // ===================================
   async updateMyProfile(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const userId = req.user!.id;
+      const userId = (req.user as NonNullable<typeof req.user>).id;
 
       const user = await userService.updateMyProfile(userId, req.body);
       await logAudit({
