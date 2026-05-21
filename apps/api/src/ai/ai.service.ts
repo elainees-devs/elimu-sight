@@ -152,39 +152,26 @@ export class AIService {
     });
   }
 
-  // =========================================
-  // GENERATE CLASS INSIGHT (FASTAPI CLIENT)
-  // =========================================
+  private readonly API_PREFIX = "/api/v1";
+
   async generateClassInsight(payload: unknown): Promise<AIServiceResponse> {
-    return this.requestWithRetry("/insights/class", payload);
+    return this.requestWithRetry(`${this.API_PREFIX}/insights/class`, payload);
   }
 
-  // =========================================
-  // GENERATE STUDENT INSIGHT (FASTAPI CLIENT)
-  // =========================================
   async generateStudentInsight(payload: unknown): Promise<AIServiceResponse> {
-    return this.requestWithRetry("/insights/student", payload);
+    return this.requestWithRetry(`${this.API_PREFIX}/insights/student`, payload);
   }
 
-  // =========================================
-  // GENERATE SUBJECT INSIGHT (FASTAPI CLIENT)
-  // =========================================
   async generateSubjectInsight(payload: unknown): Promise<AIServiceResponse> {
-    return this.requestWithRetry("/insights/subject", payload);
+    return this.requestWithRetry(`${this.API_PREFIX}/insights/subject`, payload);
   }
 
-  // =========================================
-  // REFRESH INSIGHTS (FASTAPI CLIENT)
-  // =========================================
   async refreshInsights(payload: unknown): Promise<AIServiceResponse> {
-    return this.requestWithRetry("/insights/refresh", payload);
+    return this.requestWithRetry(`${this.API_PREFIX}/insights/refresh`, payload);
   }
 
-  // =========================================
-  // BULK GENERATE INSIGHTS (FASTAPI CLIENT)
-  // =========================================
   async bulkGenerateInsights(payload: unknown): Promise<AIServiceResponse> {
-    return this.requestWithRetry("/insights/bulk", payload);
+    return this.requestWithRetry(`${this.API_PREFIX}/insights/bulk`, payload);
   }
 
   // =========================================
@@ -199,7 +186,7 @@ export class AIService {
   // =========================================
   async healthCheck() {
     try {
-      const res = await this.client.get("/health");
+      const res = await this.client.get(`${this.API_PREFIX}/health`);
       return {
         status: res.status,
         data: res.data,

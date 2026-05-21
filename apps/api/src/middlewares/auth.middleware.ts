@@ -2,6 +2,7 @@ import { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { AuthRequest } from "../types/express";
 import { JwtPayload } from "../utils/jwt";
+import { env } from "../config/env";
 
 export const authenticateMiddleware = async (
   req: AuthRequest,
@@ -23,7 +24,7 @@ export const authenticateMiddleware = async (
 
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET as string
+      env.JWT_SECRET
     ) as JwtPayload;
 
     req.user = {

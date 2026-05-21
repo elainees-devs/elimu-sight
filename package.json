@@ -3,6 +3,11 @@
   "private": true,
   "version": "1.0.0",
   "description": "AI-Powered School Intelligence Platform — Monorepo",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "shared/*"
+  ],
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
