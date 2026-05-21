@@ -17,17 +17,17 @@ ElimuSight is in **pre-production** phase. The core features are built but requi
 - [x] Teacher management
 - [x] Super Admin dashboard (overview, tenants, users, AI, health, security, billing, announcements, support)
 - [x] Role-based access (SUPER_ADMIN, ADMIN, HEADTEACHER, TEACHER, ACCOUNTANT)
-- [ ] Security hardening — `.gitignore`, secrets management, CSRF, CSP
+- [x] Security hardening — `.gitignore`, secrets management
 - [ ] Backend integration tests
 - [ ] Web app CI/CD
-- [ ] Containerized web app
+- [x] Containerized web app (Dockerfile + docker-compose)
 
 ### Phase 2 — Growth
 - [ ] E2E tests (Playwright)
 - [ ] Payment integration (Stripe)
 - [ ] Redis caching layer
 - [ ] Background job processing for AI tasks
-- [ ] Analytics backend endpoints (currently missing — frontend calls non-existent routes)
+- [x] Analytics backend endpoints (controllers + routes exist)
 - [ ] Account lockout and password policies
 - [ ] Code splitting and lazy loading
 
@@ -42,8 +42,17 @@ ElimuSight is in **pre-production** phase. The core features are built but requi
 
 | Issue | Severity | Status |
 |---|---|---|
-| Analytics page calls non-existent `/analytics/*` endpoints | P1 | Reported |
-| JWT expiry hardcoded "1d" ignores env var | P2 | Reported |
-| Assessment URL pattern inconsistent with other resources | P2 | Reported |
-| AuthProvider race condition on refresh token | P2 | Reported |
-| Web `.env` is empty — no `VITE_API_URL` for production | P2 | Reported |
+| No integration/E2E tests | P2 | Unresolved |
+| Assessment URL pattern inconsistent with other resources | P2 | Unresolved |
+| `.env` files in git history | P0 | Needs `git-filter-repo` to scrub |
+| `infra/terraform/main.tf` is commented out | P2 | Placeholder only |
+
+### Resolved Issues
+
+| Issue | Resolution |
+|---|---|
+| Analytics page calls non-existent endpoints | ✅ Backend endpoints added in commit `285436d` |
+| JWT expiry hardcoded "1d" ignores env var | ✅ Fixed in commit `acc7b29` — reads from env |
+| AuthProvider race condition on refresh token | ✅ Fixed in commit `7fc0c2f` |
+| Web `.env` is empty | Partially addressed — VITE_API_URL and VITE_AI_SERVICE_URL exist |
+| AI service route mismatch | ✅ Fixed in Phase 1 — added /api/v1 prefix |

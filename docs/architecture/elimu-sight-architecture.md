@@ -293,8 +293,7 @@ elimu-sight/
 │   ├── api/                    # Node.js Express backend
 │   │   ├── prisma/
 │   │   │   ├── schema.prisma   # Database schema
-│   │   │   ├── migrations/     # Prisma migrations
-│   │   │   └── dml/seed.sql    # Sample data
+│   │   │   └── migrations/     # Prisma migrations
 │   │   └── src/
 │   │       ├── ai/             # AI service HTTP client (circuit breaker, retry)
 │   │       ├── config/         # Environment config
@@ -322,7 +321,7 @@ elimu-sight/
 │   │       ├── providers/      # React context providers
 │   │       ├── router/         # TanStack Router setup + guards
 │   │       ├── routes/         # Page components per route
-│   │       ├── shared/         # Reusable UI, config, hooks, lib, types
+│   │       ├── shared/         # Reusable config, hooks, lib, schemas, types
 │   │       ├── stores/         # Zustand stores
 │   │       └── styles/         # Tailwind globals
 │   │
@@ -333,18 +332,52 @@ elimu-sight/
 │           ├── services/       # AI engine, LLM, ML
 │           ├── schemas/        # Pydantic request/response models
 │           └── utils/          # Cache, prompts
+│
+├── packages/
+│   ├── ui/                     # Shared UI components (React + Tailwind)
+│   │   └── src/
+│   │       ├── button.tsx, card.tsx, input.tsx, etc.
+│   │       └── index.ts
+│   ├── utils/                  # Shared utility functions
+│   │   └── src/
+│   │       └── index.ts       # capitalize, truncate, pluralize, generateInitials
+│   └── config/                 # Shared config (eslint, tsconfig)
+│       ├── eslint-preset.js
+│       └── tsconfig.base.json
+│
+├── shared/
+│   └── types/                  # Global type definitions
+│       └── src/
+│           ├── index.ts
+│           ├── common.ts       # User, School, Class, Student, etc.
+│           ├── api.ts          # ApiResponse, ApiPaginatedResponse
+│           ├── pagination.ts   # PaginationParams, PaginationMeta
+│           └── constants.ts    # ROLES, SUBSCRIPTION_PLANS, etc.
+│
+├── infra/                      # Deployment configs
+│   ├── docker/
+│   ├── nginx/
+│   └── terraform/
+│
+├── scripts/                    # Deploy/migrate scripts
+├── tests/                      # Integration/E2E tests (scaffold)
+├── docs/                       # Single source of truth for knowledge
+├── docker-compose.yml
+├── turbo.json
+├── tsconfig.base.json
+└── package.json
 ```
 
 ---
 
 ## Deployment
 
-| Service | Hosting | Port |
-|---|---|---|
-| Frontend | Vercel (SPA) | 443 |
-| API Backend | Render / Railway / VPS | 5000 |
-| AI Service | Render / Railway / VPS | 8000 |
-| PostgreSQL | Render / AWS RDS / Docker | 5432 |
+| Service | Hosting | Port (Dev) | Port (Docker) |
+|---|---|---|---|---|
+| Frontend | Vercel (SPA) / Docker nginx | 5173 | 80 |
+| API Backend | Render / Railway / VPS | 5000 | 3000 |
+| AI Service | Render / Railway / VPS | 8000 | 8000 |
+| PostgreSQL | Render / AWS RDS / Docker | 5432 | 5432 |
 
 ### Vite Proxy (Development)
 In dev mode, Vite proxies `/api/v1` to the backend at `localhost:5000`. This avoids CORS issues during development. In production, the frontend is served from a CDN and makes direct API calls to the backend's public URL.
@@ -361,8 +394,8 @@ VITE_AI_SERVICE_URL=http://localhost:8000
 ```env
 DATABASE_URL=postgresql://user:pass@localhost:5432/elimu_db
 JWT_SECRET=...
-JWT_EXPIRES_IN=1d
-REFRESH_TOKEN_EXPIRES_IN=7d
+JWT_EXPIRES_IN=7d
+REFRESH_TOKEN_EXPIRES_IN=30d
 AI_SERVICE_URL=http://localhost:8000
 CLIENT_URL=http://localhost:5173
 ```

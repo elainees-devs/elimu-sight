@@ -24,13 +24,29 @@
 - ✅ Added `.gitkeep` to `infra/docker/` (ensures directory is tracked)
 - ✅ Created root `tests/` directory scaffold with `.gitkeep`
 - ✅ Removed deprecated empty `apps/web/workflow/` directory
+- ✅ Fixed AI route prefix mismatch (ai.service.ts → /api/v1/insights/*)
+- ✅ Fixed auth middleware to use env.JWT_SECRET (not process.env)
+- ✅ Added workspaces config to root package.json
+
+## 2026-05-21 — Phase 2 Shared Layer Adoption
+
+### Completed
+- ✅ Migrated web app to @elimu-sight/types and @elimu-sight/ui
+- ✅ Moved UI components from web to packages/ui/
+- ✅ Wired @elimu-sight/types into API backend
+- ✅ Wired @elimu-sight/utils into web app
+
+## 2026-05-21 — Phase 3 Feature Isolation & Cleanup
+
+### Completed
+- ✅ Removed dead SQL DDL file (apps/api/prisma/ddl/tables.sql)
+- ✅ Removed unused deps: winston-daily-rotate-file, pg, @types/joi, @types/pg
 
 ## Known Issues
 
 | Issue | Priority | Notes |
 |---|---|---|
 | `.env` files in git history (now gitignored) | P0 | Needs `git-filter-repo` to scrub |
-| Analytics page calls non-existent backend endpoints | P1 | Frontend will 404 |
-| AI service route mismatch (API expects `/insights/*`, AI has `/ai/analyze`) | P1 | Integration will fail |
+| Analytics page backend endpoints now exist (controller + routes) | P1 | Frontend calls may still need verification |
 | No integration/E2E tests | P2 | Scaffold created at `tests/` |
 | `infra/terraform/main.tf` is commented out | P2 | Placeholder only |
