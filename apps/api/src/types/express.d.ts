@@ -1,11 +1,19 @@
-import { Request } from "express";
+import "express";
 
-export interface AuthRequest extends Request {
-  user?: {
-    id: string;
-    name: string;
-    email: string;
-    role: string;
-    schoolId?: string;
-  };
+export {};
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        name: string;
+        email: string;
+        role: string;
+        schoolId?: string;
+      };
+    }
+  }
 }
+
+export type AuthRequest = import("express-serve-static-core").Request;

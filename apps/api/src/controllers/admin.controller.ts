@@ -48,7 +48,7 @@ export class AdminController {
 
   async getSchoolDetail(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const data = await this.adminService.getSchoolDetail(req.params.id!);
+      const data = await this.adminService.getSchoolDetail(qs(req.params.id)!);
       return sendSuccess(res, data, "School detail fetched successfully");
     } catch (error) {
       return next(error);
@@ -76,7 +76,7 @@ export class AdminController {
 
   async updateSchool(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const data = await this.adminService.updateSchool(req.params.id!, req.body);
+      const data = await this.adminService.updateSchool(qs(req.params.id)!, req.body);
       await logAudit({
         action: "SCHOOL_UPDATED",
         resource: "schools",
@@ -95,7 +95,7 @@ export class AdminController {
 
   async deleteSchool(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const data = await this.adminService.deleteSchool(req.params.id!);
+      const data = await this.adminService.deleteSchool(qs(req.params.id)!);
       await logAudit({
         action: "SCHOOL_DEACTIVATED",
         resource: "schools",
@@ -146,7 +146,7 @@ export class AdminController {
         action: "USER_CREATED",
         resource: "users",
         resourceId: data.id,
-        schoolId: data.school_id,
+        schoolId: data.school_id ?? undefined,
         userId: req.user!.id,
         details: { role: data.role, email: data.email },
         ipAddress: req.ip,
@@ -165,7 +165,7 @@ export class AdminController {
         action: "USER_UPDATED",
         resource: "users",
         resourceId: data.id,
-        schoolId: data.school_id,
+        schoolId: data.school_id ?? undefined,
         userId: req.user!.id,
         details: req.body,
         ipAddress: req.ip,
@@ -184,7 +184,7 @@ export class AdminController {
         action: "USER_DEACTIVATED",
         resource: "users",
         resourceId: data.id,
-        schoolId: data.school_id,
+        schoolId: data.school_id ?? undefined,
         userId: req.user!.id,
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],
@@ -387,7 +387,7 @@ export class AdminController {
         action: "SUPPORT_TICKET_UPDATED",
         resource: "support_tickets",
         resourceId: data.id,
-        schoolId: data.school_id,
+        schoolId: data.school_id ?? undefined,
         userId: req.user!.id,
         details: req.body,
         ipAddress: req.ip,

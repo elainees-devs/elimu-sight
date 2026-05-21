@@ -1,4 +1,10 @@
 import { Prisma } from "@prisma/client";
+import type {
+  announcement_priority,
+  announcement_status,
+  ticket_priority,
+  ticket_status,
+} from "@prisma/client";
 import { prisma, ApiError, logger, hashPassword } from "@utils/index";
 
 export interface AdminOverview {
@@ -594,7 +600,7 @@ export class AdminService {
     const skip = (page - 1) * limit;
 
     const where: Prisma.announcementsWhereInput = {};
-    if (status) where.status = status;
+    if (status) where.status = status as announcement_status;
 
     const [announcements, total] = await Promise.all([
       prisma.announcements.findMany({
@@ -637,8 +643,8 @@ export class AdminService {
       data: {
         title: data.title,
         body: data.body,
-        priority: data.priority,
-        status: data.status,
+        priority: data.priority as announcement_priority,
+        status: data.status as announcement_status,
         created_by: data.createdBy,
         published_at: data.status === "PUBLISHED" ? new Date() : null,
       },
@@ -655,9 +661,9 @@ export class AdminService {
     const updateData: Prisma.announcementsUpdateInput = {};
     if (data.title !== undefined) updateData.title = data.title;
     if (data.body !== undefined) updateData.body = data.body;
-    if (data.priority !== undefined) updateData.priority = data.priority;
+    if (data.priority !== undefined) updateData.priority = data.priority as announcement_priority;
     if (data.status !== undefined) {
-      updateData.status = data.status;
+      updateData.status = data.status as announcement_status;
       if (data.status === "PUBLISHED" && !announcement.published_at) {
         updateData.published_at = new Date();
       }
@@ -683,8 +689,8 @@ export class AdminService {
     const skip = (page - 1) * limit;
 
     const where: Prisma.support_ticketsWhereInput = {};
-    if (status) where.status = status;
-    if (priority) where.priority = priority;
+    if (status) where.status = status as ticket_status;
+    if (priority) where.priority = priority as ticket_priority;
 
     const [tickets, total] = await Promise.all([
       prisma.support_tickets.findMany({
@@ -744,10 +750,10 @@ export class AdminService {
 
     const updateData: Prisma.support_ticketsUncheckedUpdateInput = {};
     if (data.status !== undefined) {
-      updateData.status = data.status;
+      updateData.status = data.status as ticket_status;
       if (data.status === "RESOLVED") updateData.resolved_at = new Date();
     }
-    if (data.priority !== undefined) updateData.priority = data.priority;
+    if (data.priority !== undefined) updateData.priority = data.priority as ticket_priority;
     if (data.assignedTo !== undefined) updateData.assigned_to = data.assignedTo;
 
     return prisma.support_tickets.update({ where: { id }, data: updateData });

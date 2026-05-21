@@ -1,4 +1,5 @@
 import { Router } from "express";
+import type { AuthRequest } from "../types/express";
 import { UserController } from "@controllers/index";
 import {
   authenticateMiddleware,
@@ -69,7 +70,7 @@ router.get("/email/:email", authenticateMiddleware, (req, res, next) =>
  *       200:
  *         description: User count
  */
-router.get("/count", authenticateMiddleware, (req, res, next) =>
+router.get("/count", authenticateMiddleware, (req: AuthRequest, res, next) =>
   userController.getUserCount(req, res, next),
 );
 

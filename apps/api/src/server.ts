@@ -3,15 +3,20 @@ import { env, logger, prisma } from "@utils/index";
 
 const PORT = env.PORT;
 
-// STARTUP VALIDATION
-const startupWarnings: string[] = [];
+// SENTRY INITIALIZATION
 if (env.SENTRY_DSN) {
-  logger.info("Sentry DSN configured");
+  import("@sentry/node").then((Sentry) => {
+    Sentry.init({
+      dsn: env.SENTRY_DSN,
+      environment: env.NODE_ENV,
+      tracesSampleRate: 0.1,
+    });
+    logger.info("Sentry initialized");
+  }).catch(() => {
+    logger.warn("Sentry SDK not available — install @sentry/node to enable");
+  });
 } else {
-  startupWarnings.push("SENTRY_DSN not set — error tracking disabled");
-}
-for (const warning of startupWarnings) {
-  logger.warn(warning);
+  logger.warn("SENTRY_DSN not set — error tracking disabled");
 }
 
 // START SERVER

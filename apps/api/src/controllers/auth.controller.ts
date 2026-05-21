@@ -108,7 +108,7 @@ export class AuthController {
         action: "USER_LOGOUT",
         resource: "auth",
         userId,
-        schoolId: req.user!.school_id,
+        schoolId: req.user!.schoolId,
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],
       });
