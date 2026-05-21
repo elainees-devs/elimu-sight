@@ -26,8 +26,6 @@ export function RegisterForm() {
       apiClient.get<ApiResponse<School[]>>('/schools').then((r) => r.data.data),
   })
 
-  const selectedRole = useWatch<RegisterFormData>({ control, name: 'role' })
-
   const {
     register,
     handleSubmit,
@@ -36,6 +34,8 @@ export function RegisterForm() {
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   })
+
+  const selectedRole = useWatch<RegisterFormData>({ control, name: 'role' })
 
   const showSchoolField = !selectedRole || selectedRole !== 'SUPER_ADMIN'
 

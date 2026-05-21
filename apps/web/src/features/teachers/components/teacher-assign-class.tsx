@@ -1,4 +1,4 @@
-import { Card, CardBody, CardHeader, Button } from "@elimu-sight/ui"
+import { Card, CardBody, CardHeader } from "@elimu-sight/ui"
 import type { Class } from "@elimu-sight/types"
 
 interface TeacherAssignClassProps {

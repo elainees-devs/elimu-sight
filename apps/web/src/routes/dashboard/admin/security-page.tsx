@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useAuditLogs, useAuditLogStats, useSecurityOverview } from '@features/admin'
-import { StatusBadge } from '@features/admin/components/status-badge'
 import { MetricCard } from '@features/admin/components/metric-card'
 import { AuditLogTable } from '@features/admin/components/audit-log-table'
 

@@ -30,7 +30,7 @@ interface UserTableProps {
   onDeactivate?: (user: User) => void
 }
 
-export function UserTable({ data, isLoading, onDeactivate }: UserTableProps) {
+export function UserTable({ data, isLoading }: UserTableProps) {
   return (
     <DataTable
       columns={columns}

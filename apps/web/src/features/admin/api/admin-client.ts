@@ -1,5 +1,5 @@
 import { apiClient } from '@shared/lib/axios'
-import type { ApiResponse, ApiPaginatedResponse, PaginationMeta } from "@elimu-sight/types"
+import type { ApiResponse, ApiPaginatedResponse } from "@elimu-sight/types"
 import type {
   AdminOverview,
   SystemHealth,

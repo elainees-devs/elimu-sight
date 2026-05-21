@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { useAuthStore } from '@stores/auth-store'
-import { useUsers, useCreateUser, useUpdateUser, useDeleteUser, UserTable, createUserSchema } from '@features/users'
+import { useUsers, useCreateUser, UserTable, createUserSchema } from '@features/users'
 import type { CreateUserInput } from '@features/users'
 import { PageHeader } from '@shared/components/data-display/page-header'
 import { Button, Modal } from "@elimu-sight/ui"
-import { ConfirmDialog } from '@shared/components/feedback/confirm-dialog'
 import { Spinner } from "@elimu-sight/ui"
 import { EmptyState } from '@shared/components/data-display/empty-state'
 import { Input } from "@elimu-sight/ui"
@@ -15,11 +14,8 @@ export function UserListPage() {
   const schoolId = useAuthStore((s) => s.user?.schoolId) ?? ''
   const { data: users, isLoading } = useUsers()
   const createUser = useCreateUser(schoolId)
-  const updateUser = useUpdateUser()
-  const deleteUser = useDeleteUser()
 
   const [createOpen, setCreateOpen] = useState(false)
-  const [deactivateTarget, setDeactivateTarget] = useState<string | null>(null)
 
   const {
     register,

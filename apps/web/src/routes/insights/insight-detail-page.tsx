@@ -1,6 +1,5 @@
 import { useParams, useNavigate } from '@tanstack/react-router'
 import { useInsight, useRefreshInsight } from '@features/insights'
-import { InsightCard } from '@features/insights'
 import { Button, Spinner } from "@elimu-sight/ui"
 import { useQueryClient } from '@tanstack/react-query'
 import { formatDate } from '@shared/lib/formatters'
@@ -62,7 +61,7 @@ export function InsightDetailPage() {
             {insight.summary && (
               <p className="text-gray-700">{insight.summary}</p>
             )}
-            {insight.data && (
+            {!!insight.data && (
               <div className="rounded-lg bg-gray-50 p-4">
                 <pre className="text-sm text-gray-600 whitespace-pre-wrap">
                   {typeof insight.data === 'string' ? insight.data : JSON.stringify(insight.data, null, 2)}
