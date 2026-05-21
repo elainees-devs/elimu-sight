@@ -1,5 +1,5 @@
 import { apiClient } from '@shared/lib/axios'
-import type { ApiPaginatedResponse, User } from "@elimu-sight/types"
+import type { ApiResponse, ApiPaginatedResponse, User } from "@elimu-sight/types"
 
 export const userClient = {
   list: () => apiClient.get<ApiPaginatedResponse<User>>('/users'),
