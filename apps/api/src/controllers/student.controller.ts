@@ -116,13 +116,13 @@ export class StudentController {
   // =========================================
 
   async getAllStudentsBySchool(
-    req: Request,
+    req: AuthRequest,
     res: Response,
     next: NextFunction
   ) {
     try {
       const schoolId = toSchoolId({
-        id: req.params.schoolId,
+        id: req.params.schoolId || req.user?.schoolId,
       } as SchoolIdParam);
 
       const result = await this.studentService.getAllStudentsBySchool(

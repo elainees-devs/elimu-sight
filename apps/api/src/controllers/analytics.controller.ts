@@ -1,14 +1,16 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
+import { AuthRequest } from "../types/express";
 import { DashboardService } from "@services/index";
 import { sendSuccess } from "@utils/response";
 import { prisma } from "@utils/prisma";
+import { ApiError } from "@utils/app-error";
 
 const dashboardService = new DashboardService();
 
 export class AnalyticsController {
-  async summary(req: Request, res: Response, next: NextFunction) {
+  async summary(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const schoolId = req.query.schoolId as string;
+      const schoolId = req.user?.schoolId ?? (req.query.schoolId as string);
       if (!schoolId) {
         return sendSuccess(res, {
           totalStudents: 0,
@@ -35,9 +37,9 @@ export class AnalyticsController {
     }
   }
 
-  async performance(req: Request, res: Response, next: NextFunction) {
+  async performance(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const schoolId = req.query.schoolId as string;
+      const schoolId = req.user?.schoolId ?? (req.query.schoolId as string);
       if (!schoolId) {
         return sendSuccess(res, []);
       }
@@ -88,9 +90,9 @@ export class AnalyticsController {
     }
   }
 
-  async riskMatrix(req: Request, res: Response, next: NextFunction) {
+  async riskMatrix(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const schoolId = req.query.schoolId as string;
+      const schoolId = req.user?.schoolId ?? (req.query.schoolId as string);
       if (!schoolId) {
         return sendSuccess(res, []);
       }
@@ -143,9 +145,9 @@ export class AnalyticsController {
     }
   }
 
-  async trends(req: Request, res: Response, next: NextFunction) {
+  async trends(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const schoolId = req.query.schoolId as string;
+      const schoolId = req.user?.schoolId ?? (req.query.schoolId as string);
       if (!schoolId) {
         return sendSuccess(res, []);
       }

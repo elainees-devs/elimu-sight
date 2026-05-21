@@ -1,4 +1,6 @@
 import pytest
+from app.schemas.ai import SubjectContext
+from app.schemas.student import Assessment
 from app.services.ai_engine import (
     analyze_student,
     analyze_class,
@@ -72,21 +74,25 @@ class TestAnalyzeClass:
 
 class TestAnalyzeSubject:
     def test_returns_correct_structure(self):
-        result = analyze_subject({
-            "id": "sub1",
-            "name": "Mathematics",
-            "code": "MATH",
-            "assessments": [
-                {"score": 80, "total_marks": 100},
-                {"score": 85, "total_marks": 100},
+        result = analyze_subject(SubjectContext(
+            id="sub1",
+            name="Mathematics",
+            code="MATH",
+            assessments=[
+                Assessment(exam_type="midterm", term="1", score=80, total_marks=100),
+                Assessment(exam_type="midterm", term="2", score=85, total_marks=100),
             ],
-        })
+        ))
         assert result["title"] == "Subject Performance Analysis"
         assert result["data"]["name"] == "Mathematics"
         assert result["data"]["average"] == 82.5
 
     def test_no_assessments(self):
-        result = analyze_subject({"id": "sub1", "name": "Empty", "assessments": []})
+        result = analyze_subject(SubjectContext(
+            id="sub1",
+            name="Empty",
+            assessments=[],
+        ))
         assert result["data"]["average"] == 0
         assert result["data"]["assessment_count"] == 0
 

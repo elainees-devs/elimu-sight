@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { INSIGHT_TYPES } from '@shared/lib/constants'
+import { INSIGHT_TYPES } from '@elimu-sight/types'
 
 export const generateInsightSchema = z.object({
   type: z.enum(INSIGHT_TYPES),

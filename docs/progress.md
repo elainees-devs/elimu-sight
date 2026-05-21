@@ -42,6 +42,33 @@
 - ✅ Removed dead SQL DDL file (apps/api/prisma/ddl/tables.sql)
 - ✅ Removed unused deps: winston-daily-rotate-file, pg, @types/joi, @types/pg
 
+## 2026-05-21 — Architecture Alignment (Plans + Config Packages)
+
+### Completed
+- ✅ Created `plans/` root directory with `implementation/` and `archive/` subdirectories
+- ✅ Moved plan files from `docs/plans/` to `plans/implementation/` (initial-api-plan.md, initial-ai-service-plan.md)
+- ✅ Removed empty `docs/plans/` directory
+- ✅ Created missing `plans/implementation/initial-plan.md` (initial project roadmap)
+- ✅ Created missing `plans/implementation/verdict.md` (architecture audit verdict)
+- ✅ Created `packages/config/` with `eslint-preset.js`, `tsconfig.base.json`, `package.json`
+- ✅ Updated `docs/README.md` links to point to new `plans/implementation/` paths
+
+## 2026-05-21 — Production Hardening Phase (P0 Fixes)
+
+### Completed
+- ✅ **Fixed `validateSchoolAccess` middleware** — role-based roles no longer short-circuit the `school_id` comparison, preventing cross-tenant data access
+- ✅ **Fixed analytics controller** — `schoolId` now sourced from JWT `req.user.schoolId` instead of unsanitized query param
+- ✅ **Fixed `schoolIdParamSchema` mismatch** — created `schoolIdInParamsSchema` for routes using `:schoolId` param (class.route, assessment.route) where `schoolIdParamSchema` expected `{ id }` instead
+- ✅ **Fixed subject-client.ts** — added missing `schoolId` to `create()` payload (was causing 400 errors on every subject creation)
+- ✅ **Fixed student/subject list routes** — `GET /students` and `GET /subjects` now fall back to `req.user?.schoolId` since routes lack `:schoolId` param
+- ✅ **Fixed `useLogout`** — added `queryClient.clear()` to prevent stale cached data after logout
+- ✅ **Fixed `PaginationParams` duplication** — insight services now import from `@elimu-sight/types` instead of redefining locally
+- ✅ **Fixed `APP_NAME` duplication** — web `app-config.ts` now imports from `@elimu-sight/types`
+- ✅ **Fixed `user-client.ts` inline type** — now uses shared `ApiPaginatedResponse<User>`
+- ✅ **Fixed `mappers/index.ts`** — removed unused `toSubjectId` import
+- ✅ **Removed dead code** — `useCurrentUser` hook and export removed (never imported anywhere)
+- ✅ **Zero `any` types** confirmed across all source code
+
 ## Known Issues
 
 | Issue | Priority | Notes |

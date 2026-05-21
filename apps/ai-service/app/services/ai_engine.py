@@ -64,7 +64,7 @@ def analyze_student(student):
         context=f"student:{student.id}",
     )
 
-    return _build_insight_response(
+    result = _build_insight_response(
         title="Student Performance Analysis",
         summary=f"{student.full_name} is performing at {average:.1f}% average. Risk level: {'high' if risk_score >= 0.7 else 'moderate' if risk_score >= 0.4 else 'low'}.",
         data={

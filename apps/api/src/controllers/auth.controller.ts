@@ -34,7 +34,7 @@ export class AuthController {
       logAudit({
         action: "LOGIN_FAILED",
         resource: "auth",
-        details: { email: (req as any).body?.email },
+        details: { email: req.body?.email },
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],
       }).catch(() => {});

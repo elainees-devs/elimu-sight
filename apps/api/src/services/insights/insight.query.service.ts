@@ -1,10 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma, ApiError, logger } from "@utils/index";
 
-type PaginationParams = {
-  page?: number;
-  limit?: number;
-};
+import { PaginationParams } from "@elimu-sight/types";
 
 export class InsightQueryService {
   // ===============================

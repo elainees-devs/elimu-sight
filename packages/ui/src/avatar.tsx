@@ -1,5 +1,5 @@
 import { cn } from './cn'
-import { generateInitials } from './utils'
+import { generateInitials } from '@elimu-sight/utils'
 
 interface AvatarProps {
   name: string

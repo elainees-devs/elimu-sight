@@ -2,7 +2,7 @@ import { Router } from "express";
 import { AssessmentController } from "@controllers/index";
 import { authenticateMiddleware, authorize, validate, validateSchoolAccess } from "@middlewares/index";
 import {
-  schoolIdParamSchema,
+  schoolIdInParamsSchema,
   assessmentSchoolAndIdParamSchema,
   updateAssessmentSchema,
   createAssessmentSchema,
@@ -33,7 +33,7 @@ router.get(
   "/school/:schoolId",
   authenticateMiddleware,
   validateSchoolAccess,
-  validate(schoolIdParamSchema, "params"),
+  validate(schoolIdInParamsSchema, "params"),
   (req, res, next) =>
     assessmentController.getAllAssessments(req, res, next)
 );
@@ -60,7 +60,7 @@ router.get(
   "/school/:schoolId/count",
   authenticateMiddleware,
   validateSchoolAccess,
-  validate(schoolIdParamSchema, "params"),
+  validate(schoolIdInParamsSchema, "params"),
   (req, res, next) =>
     assessmentController.getAssessmentCount(req, res, next)
 );
@@ -92,7 +92,7 @@ router.get(
   "/school/:schoolId/exam-type/:examType",
   authenticateMiddleware,
   validateSchoolAccess,
-  validate(schoolIdParamSchema, "params"),
+  validate(schoolIdInParamsSchema, "params"),
   (req, res, next) =>
     assessmentController.getAssessmentByName(req, res, next)
 );

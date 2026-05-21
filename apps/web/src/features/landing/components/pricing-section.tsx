@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Button, SectionHeading } from "@elimu-sight/ui"
-import { cn } from '@shared/lib/cn'
+import { cn } from '@elimu-sight/ui'
 import { pricingTiers, billingFrequencies } from '../data/pricing-data'
 
 const containerVariants = {

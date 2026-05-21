@@ -1,9 +1,6 @@
 import { prisma, ApiError, logger } from "@utils/index";
 
-type PaginationParams = {
-  page?: number;
-  limit?: number;
-};
+import { PaginationParams } from "@elimu-sight/types";
 
 // For dashboard analytics and reporting related to insights
 export class InsightAnalyticsService {

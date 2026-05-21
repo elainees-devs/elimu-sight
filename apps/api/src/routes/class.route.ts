@@ -10,7 +10,7 @@ import {
   createClassSchema,
   updateClassSchema,
   classIdParamSchema,
-  schoolIdParamSchema,
+  schoolIdInParamsSchema,
 } from "schemas";
 
 const router = Router();
@@ -41,7 +41,7 @@ const classController = new ClassController();
 router.get(
   "/school/:schoolId",
   authenticateMiddleware,
-  validate(schoolIdParamSchema, "params"),
+  validate(schoolIdInParamsSchema, "params"),
   (req, res, next) => classController.getAllClasses(req, res, next)
 );
 
@@ -188,7 +188,7 @@ router.delete(
 router.get(
   "/school/:schoolId/count",
   authenticateMiddleware,
-  validate(schoolIdParamSchema, "params"),
+  validate(schoolIdInParamsSchema, "params"),
   (req, res, next) => classController.getClassCount(req, res, next)
 );
 

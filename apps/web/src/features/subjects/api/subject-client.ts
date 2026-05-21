@@ -2,8 +2,8 @@ import { apiClient } from '@shared/lib/axios'
 import type { ApiResponse, Subject } from "@elimu-sight/types"
 
 export const subjectClient = {
-  list: () => apiClient.get<ApiResponse<Subject[]>>('/subjects'),
+  list: (schoolId: string) => apiClient.get<ApiResponse<Subject[]>>(`/subjects/school/${schoolId}`),
 
-  create: (data: { name: string; code?: string; description?: string }) =>
+  create: (data: { name: string; schoolId: string; code?: string; description?: string }) =>
     apiClient.post<ApiResponse<Subject>>('/subjects', data),
 }

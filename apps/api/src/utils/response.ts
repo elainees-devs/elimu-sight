@@ -1,33 +1,8 @@
 import { Response } from "express";
-
-interface PaginationMeta {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-}
-
-interface ApiSuccessResponse<T = unknown> {
-  success: true;
-  message: string;
-  data: T;
-}
-
-interface ApiPaginatedResponse<T = unknown> {
-  success: true;
-  message: string;
-  data: T[];
-  meta: PaginationMeta;
-}
-
-interface ApiErrorResponse {
-  success: false;
-  message: string;
-  errors?: unknown;
-}
+import type { ApiResponse, ApiPaginatedResponse, ApiError, PaginationMeta } from "@elimu-sight/types";
 
 export function sendSuccess<T>(res: Response, data: T, message = "Success", statusCode = 200): void {
-  const body: ApiSuccessResponse<T> = { success: true, message, data };
+  const body: ApiResponse<T> = { success: true, message, data };
   res.status(statusCode).json(body);
 }
 
@@ -46,7 +21,7 @@ export function sendPaginated<T>(
 }
 
 export function sendError(res: Response, message: string, statusCode = 500, errors?: unknown): void {
-  const body: ApiErrorResponse = { success: false, message };
+  const body: ApiError = { success: false, message };
   if (errors !== undefined) {
     body.errors = errors;
   }

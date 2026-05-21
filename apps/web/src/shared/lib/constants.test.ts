@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { ROLES, ROLE_LABELS, EXAM_TYPES, EXAM_TYPE_LABELS, GENDERS, SUBSCRIPTION_PLANS } from './constants'
+import { ROLES, ROLE_LABELS, EXAM_TYPES, EXAM_TYPE_LABELS, GENDERS, SUBSCRIPTION_PLANS } from '@elimu-sight/types'
 
 describe('constants', () => {
   it('ROLES contains correct roles', () => {

@@ -11,8 +11,8 @@
 | [Architectural Trade-offs](architecture/architectural-trade-offs.md) | Design decisions and consequences |
 | [Full Codebase Audit](audit/full-codebase-audit.md) | Security, performance, quality review |
 | [PRD / Spec](specs/prp.md) | Product requirements |
-| [API Plan](plans/initial-api-plan.md) | Backend evolution plan |
-| [AI Service Plan](plans/initial-ai-service-plan.md) | AI service evolution plan |
+| [API Plan](../plans/implementation/initial-api-plan.md) | Backend evolution plan |
+| [AI Service Plan](../plans/implementation/initial-ai-service-plan.md) | AI service evolution plan |
 | [User Flow](guides/user-flow.md) | Frontend user journeys |
 
 ## Repository Structure

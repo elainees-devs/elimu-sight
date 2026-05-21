@@ -1,4 +1,4 @@
-import { cn } from '@shared/lib/cn'
+import { cn } from '@elimu-sight/ui'
 
 interface HealthIndicatorProps {
   status: 'healthy' | 'degraded' | 'down' | 'connected' | 'disconnected' | 'running'

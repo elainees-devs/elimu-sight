@@ -12,6 +12,23 @@ export const INSIGHT_TYPES = [
 ] as const;
 export const GENERATED_BY = ["SYSTEM", "AI", "USER"] as const;
 
+export const ROLE_LABELS: Record<Role, string> = {
+  SUPER_ADMIN: "Super Admin",
+  ADMIN: "Admin",
+  HEADTEACHER: "Head Teacher",
+  TEACHER: "Teacher",
+  ACCOUNTANT: "Accountant",
+};
+
+export const EXAM_TYPE_LABELS: Record<ExamType, string> = {
+  QUIZ: "Quiz",
+  CAT: "CAT",
+  EXAM: "Exam",
+  ASSIGNMENT: "Assignment",
+};
+
+export const APP_NAME = "ElimuSight";
+
 export type Role = (typeof ROLES)[number];
 export type SubscriptionPlan = (typeof SUBSCRIPTION_PLANS)[number];
 export type ExamType = (typeof EXAM_TYPES)[number];

@@ -1,5 +1,3 @@
-import { toSubjectId } from "./subject.mapper";
-
 // school mappers
 export {SchoolDB,toSchoolResponse, toSchoolListResponse, toCreateSchoolDB, toUpdateSchoolDB, toSchoolId} from "./school.mapper";
 

@@ -1,7 +1,7 @@
 import { DataTable, type Column } from '@shared/components/data-display/data-table'
 import { Badge } from "@elimu-sight/ui"
 import type { User } from "@elimu-sight/types"
-import { ROLE_LABELS } from '@shared/lib/constants'
+import { ROLE_LABELS } from '@elimu-sight/types'
 
 const columns: Column<User>[] = [
   { key: 'fullName', header: 'Name', sortable: true },

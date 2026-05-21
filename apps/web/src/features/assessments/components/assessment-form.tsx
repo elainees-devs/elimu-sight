@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { assessmentSchema, type AssessmentFormData } from '../schemas/assessment-schema'
 import { Input, Select, Textarea, Button } from "@elimu-sight/ui"
-import { EXAM_TYPE_LABELS, EXAM_TYPES } from '@shared/lib/constants'
+import { EXAM_TYPE_LABELS, EXAM_TYPES } from '@elimu-sight/types'
 
 interface AssessmentFormProps {
   onSubmit: (data: AssessmentFormData) => void

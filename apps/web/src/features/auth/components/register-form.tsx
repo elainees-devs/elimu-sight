@@ -5,7 +5,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { registerSchema, type RegisterFormData } from '../schemas/auth-schema'
 import { useRegister } from '../hooks/use-register'
-import { ROLES, ROLE_LABELS } from '@shared/lib/constants'
+import { ROLES, ROLE_LABELS } from '@elimu-sight/types'
 import { apiClient } from '@shared/lib/axios'
 import type { ApiResponse, School } from "@elimu-sight/types"
 
@@ -47,7 +47,7 @@ export function RegisterForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       {registerMutation.error && (
         <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
-          {(registerMutation.error as any)?.response?.data?.message || 'Registration failed'}
+          {(registerMutation.error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Registration failed'}
         </div>
       )}
 

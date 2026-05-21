@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button, Select } from "@elimu-sight/ui"
-import { INSIGHT_TYPES } from '@shared/lib/constants'
+import { INSIGHT_TYPES } from '@elimu-sight/types'
 
 interface InsightGeneratorProps {
   onGenerate: (params: { type: string; classId?: string; studentId?: string; subjectId?: string }) => void

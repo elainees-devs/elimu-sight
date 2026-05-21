@@ -4,6 +4,7 @@ export {
   createSchoolSchema,
   updateSchoolSchema,
   schoolIdParamSchema,
+  schoolIdInParamsSchema,
   School,
   CreateSchoolInput,
   UpdateSchoolInput,

@@ -6,10 +6,14 @@ os.environ["ENABLE_ML"] = "true"
 os.environ["LOG_JSON"] = "false"
 
 import pytest
-from app.schemas.student import StudentRequest, Assessment
-from app.schemas.ai import StudentContext, StudentInsightRequest, ClassInsightRequest
-
-
+from app.schemas.student import Assessment
+from app.schemas.ai import (
+    StudentContext,
+    StudentInsightRequest,
+    ClassInsightRequest,
+    ClassContext,
+    SubjectContext,
+)
 
 
 
@@ -63,11 +67,11 @@ def student_request(student_context):
 
 @pytest.fixture
 def class_context():
-    return {
-        "id": "c1",
-        "name": "Grade 5",
-        "level": "5",
-        "stream": "East",
-        "studentCount": 30,
-        "subjectCount": 8,
-    }
+    return ClassContext(
+        id="c1",
+        name="Grade 5",
+        level="5",
+        stream="East",
+        studentCount=30,
+        subjectCount=8,
+    )

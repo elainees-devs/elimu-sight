@@ -1,5 +1,5 @@
 import { type ReactNode, createContext, useContext, useState, useCallback } from 'react'
-import { cn } from '@shared/lib/cn'
+import { cn } from '@elimu-sight/ui'
 
 type ToastType = 'success' | 'error' | 'warning' | 'info'
 

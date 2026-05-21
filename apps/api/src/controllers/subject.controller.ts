@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { AuthRequest } from "../types/express";
 import { SubjectService } from "../services/index";
 
 import { toSubjectId, toSchoolId } from "../mappers";
@@ -10,10 +11,10 @@ export class SubjectController {
   // ===================================
   // GET ALL SUBJECTS
   // ===================================
-  async getAllSubjects(req: Request, res: Response, next: NextFunction) {
+  async getAllSubjects(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const schoolId = toSchoolId({
-        id: req.params.schoolId,
+        id: req.params.schoolId || req.user?.schoolId,
       } as SchoolIdParam);
 
       const result = await subjectService.getAllSubjects(schoolId, {

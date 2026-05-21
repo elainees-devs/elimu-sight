@@ -72,6 +72,10 @@ export const schoolIdParamSchema = Joi.object({
   id: Joi.string().uuid().required(),
 });
 
+export const schoolIdInParamsSchema = Joi.object({
+  schoolId: Joi.string().uuid().required(),
+});
+
 /**
  * Utility to extract Joi type
  */

@@ -1,8 +1,8 @@
 import { apiClient } from '@shared/lib/axios'
-import type { ApiResponse, User } from "@elimu-sight/types"
+import type { ApiPaginatedResponse, User } from "@elimu-sight/types"
 
 export const userClient = {
-  list: () => apiClient.get<{ success: boolean; message: string; data: User[]; meta: { page: number; limit: number; total: number; totalPages: number } }>('/users'),
+  list: () => apiClient.get<ApiPaginatedResponse<User>>('/users'),
 
   update: (id: string, data: { fullName?: string; email?: string; isActive?: boolean }) =>
     apiClient.patch<ApiResponse<User>>(`/users/${id}`, data),

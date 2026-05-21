@@ -57,7 +57,8 @@ describe("AIService", () => {
     });
 
     it("retries on server error then throws", async () => {
-      jest.spyOn(AIService.prototype as any, "delay").mockResolvedValue(undefined);
+      // @ts-expect-error: accessing private method for mocking delay
+      jest.spyOn(AIService.prototype, "delay").mockResolvedValue(undefined);
 
       mockPost.mockRejectedValue({
         response: { status: 500, data: { message: "Server error" } },
