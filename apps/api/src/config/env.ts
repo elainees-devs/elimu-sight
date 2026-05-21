@@ -27,6 +27,8 @@ export const env = {
   AI_SERVICE_URL: optionalEnv("AI_SERVICE_URL", "http://localhost:8000"),
   AI_SERVICE_API_KEY: optionalEnv("AI_SERVICE_API_KEY", ""),
 
+  SENTRY_DSN: optionalEnv("SENTRY_DSN", ""),
+
   REDIS_URL: optionalEnv("REDIS_URL", "redis://localhost:6379"),
 
   CLIENT_URL: optionalEnv("CLIENT_URL", "http://localhost:5173"),

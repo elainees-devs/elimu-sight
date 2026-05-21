@@ -3,6 +3,17 @@ import { env, logger, prisma } from "@utils/index";
 
 const PORT = env.PORT;
 
+// STARTUP VALIDATION
+const startupWarnings: string[] = [];
+if (env.SENTRY_DSN) {
+  logger.info("Sentry DSN configured");
+} else {
+  startupWarnings.push("SENTRY_DSN not set — error tracking disabled");
+}
+for (const warning of startupWarnings) {
+  logger.warn(warning);
+}
+
 // START SERVER
 const server = app.listen(PORT, () => {
   logger.info(`Server is running on port ${PORT} in ${env.NODE_ENV} mode`);
